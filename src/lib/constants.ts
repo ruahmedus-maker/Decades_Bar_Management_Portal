@@ -5,14 +5,14 @@ export const SECURITY_CONFIG = {
   passwordMinLength: 6
 } as const;
 
-export const APPROVED_CODES = [
-  "BARSTAFF2025", 
-  "DECADESADMIN"
-] as const;
+export const APPROVED_CODES: string[] = [
+  "BARSTAFF2025", "DECADESADMIN"
+];
 
-export const ADMIN_CODES = [
+export const ADMIN_CODES: string[] = [
   "DECADESADMIN"
-] as const;
+];
+
 
 export const NAV_ITEMS = [
   { id: 'welcome', icon: '🏠', label: 'Welcome' },

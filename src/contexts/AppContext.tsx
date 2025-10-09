@@ -3,8 +3,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
 import { validateSession, endUserSession, performLogin, performRegistration } from '@/lib/auth';
-import { storage } from '@/lib/storage';
+
 import { trackSectionVisit, submitAcknowledgement } from '@/lib/progress';
+
+interface RegistrationData {
+  name: string;
+  email: string;
+  position: string;
+  code: string;
+  password: string;
+  confirmPassword: string;
+}
 
 interface AppContextType {
   currentUser: User | null;

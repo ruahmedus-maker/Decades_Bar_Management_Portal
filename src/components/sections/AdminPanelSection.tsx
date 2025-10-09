@@ -1,21 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
-import { User, TestResult } from '@/types';
+import { User } from '@/types';
 
-// Define the type for admin test results
-interface AdminTestResult extends TestResult {
-  userName: string;
-  userEmail: string;
-  testId: string;
+interface TestResult {
+  score: number;
+  total: number;
+  percentage: number;
+  passed: boolean;
+  date: string;
+  testName: string;
 }
 
 export default function AdminPanelSection() {
-  const { currentUser, isAdmin } = useApp();
+  const { isAdmin, showToast } = useApp();
   const [users, setUsers] = useState<User[]>([]);
-  const [testResults, setTestResults] = useState<AdminTestResult[]>([]);
+  const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
   const [blockEmail, setBlockEmail] = useState('');
 
   useEffect(() => {
@@ -29,58 +31,75 @@ export default function AdminPanelSection() {
     const userList = Object.values(usersData);
     setUsers(userList);
 
-    // Aggregate test results
-    const results: AdminTestResult[] = [];
-    userList.forEach(user => {
-      if (user.testResults) {
-        Object.entries(user.testResults).forEach(([testId, result]) => {
-          results.push({
-            userName: user.name,
-            userEmail: user.email,
-            testId,
-            ...result
-          });
-        });
-      }
-    });
+    // Compile test results
+    const results = userList
+      .filter(user => user.testResults && Object.keys(user.testResults).length > 0)
+      .map(user => ({
+        email: user.email,
+        user: user,
+        results: user.testResults || {}
+      }));
     setTestResults(results);
   };
 
   const toggleUserBlock = (email: string) => {
     const usersData = storage.getUsers();
-    if (usersData[email]) {
-      usersData[email].status = usersData[email].status === 'blocked' ? 'active' : 'blocked';
+    const user = usersData[email];
+    
+    if (user) {
+      if (user.status === 'blocked') {
+        user.status = 'active';
+        showToast(`User ${email} has been unblocked.`);
+      } else {
+        user.status = 'blocked';
+        showToast(`User ${email} has been blocked.`);
+      }
+      
       storage.saveUsers(usersData);
-      loadAdminData();
+      loadAdminData(); // Refresh the data
     }
   };
 
-  const handleToggleBlock = () => {
-    if (blockEmail) {
-      const user = users.find(u => u.email === blockEmail);
-      if (user) {
-        toggleUserBlock(blockEmail);
-        setBlockEmail('');
-      } else {
-        alert('User not found');
-      }
+  const handleQuickBlock = () => {
+    if (!blockEmail.trim()) {
+      alert('Please enter an email address');
+      return;
     }
+
+    const usersData = storage.getUsers();
+    if (!usersData[blockEmail]) {
+      alert('User not found.');
+      return;
+    }
+
+    toggleUserBlock(blockEmail);
+    setBlockEmail('');
   };
 
   if (!isAdmin) {
     return (
-      <div className="section" id="admin-panel">
+      <div className="section active">
         <div className="section-header">
           <h3>Admin Dashboard</h3>
           <span className="badge">Admin Only</span>
         </div>
-        <p>Access denied. Administrator privileges required.</p>
+        <div className="card">
+          <div className="card-body">
+            <p>Admin access required to view this section.</p>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const totalUsers = users.length;
+  const activeUsers = users.filter(u => u.status !== 'blocked').length;
+  const blockedUsers = users.filter(u => u.status === 'blocked').length;
+  const completedTraining = users.filter(u => u.progress >= 100).length;
+  const acknowledgedCount = users.filter(u => u.acknowledged).length;
+
   return (
-    <div className="section" id="admin-panel">
+    <div className="section active">
       <div className="section-header">
         <h3>Admin Dashboard</h3>
         <span className="badge">Admin Only</span>
@@ -93,15 +112,13 @@ export default function AdminPanelSection() {
             <h4>📊 Quick Stats</h4>
           </div>
           <div className="card-body">
-            <div id="admin-stats">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div><strong>Total Users:</strong> {users.length}</div>
-                <div><strong>Active:</strong> {users.filter(u => u.status !== 'blocked').length}</div>
-                <div><strong>Blocked:</strong> {users.filter(u => u.status === 'blocked').length}</div>
-                <div><strong>Completed Training:</strong> {users.filter(u => u.progress >= 100).length}</div>
-                <div><strong>Submitted Acknowledgements:</strong> {users.filter(u => u.acknowledged).length}</div>
-                <div><strong>Completion Rate:</strong> {users.length ? Math.round((users.filter(u => u.progress >= 100).length / users.length) * 100) : 0}%</div>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div><strong>Total Users:</strong> {totalUsers}</div>
+              <div><strong>Active:</strong> {activeUsers}</div>
+              <div><strong>Blocked:</strong> {blockedUsers}</div>
+              <div><strong>Completed Training:</strong> {completedTraining}</div>
+              <div><strong>Submitted Acknowledgements:</strong> {acknowledgedCount}</div>
+              <div><strong>Completion Rate:</strong> {totalUsers ? Math.round((completedTraining / totalUsers) * 100) : 0}%</div>
             </div>
           </div>
         </div>
@@ -120,10 +137,17 @@ export default function AdminPanelSection() {
                 placeholder="user@decadesbar.com"
                 style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
               />
-              <button className="btn" onClick={handleToggleBlock} style={{ width: '100%' }}>
+              <button 
+                className="btn" 
+                onClick={handleQuickBlock}
+                style={{ width: '100%' }}
+              >
                 Toggle Block Status
               </button>
             </div>
+            <button className="btn" onClick={loadAdminData} style={{ width: '100%', marginTop: '10px' }}>
+              <i className="fas fa-sync-alt"></i> Refresh Data
+            </button>
           </div>
         </div>
       </div>
@@ -134,12 +158,15 @@ export default function AdminPanelSection() {
           <h4>📊 Employee Test Results</h4>
         </div>
         <div className="card-body">
-          <div id="admin-test-results">
-            {testResults.length > 0 ? (
+          {testResults.length === 0 ? (
+            <p>No test results available.</p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
               <table className="test-results-table">
                 <thead>
                   <tr>
                     <th>Employee</th>
+                    <th>Position</th>
                     <th>Test</th>
                     <th>Score</th>
                     <th>Status</th>
@@ -147,25 +174,31 @@ export default function AdminPanelSection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {testResults.map((result, index) => (
-                    <tr key={index}>
-                      <td>{result.userName}</td>
-                      <td>{result.testName || result.testId}</td>
-                      <td>{result.score}/{result.total} ({result.percentage}%)</td>
-                      <td>
-                        <span className={result.passed ? 'test-pass-badge' : 'test-fail-badge'}>
-                          {result.passed ? 'Passed' : 'Failed'}
-                        </span>
-                      </td>
-                      <td>{new Date(result.date).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
+                  {testResults.flatMap(({ email, user, results }) =>
+                    Object.entries(results).map(([testId, result]) => {
+                      const date = new Date(result.date);
+                      const formattedDate = date.toLocaleDateString();
+
+                      return (
+                        <tr key={`${email}-${testId}`}>
+                          <td>{user.name}</td>
+                          <td>{user.position}</td>
+                          <td>{result.testName || testId}</td>
+                          <td>{result.score}/{result.total} ({result.percentage}%)</td>
+                          <td>
+                            <span className={result.passed ? 'test-pass-badge' : 'test-fail-badge'}>
+                              {result.passed ? 'Passed' : 'Failed'}
+                            </span>
+                          </td>
+                          <td>{formattedDate}</td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
-            ) : (
-              <p>No test results available.</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -175,75 +208,66 @@ export default function AdminPanelSection() {
           <h4>👥 Employee Management</h4>
         </div>
         <div className="card-body">
-          <div style={{ marginBottom: '15px' }}>
-            <button className="btn" onClick={loadAdminData}>
-              <i className="fas fa-sync-alt"></i> Refresh Data
-            </button>
-          </div>
-          <div id="admin-user-list">
-            {users.length > 0 ? (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                  <thead>
-                    <tr style={{ background: '#f8f9fa' }}>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Name</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Email</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Position</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Progress</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Status</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((user) => {
-                      const progressColor = user.progress >= 100 ? 'green' :
-                        user.progress >= 50 ? 'orange' : 'red';
+          {users.length === 0 ? (
+            <p>No users found.</p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8f9fa' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Name</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Email</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Position</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Progress</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Status</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => {
+                    const progressColor = user.progress >= 100 ? 'green' :
+                      user.progress >= 50 ? 'orange' : 'red';
 
-                      return (
-                        <tr key={user.email} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                          <td style={{ padding: '12px' }}>{user.name}</td>
-                          <td style={{ padding: '12px' }}>{user.email}</td>
-                          <td style={{ padding: '12px' }}>{user.position}</td>
-                          <td style={{ padding: '12px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '60px', height: '8px', background: '#e2e8f0', borderRadius: '4px' }}>
-                                <div style={{ width: `${user.progress || 0}%`, height: '100%', background: progressColor, borderRadius: '4px' }}></div>
-                              </div>
-                              <span>{user.progress || 0}%</span>
+                    const status = user.status === 'blocked' ?
+                      <span style={{ color: 'red' }}>🔒 Blocked</span> :
+                      <span style={{ color: 'green' }}>✅ Active</span>;
+
+                    const actionButton = user.status === 'blocked' ?
+                      <button 
+                        onClick={() => toggleUserBlock(user.email)}
+                        style={{ background: '#38a169', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.8rem' }}
+                      >
+                        Unblock
+                      </button> :
+                      <button 
+                        onClick={() => toggleUserBlock(user.email)}
+                        style={{ background: '#e53e3e', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.8rem' }}
+                      >
+                        Block
+                      </button>;
+
+                    return (
+                      <tr key={user.email} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '12px' }}>{user.name}</td>
+                        <td style={{ padding: '12px' }}>{user.email}</td>
+                        <td style={{ padding: '12px' }}>{user.position}</td>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '60px', height: '8px', background: '#e2e8f0', borderRadius: '4px' }}>
+                              <div style={{ width: `${user.progress || 0}%`, height: '100%', background: progressColor, borderRadius: '4px' }}></div>
                             </div>
-                          </td>
-                          <td style={{ padding: '12px' }}>
-                            {user.status === 'blocked' ? 
-                              <span style={{ color: 'red' }}>🔒 Blocked</span> : 
-                              <span style={{ color: 'green' }}>✅ Active</span>
-                            }
-                          </td>
-                          <td style={{ padding: '12px' }}>
-                            <button 
-                              onClick={() => toggleUserBlock(user.email)}
-                              style={{ 
-                                background: user.status === 'blocked' ? '#38a169' : '#e53e3e', 
-                                color: 'white', 
-                                border: 'none', 
-                                padding: '5px 10px', 
-                                borderRadius: '3px', 
-                                cursor: 'pointer', 
-                                fontSize: '0.8rem' 
-                              }}
-                            >
-                              {user.status === 'blocked' ? 'Unblock' : 'Block'}
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p>No users found.</p>
-            )}
-          </div>
+                            <span>{user.progress || 0}%</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px' }}>{status}</td>
+                        <td style={{ padding: '12px' }}>{actionButton}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
