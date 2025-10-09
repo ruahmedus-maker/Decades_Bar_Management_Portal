@@ -3,13 +3,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
 import { validateSession, endUserSession, performLogin, performRegistration } from '@/lib/auth';
-
 import { trackSectionVisit, submitAcknowledgement } from '@/lib/progress';
 
+// Use the same position type as auth.ts
 interface RegistrationData {
   name: string;
   email: string;
-  position: string;
+  position: 'Bartender' | 'Admin' | 'Trainee'; // Fixed: match the exact type
   code: string;
   password: string;
   confirmPassword: string;
@@ -24,7 +24,7 @@ interface AppContextType {
     show: boolean;
   };
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  register: (userData: RegistrationData) => Promise<void>;
   logout: () => void;
   setActiveSection: (section: string) => void;
   trackVisit: (sectionId: string) => void;
@@ -63,7 +63,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast(`Welcome back, ${user.name}!`);
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: RegistrationData) => {
     const user = await performRegistration(userData);
     setCurrentUser(user);
     showToast(`Welcome to Decades Bar, ${user.name}!`);

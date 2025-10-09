@@ -14,6 +14,16 @@ export interface User {
   testResults?: Record<string, TestResult>;
 }
 
+
+export interface RegistrationData {
+  name: string;
+  email: string;
+  position: 'Bartender' | 'Admin' | 'Trainee';
+  code: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface TestResult {
   score: number;
   total: number;

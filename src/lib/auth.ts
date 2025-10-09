@@ -1,6 +1,25 @@
 import { User, SessionData } from '@/types';
-import { SECURITY_CONFIG, ADMIN_CODES, APPROVED_CODES } from './constants';
+import { SECURITY_CONFIG } from './constants';
 import { storage } from './storage';
+
+// Define the RegistrationData interface here too
+interface RegistrationData {
+  name: string;
+  email: string;
+  position: 'Bartender' | 'Admin' | 'Trainee';
+  code: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// Fix the constants to be strongly typed
+export const APPROVED_CODES: string[] = [
+  "BARSTAFF2025", "DECADESADMIN"
+];
+
+export const ADMIN_CODES: string[] = [
+  "DECADESADMIN"
+];
 
 export const hashPassword = (password: string): string => {
   let hash = 0;
@@ -91,15 +110,6 @@ export const performLogin = async (email: string, password: string): Promise<Use
   return user;
 };
 
-interface RegistrationData {
-  name: string;
-  email: string;
-  position: 'Bartender' | 'Admin' | 'Trainee';
-  code: string;
-  password: string;
-  confirmPassword: string;
-}
-
 export const performRegistration = async (userData: RegistrationData): Promise<User> => {
   const { name, email, position, code, password, confirmPassword } = userData;
 
@@ -117,13 +127,14 @@ export const performRegistration = async (userData: RegistrationData): Promise<U
     throw new Error(strengthError);
   }
 
-  if (!APPROVED_CODES.includes(code as any)) {
+  // Fixed: Remove type assertions
+  if (!APPROVED_CODES.includes(code)) {
     throw new Error('Invalid registration code. Please contact your manager.');
   }
 
   // Admin registration safeguards
   if (position === 'Admin') {
-    if (!ADMIN_CODES.includes(code as any)) {
+    if (!ADMIN_CODES.includes(code)) {
       throw new Error('Administrative positions require manager authorization codes.');
     }
   }
