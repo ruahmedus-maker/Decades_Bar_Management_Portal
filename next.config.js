@@ -3,11 +3,10 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
-
-  // experimental: {
-  //   appDir: true,
-  // },
-  // Enable static exports for deployment
+  reactStrictMode: true,
+  images: {
+    domains: ['example.com'],
+  },
   output: 'export',
   trailingSlash: true,
   images: {
