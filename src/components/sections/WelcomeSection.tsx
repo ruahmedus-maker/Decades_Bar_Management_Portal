@@ -1,3 +1,4 @@
+'use client';
 import ProgressSection from '@/components/ProgressSection';
 
 export default function WelcomeSection() {

@@ -5,14 +5,13 @@ export const SECURITY_CONFIG = {
   passwordMinLength: 6
 } as const;
 
-export const APPROVED_CODES: string[] = [
+export const APPROVED_CODES = [
   "BARSTAFF2025", "DECADESADMIN"
-];
+] as const;
 
-export const ADMIN_CODES: string[] = [
+export const ADMIN_CODES = [
   "DECADESADMIN"
-];
-
+] as const;
 
 export const NAV_ITEMS = [
   { id: 'welcome', icon: '🏠', label: 'Welcome' },
@@ -53,4 +52,4 @@ export const TEST_QUESTIONS = [
   // Add other questions...
 ] as const;
 
-export const ENABLE_TESTS = true;
+export const ENABLE_TESTS = false;

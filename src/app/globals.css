@@ -27,9 +27,12 @@
  .container {
    display: flex;
    min-height: 100vh;
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 0 1rem;
  }
 
- /* Sidebar Styling */
+ /* ===== SIDEBAR STYLING ===== */
  .sidebar {
    width: 260px;
    background: linear-gradient(to bottom, var(--primary), var(--secondary));
@@ -92,7 +95,7 @@
    text-align: center;
  }
 
- /* Main Content Styling */
+ /* ===== MAIN CONTENT STYLING ===== */
  .main-content {
    flex: 1;
    margin-left: 260px;
@@ -111,7 +114,6 @@
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
  }
 
- /* Page title */
  .header h2 {
    color: #1a365d !important;
    font-size: 1.8rem !important;
@@ -119,20 +121,18 @@
    font-weight: 600 !important;
  }
 
- /* User info section */
  .user-info {
    display: flex !important;
    align-items: center !important;
    gap: 15px !important;
  }
 
- /* User display container */
  #user-display {
    display: flex !important;
    align-items: center !important;
    gap: 15px !important;
  }
- /* Avatar */
+
  .avatar {
    width: 40px !important;
    height: 40px !important;
@@ -145,36 +145,14 @@
    font-weight: bold !important;
    font-size: 1.1rem !important;
  }
- /* User name display */
+
  #user-display-name {
    font-weight: 600 !important;
    color: #2d3748 !important;
    font-size: 1rem !important;
  }
 
- /* Logout button */
- .btn-logout {
-   background: none !important;
-   border: 2px solid #d4af37 !important;
-   color: #d4af37 !important;
-   padding: 8px 16px !important;
-   border-radius: 6px !important;
-   cursor: pointer !important;
-   font-weight: 600 !important;
-   font-size: 0.9rem !important;
-   transition: all 0.3s ease !important;
-   text-decoration: none !important;
-   display: inline-block !important;
- }
-
- .btn-logout:hover {
-   background-color: #d4af37 !important;
-   color: white !important;
-   transform: translateY(-1px) !important;
-   box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3) !important;
- }
-
- /* Section Styling */
+ /* ===== SECTION STYLING ===== */
  .section {
    background-color: white;
    border-radius: 8px;
@@ -224,7 +202,7 @@
    font-weight: bold;
  }
 
- /* Card Grid */
+ /* ===== CARD STYLING ===== */
  .card-grid {
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -264,7 +242,220 @@
    justify-content: space-between;
  }
 
- /* Progress Section */
+ /* ===== TRAINING & PROCEDURE SPECIFIC STYLES ===== */
+ .training-list {
+   margin-top: 10px;
+   padding-left: 20px;
+ }
+
+ .procedure-list {
+   padding-left: 20px;
+ }
+
+ .procedure-card-spacing {
+   margin-top: 20px;
+ }
+
+ /* ===== COCKTAIL RECIPE STYLES ===== */
+ .cocktail-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+   gap: 20px;
+   margin-top: 15px;
+ }
+
+ .cocktail-card {
+   background: #f8f9fa;
+   padding: 20px;
+   border-radius: 8px;
+   border-left: 4px solid var(--accent);
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+   transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .cocktail-card:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+ }
+
+ .cocktail-card h5 {
+   color: var(--primary);
+   margin-bottom: 15px;
+   padding-bottom: 8px;
+   border-bottom: 2px solid var(--accent);
+   font-size: 1.1rem;
+ }
+
+ .cocktail-card .ingredients,
+ .cocktail-card .instructions {
+   margin-bottom: 15px;
+ }
+
+ .cocktail-card .ingredients {
+   background: white;
+   padding: 15px;
+   border-radius: 5px;
+   border: 1px solid #e2e8f0;
+ }
+
+ .cocktail-card .instructions {
+   background: #fff9f0;
+   padding: 15px;
+   border-radius: 5px;
+   border: 1px solid #ffeaa7;
+ }
+
+ .cocktail-card ul,
+ .cocktail-card ol {
+   margin: 8px 0;
+   padding-left: 20px;
+ }
+
+ .cocktail-card li {
+   margin-bottom: 5px;
+   line-height: 1.4;
+ }
+
+ .cocktail-card strong {
+   color: var(--secondary);
+   display: block;
+   margin-bottom: 8px;
+   font-size: 0.9rem;
+   text-transform: uppercase;
+   letter-spacing: 0.5px;
+ }
+
+ /* Card headers for cocktail section only */
+ #cocktails .card .card-header {
+   background-color: var(--primary);
+   color: white;
+   padding: 15px;
+ }
+
+ #cocktails .card .card-header h4 {
+   color: white;
+   margin: 0;
+   font-size: 1.2rem;
+ }
+
+ /* Special underline ONLY for Decades Summer Cocktails */
+ #cocktails .card:last-child .card-header h4 {
+   position: relative;
+   display: inline-block;
+ }
+
+ #cocktails .card:last-child .card-header h4::after {
+   content: '';
+   position: absolute;
+   bottom: -8px;
+   left: 0;
+   width: 60px;
+   height: 3px;
+   background: var(--accent);
+   border-radius: 2px;
+ }
+
+ /* ===== GLASSWARE GUIDE STYLES ===== */
+ .glassware-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+   gap: 2rem;
+   margin-bottom: 3rem;
+ }
+
+ .glass-card {
+   background: white;
+   border-radius: 8px;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   overflow: hidden;
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+ }
+
+ .glass-card:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+ }
+
+ .glass-header {
+   background: #2c3e50;
+   color: white;
+   padding: 1rem;
+ }
+
+ .glass-header h3 {
+   margin: 0;
+   font-size: 1.2rem;
+ }
+
+ .glass-content {
+   padding: 1.5rem;
+ }
+
+ .glass-use {
+   color: #666;
+   margin-bottom: 1rem;
+   font-style: italic;
+ }
+
+ .glass-includes {
+   margin-bottom: 1rem;
+ }
+
+ .glass-includes ul {
+   margin: 0.5rem 0;
+   padding-left: 1.5rem;
+ }
+
+ .glass-includes li {
+   margin-bottom: 0.3rem;
+ }
+
+ .glass-note {
+   background: #fff3cd;
+   border-left: 4px solid #ffc107;
+   padding: 0.75rem;
+   margin: 1rem 0 0 0;
+   border-radius: 0 4px 4px 0;
+ }
+
+ /* ===== POLICY NOTICE STYLES ===== */
+ .policy-notice {
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+   color: white;
+   border-radius: 8px;
+   overflow: hidden;
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+ }
+
+ .policy-header {
+   background: rgba(0, 0, 0, 0.2);
+   padding: 1rem 1.5rem;
+ }
+
+ .policy-header h3 {
+   margin: 0;
+   font-size: 1.3rem;
+ }
+
+ .policy-content {
+   padding: 1.5rem;
+ }
+
+ .policy-content p {
+   margin-bottom: 1rem;
+   line-height: 1.6;
+ }
+
+ .policy-content ul {
+   margin: 1rem 0;
+   padding-left: 2rem;
+ }
+
+ .policy-content li {
+   margin-bottom: 0.5rem;
+ }
+
+ /* ===== PROGRESS SECTION ===== */
  .progress-section {
    background-color: white;
    border-radius: 8px;
@@ -310,6 +501,7 @@
    height: 20px;
  }
 
+ /* ===== BUTTON STYLES ===== */
  .btn {
    background-color: var(--primary);
    color: white;
@@ -325,7 +517,20 @@
    background-color: var(--secondary);
  }
 
- /* Login & Registration Styles */
+ .btn-secondary {
+   background-color: #6c757d;
+   color: white;
+   border: none;
+   padding: 10px 20px;
+   border-radius: 5px;
+   cursor: pointer;
+   font-weight: bold;
+ }
+
+ .btn-secondary:hover {
+   background-color: #5a6268;
+ }
+
  .login-btn {
    background: var(--accent);
    color: white;
@@ -355,6 +560,7 @@
    color: white;
  }
 
+ /* ===== LOGIN & AUTH STYLES ===== */
  #login-section {
    display: flex;
    align-items: center;
@@ -367,7 +573,6 @@
    gap: 10px;
  }
 
- /* Login Barrier Styles */
  #login-barrier {
    position: fixed;
    top: 0;
@@ -444,7 +649,6 @@
    transform: none !important;
  }
 
- /* Password Strength Indicator */
  .password-strength {
    font-size: 0.8rem;
    margin-top: 5px;
@@ -475,31 +679,7 @@
    margin-top: 20px;
  }
 
- /* Responsive Design */
- @media (max-width: 768px) {
-   .header {
-     flex-direction: column;
-     gap: 15px;
-     text-align: center;
-   }
-
-   .user-info {
-     justify-content: center;
-   }
-
-   #user-display {
-     flex-wrap: wrap;
-     justify-content: center;
-   }
-
-   .login-container {
-     padding: 30px 20px;
-   }
- }
-
-
-
- /* Modal Styles - SINGLE VERSION (removed duplicates) */
+ /* ===== MODAL STYLES ===== */
  .modal {
    display: none;
    position: fixed;
@@ -575,7 +755,7 @@
    max-height: 65vh;
  }
 
- /* Form Styles */
+ /* ===== FORM STYLES ===== */
  .form-group {
    margin-bottom: 20px;
    text-align: left;
@@ -618,20 +798,6 @@
    border-top: 1px solid #e2e8f0;
  }
 
- .btn-secondary {
-   background-color: #6c757d;
-   color: white;
-   border: none;
-   padding: 10px 20px;
-   border-radius: 5px;
-   cursor: pointer;
-   font-weight: bold;
- }
-
- .btn-secondary:hover {
-   background-color: #5a6268;
- }
-
  .notification {
    background-color: #fff3cd;
    border: 1px solid #ffeaa7;
@@ -663,28 +829,7 @@
    text-decoration: underline;
  }
 
- /* Responsive Design */
- @media (max-width: 768px) {
-   .container {
-     flex-direction: column;
-   }
-
-   .sidebar {
-     width: 100%;
-     height: auto;
-     position: relative;
-   }
-
-   .main-content {
-     margin-left: 0;
-   }
-
-   .card-grid {
-     grid-template-columns: 1fr;
-   }
- }
-
- /* Video Container */
+ /* ===== VIDEO STYLES ===== */
  .video-container {
    position: relative;
    padding-bottom: 56.25%;
@@ -703,7 +848,7 @@
    border: none;
  }
 
- /* FAQ Styling */
+ /* ===== FAQ STYLING ===== */
  .faq-item {
    margin-bottom: 15px;
    border: 1px solid #e2e8f0;
@@ -732,7 +877,7 @@
    max-height: 500px;
  }
 
- /* Toast Notification */
+ /* ===== TOAST NOTIFICATION ===== */
  .toast {
    position: fixed;
    bottom: 20px;
@@ -753,245 +898,7 @@
    opacity: 1;
  }
 
- /* Cocktail Recipe Styles */
- #cocktails .cocktail-grid {
-   display: grid;
-   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-   gap: 20px;
-   margin-top: 15px;
- }
-
- #cocktails .cocktail-card {
-   background: #f8f9fa;
-   padding: 20px;
-   border-radius: 8px;
-   border-left: 4px solid var(--accent);
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-   transition: transform 0.2s ease, box-shadow 0.2s ease;
- }
-
- #cocktails .cocktail-card:hover {
-   transform: translateY(-2px);
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
- }
-
- #cocktails .cocktail-card h5 {
-   color: var(--primary);
-   margin-bottom: 15px;
-   padding-bottom: 8px;
-   border-bottom: 2px solid var(--accent);
-   font-size: 1.1rem;
- }
-
- #cocktails .cocktail-card .ingredients,
- #cocktails .cocktail-card .instructions {
-   margin-bottom: 15px;
- }
-
- #cocktails .cocktail-card .ingredients {
-   background: white;
-   padding: 15px;
-   border-radius: 5px;
-   border: 1px solid #e2e8f0;
- }
-
- #cocktails .cocktail-card .instructions {
-   background: #fff9f0;
-   padding: 15px;
-   border-radius: 5px;
-   border: 1px solid #ffeaa7;
- }
-
- #cocktails .cocktail-card ul,
- #cocktails .cocktail-card ol {
-   margin: 8px 0;
-   padding-left: 20px;
- }
-
- #cocktails .cocktail-card li {
-   margin-bottom: 5px;
-   line-height: 1.4;
- }
-
- #cocktails .cocktail-card strong {
-   color: var(--secondary);
-   display: block;
-   margin-bottom: 8px;
-   font-size: 0.9rem;
-   text-transform: uppercase;
-   letter-spacing: 0.5px;
- }
-
- /* Card headers for cocktail section only */
- #cocktails .card .card-header {
-   background-color: var(--primary);
-   color: white;
-   padding: 15px;
- }
-
- #cocktails .card .card-header h4 {
-   color: white;
-   margin: 0;
-   font-size: 1.2rem;
- }
-
- /* Special underline ONLY for Decades Summer Cocktails */
- #cocktails .card:last-child .card-header h4 {
-   position: relative;
-   display: inline-block;
- }
-
- #cocktails .card:last-child .card-header h4::after {
-   content: '';
-   position: absolute;
-   bottom: -8px;
-   left: 0;
-   width: 60px;
-   height: 3px;
-   background: var(--accent);
-   border-radius: 2px;
- }
-
-
- /* Glassware Guide Section */
- .glassware-section {
-   padding: 2rem 0;
-   background: #f8f9fa;
-   margin: 2rem 0;
- }
-
- .glassware-section h2 {
-   text-align: center;
-   margin-bottom: 2rem;
-   color: #333;
-   font-size: 2.5rem;
- }
-
- /* Glassware Grid */
- .glassware-grid {
-   display: grid;
-   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-   gap: 2rem;
-   margin-bottom: 3rem;
- }
-
- /* Glass Cards */
- .glass-card {
-   background: white;
-   border-radius: 8px;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-   overflow: hidden;
-   transition: transform 0.3s ease, box-shadow 0.3s ease;
- }
-
- .glass-card:hover {
-   transform: translateY(-5px);
-   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
- }
-
- .glass-header {
-   background: #2c3e50;
-   color: white;
-   padding: 1rem;
- }
-
- .glass-header h3 {
-   margin: 0;
-   font-size: 1.2rem;
- }
-
- .glass-content {
-   padding: 1.5rem;
- }
-
- .glass-use {
-   color: #666;
-   margin-bottom: 1rem;
-   font-style: italic;
- }
-
- .glass-includes {
-   margin-bottom: 1rem;
- }
-
- .glass-includes ul {
-   margin: 0.5rem 0;
-   padding-left: 1.5rem;
- }
-
- .glass-includes li {
-   margin-bottom: 0.3rem;
- }
-
- .glass-note {
-   background: #fff3cd;
-   border-left: 4px solid #ffc107;
-   padding: 0.75rem;
-   margin: 1rem 0 0 0;
-   border-radius: 0 4px 4px 0;
- }
-
- /* Thursday Policy */
- .policy-notice {
-   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-   color: white;
-   border-radius: 8px;
-   overflow: hidden;
-   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
- }
-
- .policy-header {
-   background: rgba(0, 0, 0, 0.2);
-   padding: 1rem 1.5rem;
- }
-
- .policy-header h3 {
-   margin: 0;
-   font-size: 1.3rem;
- }
-
- .policy-content {
-   padding: 1.5rem;
- }
-
- .policy-content p {
-   margin-bottom: 1rem;
-   line-height: 1.6;
- }
-
- .policy-content ul {
-   margin: 1rem 0;
-   padding-left: 2rem;
- }
-
- .policy-content li {
-   margin-bottom: 0.5rem;
- }
-
- /* Responsive Design */
- @media (max-width: 768px) {
-   .glassware-grid {
-     grid-template-columns: 1fr;
-     gap: 1.5rem;
-   }
-
-   .glassware-section h2 {
-     font-size: 2rem;
-   }
-
-   .glass-content {
-     padding: 1rem;
-   }
- }
-
- /* Container */
- .container {
-   max-width: 1200px;
-   margin: 0 auto;
-   padding: 0 1rem;
- }
-
- /* Calendar Styling */
+ /* ===== CALENDAR STYLING ===== */
  .calendar-header {
    display: flex;
    justify-content: space-between;
@@ -1060,7 +967,7 @@
    display: inline-block;
  }
 
- /* Test Section Styling */
+ /* ===== TEST SECTION STYLING ===== */
  .test-question {
    margin-bottom: 20px;
    padding: 15px;
@@ -1119,7 +1026,7 @@
    color: #e53e3e;
  }
 
- /* Admin Test Results Styling */
+ /* ===== ADMIN STYLES ===== */
  .test-results-table {
    width: 100%;
    border-collapse: collapse;
@@ -1159,12 +1066,10 @@
    font-size: 0.8rem;
  }
 
- /* Add this style for the test results container in admin panel */
  #admin-test-results {
    margin-top: 20px;
  }
 
- /* NEW: More specific CSS for test visibility */
  #tests.tests-disabled {
    display: none !important;
  }
@@ -1173,7 +1078,6 @@
    display: none !important;
  }
 
- /* Ensure tests are visible when enabled */
  #tests:not(.tests-disabled) {
    display: block;
  }
@@ -1182,7 +1086,7 @@
    display: list-item;
  }
 
- /* Employee Counseling Section */
+ /* ===== EMPLOYEE COUNSELING SECTION ===== */
  .counseling-form {
    background: white;
    padding: 20px;
@@ -1222,7 +1126,7 @@
    border-left-color: #dc3545;
  }
 
- /* Schedule Report Section */
+ /* ===== SCHEDULE REPORT SECTION ===== */
  .schedule-upload {
    background: white;
    padding: 20px;
@@ -1239,13 +1143,64 @@
    min-height: 200px;
  }
 
- /* Test Section Fix */
+ /* ===== TEST SECTION FIX ===== */
  #tests {
    display: none;
-   /* Start hidden, will be shown by JS if enabled */
  }
 
  #tests-nav-item {
    display: none;
-   /* Start hidden, will be shown by JS if enabled */
+ }
+
+ /* ===== RESPONSIVE DESIGN ===== */
+ @media (max-width: 768px) {
+   .container {
+     flex-direction: column;
+   }
+
+   .sidebar {
+     width: 100%;
+     height: auto;
+     position: relative;
+   }
+
+   .main-content {
+     margin-left: 0;
+   }
+
+   .card-grid {
+     grid-template-columns: 1fr;
+   }
+
+   .header {
+     flex-direction: column;
+     gap: 15px;
+     text-align: center;
+   }
+
+   .user-info {
+     justify-content: center;
+   }
+
+   #user-display {
+     flex-wrap: wrap;
+     justify-content: center;
+   }
+
+   .login-container {
+     padding: 30px 20px;
+   }
+
+   .glassware-grid {
+     grid-template-columns: 1fr;
+     gap: 1.5rem;
+   }
+
+   .glassware-section h2 {
+     font-size: 2rem;
+   }
+
+   .glass-content {
+     padding: 1rem;
+   }
  }

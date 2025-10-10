@@ -1,6 +1,6 @@
 export default function BarCleaningsSection() {
   return (
-    <div className="section" id="bar-cleanings">
+    <div className="section active" id="bar-cleanings">
       <div className="section-header">
         <h3>Bar Cleaning Schedule</h3>
         <span className="badge">Maintenance</span>

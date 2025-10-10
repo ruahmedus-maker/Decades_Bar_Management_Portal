@@ -1,6 +1,6 @@
 export default function ProceduresSection() {
   return (
-    <div className="section" id="procedures">
+    <div className="section active" id="procedures">
       <div className="section-header">
         <h3>Standard Operating Procedures</h3>
       </div>
@@ -11,7 +11,7 @@ export default function ProceduresSection() {
           <h4>Opening Checklist</h4>
         </div>
         <div className="card-body">
-          <ol style={{ paddingLeft: '20px' }}>
+          <ol style={{paddingLeft: '20px'}}>
             <li>Arrive ready for your shift and clock it at the start time indicated on your schedule</li>
             <li>Collect banks and check-books (HH & Rooftop floors) from the office and confirm registers are assigned</li>
             <li>Remove all caps from liquor bottles and soak in soda water</li>
@@ -23,12 +23,12 @@ export default function ProceduresSection() {
         </div>
       </div>
       
-      <div className="card" style={{ marginTop: '20px' }}>
+      <div className="card" style={{marginTop: '20px'}}>
         <div className="card-header">
           <h4>Closing Procedures</h4>
         </div>
         <div className="card-body">
-          <ol style={{ paddingLeft: '20px' }}>
+          <ol style={{paddingLeft: '20px'}}>
             <li>Do not start entering tips into the POS system or start any other closing duties until the lights go up and we are no longer serving customers</li>
             <li>Soak bar guns in hot water (where available) or soda water to disolve residue</li>
             <li>Enter tips, change out cash tips with the drawer (giving the low denomination bills to the house in exchange for larger bills for yourselves), count the bank to $300. Straight face the remaining cash in the drawer (this will be the blind drop). Once you are done with those procedures please exit out of your screen so that management can run the report.</li>

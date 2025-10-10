@@ -1,6 +1,6 @@
 export default function ScheduleReportSection() {
   return (
-    <div className="section" id="schedule-report">
+    <div className="section active" id="schedule-report">
       <div className="section-header">
         <h3>Schedule Report</h3>
         <span className="badge">Admin Only</span>
