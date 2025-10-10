@@ -9,7 +9,13 @@ export default function TestsSection() {
   const { currentUser } = useApp();
   const [testAnswers, setTestAnswers] = useState<Record<number, number>>({});
 
+  // ADD DEBUGGING HERE
+  console.log('🔍 ENABLE_TESTS value:', ENABLE_TESTS);
+  console.log('🔍 Raw env variable:', process.env.NEXT_PUBLIC_ENABLE_TESTS);
+  console.log('🔍 Component rendering, ENABLE_TESTS is:', ENABLE_TESTS);
+
   if (!ENABLE_TESTS) {
+    console.log('🚫 Tests are disabled, returning null');
     return null;
   }
 

@@ -1152,6 +1152,51 @@
    display: none;
  }
 
+ /* ===== CHECKLIST STYLES ===== */
+ .checklist-container {
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+ }
+
+ .checklist-item {
+   display: flex;
+   align-items: flex-start;
+   gap: 12px;
+   padding: 12px;
+   border-radius: 8px;
+   transition: all 0.3s ease;
+   cursor: pointer;
+   border: 1px solid #e2e8f0;
+   background: white;
+ }
+
+ .checklist-item:hover {
+   background-color: #f8f9fa;
+   border-color: #d4af37;
+   transform: translateY(-1px);
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+ }
+
+ .checklist-item input[type="checkbox"] {
+   width: 18px;
+   height: 18px;
+   margin-top: 2px;
+   flex-shrink: 0;
+   cursor: pointer;
+ }
+
+ .checklist-item span {
+   flex: 1;
+   line-height: 1.5;
+   color: var(--dark);
+ }
+
+ .checklist-item input[type="checkbox"]:checked+span {
+   color: #6c757d;
+   text-decoration: line-through;
+ }
+
  /* ===== RESPONSIVE DESIGN ===== */
  @media (max-width: 768px) {
    .container {
@@ -1203,4 +1248,5 @@
    .glass-content {
      padding: 1rem;
    }
+
  }
