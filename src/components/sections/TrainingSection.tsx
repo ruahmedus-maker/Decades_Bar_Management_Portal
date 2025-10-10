@@ -1,10 +1,6 @@
 export default function TrainingSection() {
   return (
-    <div className="section" id="training">
-      <div className="section-header">
-        <h3>Training Materials</h3>
-        <span className="badge">Updated</span>
-      </div>
+    <>
       <p>Our comprehensive training program covers all aspects of bartending, from basic skills to advanced techniques.</p>
       
       <div className="card-grid">
@@ -50,6 +46,6 @@ export default function TrainingSection() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

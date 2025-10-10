@@ -7,8 +7,12 @@ import Header from '@/components/Header';
 import SectionRouter from '@/components/SectionRouter';
 import Toast from '@/components/Toast';
 
+
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
+
+  console.log('MainApp - Current User:', currentUser); // Debug
+  console.log('MainApp - Is Loading:', isLoading); // Debug
 
   if (isLoading) {
     return (
@@ -39,7 +43,7 @@ function MainApp() {
       </>
     );
   }
-
+  console.log('MainApp - Showing Main Interface'); // Debug
   return (
     <>
       <div className="container">
@@ -65,4 +69,5 @@ export default function HomePage() {
     </AppProvider>
   );
 }
+
 

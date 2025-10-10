@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "./globals.css"; // This should be imported
 
 const inter = Inter({ 
   subsets: ["latin"],
-  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -19,6 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link 
+          rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        />
+      </head>
       <body className={inter.className}>
         {children}
       </body>
