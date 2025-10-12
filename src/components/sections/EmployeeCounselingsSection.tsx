@@ -166,7 +166,7 @@ export default function EmployeeCounselingSection() {
 
   if (!currentUser || currentUser.position !== 'Admin') {
     return (
-      <div className="section" id="employee-counselings">
+      <div className="section active" id="employee-counselings">
         <div className="section-header">
           <h3>Employee Counselings & Write-ups</h3>
           <span className="badge">Admin Only</span>
@@ -177,7 +177,7 @@ export default function EmployeeCounselingSection() {
   }
 
   return (
-    <div className="section" id="employee-counselings">
+    <div className="section active" id="employee-counselings">
       <div className="section-header">
         <h3>Employee Counselings & Write-ups</h3>
         <span className="badge">Admin Only</span>

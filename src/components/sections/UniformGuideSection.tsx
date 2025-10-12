@@ -34,7 +34,7 @@ export default function UniformGuideSection() {
           <div className="card-body">
             <p><strong>Required Attire</strong></p>
             <ul>
-              <li>Concept themed - Otional</li>
+              <li>Concept themed - Optional</li>
               <li>Mostly do your thing because you always look good</li>
               <li>Special event attire will be communicated 1 week in advance</li>
               <li>No sweat pants</li>
