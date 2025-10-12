@@ -1,4 +1,5 @@
-import { User, CounselingRecord, SessionData } from '@/types';
+// storage.ts - Updated to work with the complete types
+import { User, CounselingRecord, SessionData, EmployeeFolder } from '@/types';
 
 // Simple encryption/decryption for localStorage data
 const encrypt = (data: string): string => {
@@ -79,6 +80,67 @@ export const storage = {
   saveCounselings: (counselings: CounselingRecord[]): void => {
     if (typeof window === 'undefined') return;
     localStorage.setItem('decadesCounselings', JSON.stringify(counselings));
+  },
+
+  // Employee folders and counseling management
+  getEmployeeFolders(): EmployeeFolder[] {
+    if (typeof window === 'undefined') return [];
+    
+    try {
+      const users = this.getUsers();
+      const counselings = this.getCounselings();
+      
+      return Object.values(users)
+        .filter(user => user.position !== 'Admin')
+        .map(user => {
+          const employeeCounselings = counselings.filter((c: CounselingRecord) => 
+            c.employeeEmail === user.email
+          );
+          
+          return {
+            email: user.email,
+            name: user.name,
+            position: user.position,
+            hireDate: user.registeredDate,
+            counselingRecords: employeeCounselings
+          };
+        });
+    } catch (error) {
+      console.error('Error reading employee folders:', error);
+      return [];
+    }
+  },
+
+  saveCounselingRecord(record: CounselingRecord): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const counselings = this.getCounselings();
+      counselings.push(record);
+      this.saveCounselings(counselings);
+    } catch (error) {
+      console.error('Error saving counseling record:', error);
+    }
+  },
+
+  acknowledgeCounselingRecord(recordId: string): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const counselings = this.getCounselings();
+      const record = counselings.find((c: CounselingRecord) => c.id === recordId);
+      if (record) {
+        record.acknowledged = true;
+        record.acknowledgedDate = new Date().toISOString();
+        this.saveCounselings(counselings);
+      }
+    } catch (error) {
+      console.error('Error acknowledging counseling record:', error);
+    }
+  },
+
+  getCounselingRecords(): CounselingRecord[] {
+    return this.getCounselings();
   },
 
   // Schedule

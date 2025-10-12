@@ -1,3 +1,4 @@
+// types.ts - Complete updated file with all interfaces
 export interface User {
   name: string;
   email: string;
@@ -13,7 +14,6 @@ export interface User {
   visitedSections?: string[];
   testResults?: Record<string, TestResult>;
 }
-
 
 export interface RegistrationData {
   name: string;
@@ -33,19 +33,29 @@ export interface TestResult {
   testName: string;
 }
 
-export interface CounselingRecord {
-  employeeEmail: string;
-  employeeName: string;
-  type: 'verbal' | 'written' | 'suspension' | 'termination';
-  date: string;
-  reason: string;
-  action: string;
-  recordedBy: string;
-  recordedDate: string;
-}
-
 export interface SessionData {
   user: User;
   loginTime: string;
-  expires: string;
+}
+
+export interface CounselingRecord {
+  id: string;
+  employeeEmail: string;
+  employeeName: string;
+  type: 'observation' | 'verbal' | 'written' | 'suspension' | 'termination';
+  date: string;
+  description: string;
+  actionPlan: string;
+  recordedBy: string;
+  recordedDate: string;
+  acknowledged?: boolean;
+  acknowledgedDate?: string;
+}
+
+export interface EmployeeFolder {
+  email: string;
+  name: string;
+  position: string;
+  hireDate: string;
+  counselingRecords: CounselingRecord[];
 }
