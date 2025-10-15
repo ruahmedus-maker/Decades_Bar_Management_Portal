@@ -1,4 +1,17 @@
+
+import { useEffect } from 'react';
+import { useApp } from '@/contexts/AppContext';
+import ProgressSection from '../ProgressSection';
+import { trackSectionVisit } from '@/lib/progress';
 export default function UniformGuideSection() {
+  const { currentUser } = useApp();
+
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'uniform-guide');
+    }
+  }, [currentUser]);
+
   return (
     <div className="section active" id="uniform-guide">
       <div className="section-header">
@@ -65,6 +78,7 @@ export default function UniformGuideSection() {
           </div>
         </div>
       </div>
+      <ProgressSection />
     </div>
   );
 }

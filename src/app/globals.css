@@ -1027,6 +1027,43 @@
  }
 
  /* ===== ADMIN STYLES ===== */
+
+ .progress-status-excellent {
+   background: #38a16920;
+   color: #38a169;
+   padding: 4px 8px;
+   border-radius: 12px;
+   font-size: 0.8rem;
+   font-weight: bold;
+ }
+
+ .progress-status-good {
+   background: #d69e2e20;
+   color: #d69e2e;
+   padding: 4px 8px;
+   border-radius: 12px;
+   font-size: 0.8rem;
+   font-weight: bold;
+ }
+
+ .progress-status-poor {
+   background: #e53e3e20;
+   color: #e53e3e;
+   padding: 4px 8px;
+   border-radius: 12px;
+   font-size: 0.8rem;
+   font-weight: bold;
+ }
+
+ .progress-status-inactive {
+   background: #71809620;
+   color: #718096;
+   padding: 4px 8px;
+   border-radius: 12px;
+   font-size: 0.8rem;
+   font-weight: bold;
+ }
+ 
  .test-results-table {
    width: 100%;
    border-collapse: collapse;

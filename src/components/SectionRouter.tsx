@@ -8,7 +8,7 @@ import ProceduresSection from '@/components/sections/ProceduresSection';
 import AlohaPosSection from '@/components/sections/AlohaPosSection';
 import VideosSection from '@/components/sections/VideosSection';
 import CocktailsSection from '@/components/sections/CocktailsSection';
-import DrinkSpecialsSection from '@/components/sections/DrinkSpecialsSection';
+import DrinksSpecialsSection from '@/components/sections/DrinksSpecialsSection';
 import GlasswareGuideSection from '@/components/sections/GlasswareGuideSection';
 import UniformGuideSection from '@/components/sections/UniformGuideSection';
 import BarCleaningsSection from '@/components/sections/BarCleaningsSection';
@@ -42,7 +42,7 @@ export default function SectionRouter() {
       case 'cocktails':
         return <CocktailsSection />;
       case 'drink-specials':
-        return <DrinkSpecialsSection />;
+        return <DrinksSpecialsSection />;
       case 'glassware-guide':
         return <GlasswareGuideSection />;
       case 'uniform-guide':

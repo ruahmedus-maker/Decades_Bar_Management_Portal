@@ -1,4 +1,15 @@
+import { useEffect } from 'react';
+import { useApp } from '@/contexts/AppContext';
+import ProgressSection from '../ProgressSection';
+import { trackSectionVisit } from '@/lib/progress';
 export default function TrainingMaterials() {
+  const { currentUser } = useApp();
+
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'training');
+    }
+  }, [currentUser]);
   return (
     <div className="section active" id="training">
       <div className="section-header">
@@ -184,6 +195,7 @@ export default function TrainingMaterials() {
           </div>
         </div>
       </div>
+       <ProgressSection />
     </div>
   );
 }

@@ -50,6 +50,7 @@ export interface CounselingRecord {
   recordedDate: string;
   acknowledged?: boolean;
   acknowledgedDate?: string;
+  employeeSignature?: string; // Add this line
 }
 
 export interface EmployeeFolder {
@@ -58,4 +59,32 @@ export interface EmployeeFolder {
   position: string;
   hireDate: string;
   counselingRecords: CounselingRecord[];
+}
+
+// Add to your existing types.ts
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  assignedTo: string; // User email
+  dueDate: string;
+  completed: boolean;
+  completedAt?: string;
+  createdAt: string;
+  eventId?: string; // Link to special event if applicable
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface SpecialEvent {
+  id: string;
+  name: string;
+  date: string;
+  theme: string;
+  drinkSpecials: string;
+  notes: string;
+  tasks: Task[];
+  createdAt: string;
+  createdBy: string; // User email
+  status: 'planned' | 'in-progress' | 'completed' | 'cancelled';
 }

@@ -7,7 +7,7 @@ import { CounselingRecord, EmployeeFolder } from '@/types';
 
 export default function EmployeeCounselingSection() {
   const { currentUser } = useApp();
-  const [activeTab, setActiveTab] = useState<'observation' | 'writeup'>('observation');
+  const [activeTab, setActiveTab] = useState<'violation' | 'writeup'>('violation');
   const [employees, setEmployees] = useState<EmployeeFolder[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [formData, setFormData] = useState({
@@ -15,7 +15,9 @@ export default function EmployeeCounselingSection() {
     date: new Date().toISOString().split('T')[0],
     description: '',
     actionPlan: '',
-    consequences: ''
+    consequences: '',
+    managerName: currentUser?.name || '',
+    employeeSignature: ''
   });
 
   useEffect(() => {
@@ -35,8 +37,8 @@ export default function EmployeeCounselingSection() {
   };
 
   const submitCounselingRecord = () => {
-    if (!selectedEmployee || !formData.description) {
-      alert('Please select an employee and provide a description.');
+    if (!selectedEmployee || !formData.description || !formData.managerName) {
+      alert('Please select an employee, provide a description, and enter manager name.');
       return;
     }
 
@@ -51,31 +53,114 @@ export default function EmployeeCounselingSection() {
       id: Date.now().toString(),
       employeeEmail: selectedEmployee,
       employeeName: employee.name,
-      type: formData.type as CounselingRecord['type'], // FIXED: Type-safe casting
+      type: formData.type as CounselingRecord['type'],
       date: formData.date,
       description: formData.description,
       actionPlan: formData.actionPlan,
-      recordedBy: currentUser?.name || 'Unknown Manager',
+      recordedBy: formData.managerName,
       recordedDate: new Date().toISOString(),
-      acknowledged: false
+      acknowledged: false,
+      employeeSignature: formData.employeeSignature
     };
 
     storage.saveCounselingRecord(record);
     
-    // Reset form
+    // Reset form but keep manager name
     setFormData({
       type: 'observation',
       date: new Date().toISOString().split('T')[0],
       description: '',
       actionPlan: '',
-      consequences: ''
+      consequences: '',
+      managerName: formData.managerName,
+      employeeSignature: ''
     });
 
     loadEmployeeFolders();
-    alert('Counseling record saved successfully.');
+    alert('Record saved successfully.');
   };
 
-  // ... rest of your component remains the same ...
+  const exportViolation = (record: CounselingRecord) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Employee Violation & Counseling - ${record.employeeName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+          .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+          .section { margin-bottom: 25px; }
+          .section-title { background: #f5f5f5; padding: 10px; font-weight: bold; }
+          .content { padding: 15px; border: 1px solid #ddd; margin-top: 5px; }
+          .signature-area { margin-top: 50px; border-top: 1px solid #333; padding-top: 20px; }
+          .footer { margin-top: 50px; font-size: 12px; color: #666; }
+          @media print {
+            body { margin: 20px; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>DECADES BAR - EMPLOYEE VIOLATION & COUNSELING</h1>
+          <p><strong>Date:</strong> ${new Date(record.date).toLocaleDateString()}</p>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">EMPLOYEE INFORMATION</div>
+          <div class="content">
+            <p><strong>Name:</strong> ${record.employeeName}</p>
+            <p><strong>Position:</strong> ${record.type === 'observation' ? 'Observation Note' : 
+              record.type === 'verbal' ? 'Verbal Warning' :
+              record.type === 'written' ? 'Written Warning' :
+              record.type === 'suspension' ? 'Suspension Notice' : 'Termination Notice'}</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">VIOLATION DESCRIPTION</div>
+          <div class="content">
+            <p>${record.description}</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">COUNSELING & ACTION PLAN</div>
+          <div class="content">
+            <p>${record.actionPlan}</p>
+          </div>
+        </div>
+
+        <div class="signature-area">
+          <div style="float: left; width: 45%;">
+            <p>_________________________</p>
+            <p><strong>Manager Signature</strong></p>
+            <p>${record.recordedBy}</p>
+            <p>Date: ${new Date(record.recordedDate).toLocaleDateString()}</p>
+          </div>
+          <div style="float: right; width: 45%;">
+            <p>${record.employeeSignature ? '_________________________' : ''}</p>
+            <p><strong>Employee Signature</strong></p>
+            <p>${record.employeeSignature || ''}</p>
+            <p>Date: ${record.employeeSignature ? new Date().toLocaleDateString() : '___________________'}</p>
+          </div>
+          <div style="clear: both;"></div>
+        </div>
+
+        <div class="footer">
+          <p>This document becomes part of the employee's permanent record.</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
 
   const exportWriteUp = (record: CounselingRecord) => {
     const printWindow = window.open('', '_blank');
@@ -94,11 +179,15 @@ export default function EmployeeCounselingSection() {
           .content { padding: 15px; border: 1px solid #ddd; margin-top: 5px; }
           .signature-area { margin-top: 50px; border-top: 1px solid #333; padding-top: 20px; }
           .footer { margin-top: 50px; font-size: 12px; color: #666; }
+          @media print {
+            body { margin: 20px; }
+            .no-print { display: none; }
+          }
         </style>
       </head>
       <body>
         <div class="header">
-          <h1>DECADES BAR - EMPLOYEE WRITE-UP</h1>
+          <h1>DECADES BAR - FORMAL EMPLOYEE WRITE-UP</h1>
           <p><strong>Date:</strong> ${new Date(record.date).toLocaleDateString()}</p>
         </div>
         
@@ -140,9 +229,10 @@ export default function EmployeeCounselingSection() {
             <p>Date: ${new Date(record.recordedDate).toLocaleDateString()}</p>
           </div>
           <div style="float: right; width: 45%;">
-            <p>_________________________</p>
+            <p>${record.employeeSignature ? '_________________________' : ''}</p>
             <p><strong>Employee Signature</strong></p>
-            <p>Date: ___________________</p>
+            <p>${record.employeeSignature || ''}</p>
+            <p>Date: ${record.employeeSignature ? new Date().toLocaleDateString() : '___________________'}</p>
           </div>
           <div style="clear: both;"></div>
         </div>
@@ -186,18 +276,18 @@ export default function EmployeeCounselingSection() {
       {/* Tab Navigation */}
       <div className="tab-navigation" style={{ marginBottom: '20px', borderBottom: '1px solid #e2e8f0' }}>
         <button
-          className={`tab-button ${activeTab === 'observation' ? 'active' : ''}`}
-          onClick={() => setActiveTab('observation')}
+          className={`tab-button ${activeTab === 'violation' ? 'active' : ''}`}
+          onClick={() => setActiveTab('violation')}
           style={{
             padding: '10px 20px',
             border: 'none',
             background: 'none',
-            borderBottom: activeTab === 'observation' ? '2px solid #d4af37' : '2px solid transparent',
+            borderBottom: activeTab === 'violation' ? '2px solid #d4af37' : '2px solid transparent',
             cursor: 'pointer',
-            fontWeight: activeTab === 'observation' ? 'bold' : 'normal'
+            fontWeight: activeTab === 'violation' ? 'bold' : 'normal'
           }}
         >
-          📝 Observation & Counseling
+          📝 Violation & Counseling
         </button>
         <button
           className={`tab-button ${activeTab === 'writeup' ? 'active' : ''}`}
@@ -217,7 +307,7 @@ export default function EmployeeCounselingSection() {
 
       {/* Counseling Form */}
       <div className="counseling-form">
-        <h4>{activeTab === 'observation' ? 'Employee Observation & Counseling' : 'Formal Employee Write-up'}</h4>
+        <h4>{activeTab === 'violation' ? 'Employee Violation & Counseling' : 'Formal Employee Write-up'}</h4>
         
         <div className="form-group">
           <label htmlFor="counseling-employee">Employee *</label>
@@ -264,8 +354,20 @@ export default function EmployeeCounselingSection() {
         </div>
 
         <div className="form-group">
+          <label htmlFor="counseling-manager">Manager's Name *</label>
+          <input
+            type="text"
+            id="counseling-manager"
+            value={formData.managerName}
+            onChange={(e) => handleInputChange('managerName', e.target.value)}
+            className="form-control"
+            placeholder="Enter manager's full name"
+          />
+        </div>
+
+        <div className="form-group">
           <label htmlFor="counseling-description">
-            {activeTab === 'observation' ? 'Observation Details *' : 'Incident Description *'}
+            {activeTab === 'violation' ? 'Violation Details *' : 'Incident Description *'}
           </label>
           <textarea
             id="counseling-description"
@@ -273,8 +375,8 @@ export default function EmployeeCounselingSection() {
             onChange={(e) => handleInputChange('description', e.target.value)}
             className="form-control"
             rows={4}
-            placeholder={activeTab === 'observation' 
-              ? 'Describe the observed behavior or performance issue...' 
+            placeholder={activeTab === 'violation' 
+              ? 'Describe the violation or performance issue...' 
               : 'Provide detailed description of the policy violation or incident...'
             }
           />
@@ -282,7 +384,7 @@ export default function EmployeeCounselingSection() {
 
         <div className="form-group">
           <label htmlFor="counseling-action">
-            {activeTab === 'observation' ? 'Action Plan *' : 'Corrective Actions *'}
+            {activeTab === 'violation' ? 'Counseling & Action Plan *' : 'Corrective Actions *'}
           </label>
           <textarea
             id="counseling-action"
@@ -290,8 +392,8 @@ export default function EmployeeCounselingSection() {
             onChange={(e) => handleInputChange('actionPlan', e.target.value)}
             className="form-control"
             rows={3}
-            placeholder={activeTab === 'observation'
-              ? 'Outline the expected improvements and support provided...'
+            placeholder={activeTab === 'violation'
+              ? 'Outline the counseling provided and expected improvements...'
               : 'Specify required corrective actions and timeline...'
             }
           />
@@ -311,8 +413,20 @@ export default function EmployeeCounselingSection() {
           </div>
         )}
 
+        <div className="form-group">
+          <label htmlFor="counseling-signature">Employee Signature (for acknowledgment)</label>
+          <input
+            type="text"
+            id="counseling-signature"
+            value={formData.employeeSignature}
+            onChange={(e) => handleInputChange('employeeSignature', e.target.value)}
+            className="form-control"
+            placeholder="Employee's signature (if present)"
+          />
+        </div>
+
         <button className="btn" onClick={submitCounselingRecord}>
-          {activeTab === 'observation' ? 'Save Observation' : 'Create Write-up'}
+          {activeTab === 'violation' ? 'Save Violation Record' : 'Create Write-up'}
         </button>
       </div>
 
@@ -348,7 +462,7 @@ export default function EmployeeCounselingSection() {
                           <div className="record-actions">
                             <button 
                               className="btn-secondary"
-                              onClick={() => exportWriteUp(record)}
+                              onClick={() => activeTab === 'violation' ? exportViolation(record) : exportWriteUp(record)}
                             >
                               Export
                             </button>

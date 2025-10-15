@@ -21,7 +21,7 @@ export const NAV_ITEMS = [
   { id: 'aloha-pos', icon: '💻', label: 'Aloha POS' },
   { id: 'videos', icon: '🎥', label: 'Video Library' },
   { id: 'cocktails', icon: '🍹', label: 'Cocktail Recipes' },
-  { id: 'drink-specials', icon: '🏷️', label: 'Drink Specials' },
+  { id: 'drinks-specials', icon: '🏷️', label: 'Drinks Specials' },
   { id: 'glassware-guide', icon: '🥃', label: 'Glassware Guide' },
   { id: 'uniform-guide', icon: '👕', label: 'Uniform Guide' },
   { id: 'bar-cleanings', icon: '🧹', label: 'Bar Cleanings' },

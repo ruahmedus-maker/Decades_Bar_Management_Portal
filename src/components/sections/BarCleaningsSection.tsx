@@ -1,8 +1,24 @@
 'use client';
 
+
+import { useApp } from '@/contexts/AppContext';
+import ProgressSection from '../ProgressSection';
+import { trackSectionVisit } from '@/lib/progress';
+
+
 import { useState, useEffect } from 'react';
 
 export default function BarCleaningsSection() {
+
+   const { currentUser } = useApp();
+
+  // Track section visit when component mounts
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'bar-cleanings');
+    }
+  }, [currentUser]);
+
   const [cleaningDays, setCleaningDays] = useState<string[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -274,6 +290,7 @@ export default function BarCleaningsSection() {
       <button className="btn" onClick={resetChecklists} style={{marginTop: '15px'}}>
         Reset All Checklists
       </button>
+      <ProgressSection />
     </div>
   );
 }

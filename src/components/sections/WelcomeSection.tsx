@@ -1,7 +1,19 @@
 'use client';
-import ProgressSection from '@/components/ProgressSection';
+
+import { useEffect } from 'react';
+import { useApp } from '@/contexts/AppContext';
+import ProgressSection from '../ProgressSection'; // ← COMPONENT
+import { trackSectionVisit } from '@/lib/progress'; // ← FUNCTION
 
 export default function WelcomeSection() {
+  const { currentUser } = useApp();
+
+  // Track when user visits this section
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'welcome');
+    }
+  }, [currentUser]);
   return (
     <div className="section active" id="welcome">
       <div className="section-header">
@@ -50,6 +62,7 @@ export default function WelcomeSection() {
           </div>
         </div>
       </div>
+      <ProgressSection />  {/* ← Add this line */}
     </div>
   );
 }

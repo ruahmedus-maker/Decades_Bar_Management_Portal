@@ -1,4 +1,19 @@
+import { useEffect } from 'react'; // Add this if not present
+import { useApp } from '@/contexts/AppContext'; // Add this if not present
+import ProgressSection from '../ProgressSection'; // Adjust path if necessary
+import { trackSectionVisit } from '@/lib/progress'; // Add this import
+
 export default function GlasswareGuideSection() {
+
+   const { currentUser } = useApp(); // Add this if not present
+
+  // Add this useEffect to track section visit
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'section-id');
+    }
+  }, [currentUser]);
+
   return (
     <div className="section active" id="glassware-guide">
       <div className="section-header">
@@ -83,6 +98,7 @@ export default function GlasswareGuideSection() {
           <p>Please adhere to this policy for the entire Thursday night operation.</p>
         </div>
       </div>
+      <ProgressSection />
     </div>
   );
 }

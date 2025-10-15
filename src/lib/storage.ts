@@ -1,32 +1,16 @@
-// storage.ts - Updated to work with the complete types
+// storage.ts - Fixed without this keyword issues
 import { User, CounselingRecord, SessionData, EmployeeFolder } from '@/types';
 
-// Simple encryption/decryption for localStorage data
-const encrypt = (data: string): string => {
-  if (typeof window === 'undefined') return data;
-  return btoa(unescape(encodeURIComponent(data)));
-};
-
-const decrypt = (encrypted: string): string => {
-  if (typeof window === 'undefined') return encrypted;
-  try {
-    return decodeURIComponent(escape(atob(encrypted)));
-  } catch {
-    return '';
-  }
-};
-
 export const storage = {
-  // User management
+  // User management - WITHOUT encryption to fix progress tracking
   getUsers: (): Record<string, User> => {
     if (typeof window === 'undefined') return {};
     
     try {
-      const encrypted = localStorage.getItem('decadesBarUsers');
-      if (!encrypted) return {};
+      const usersJson = localStorage.getItem('decadesBarUsers');
+      if (!usersJson) return {};
       
-      const decrypted = decrypt(encrypted);
-      return JSON.parse(decrypted);
+      return JSON.parse(usersJson);
     } catch (error) {
       console.error('Error reading user database:', error);
       return {};
@@ -37,8 +21,7 @@ export const storage = {
     if (typeof window === 'undefined') return;
     
     try {
-      const encrypted = encrypt(JSON.stringify(users));
-      localStorage.setItem('decadesBarUsers', encrypted);
+      localStorage.setItem('decadesBarUsers', JSON.stringify(users));
     } catch (error) {
       console.error('Error saving user database:', error);
     }
@@ -83,12 +66,12 @@ export const storage = {
   },
 
   // Employee folders and counseling management
-  getEmployeeFolders(): EmployeeFolder[] {
+  getEmployeeFolders: (): EmployeeFolder[] => {
     if (typeof window === 'undefined') return [];
     
     try {
-      const users = this.getUsers();
-      const counselings = this.getCounselings();
+      const users = storage.getUsers();
+      const counselings = storage.getCounselings();
       
       return Object.values(users)
         .filter(user => user.position !== 'Admin')
@@ -111,36 +94,36 @@ export const storage = {
     }
   },
 
-  saveCounselingRecord(record: CounselingRecord): void {
+  saveCounselingRecord: (record: CounselingRecord): void => {
     if (typeof window === 'undefined') return;
     
     try {
-      const counselings = this.getCounselings();
+      const counselings = storage.getCounselings();
       counselings.push(record);
-      this.saveCounselings(counselings);
+      storage.saveCounselings(counselings);
     } catch (error) {
       console.error('Error saving counseling record:', error);
     }
   },
 
-  acknowledgeCounselingRecord(recordId: string): void {
+  acknowledgeCounselingRecord: (recordId: string): void => {
     if (typeof window === 'undefined') return;
     
     try {
-      const counselings = this.getCounselings();
+      const counselings = storage.getCounselings();
       const record = counselings.find((c: CounselingRecord) => c.id === recordId);
       if (record) {
         record.acknowledged = true;
         record.acknowledgedDate = new Date().toISOString();
-        this.saveCounselings(counselings);
+        storage.saveCounselings(counselings);
       }
     } catch (error) {
       console.error('Error acknowledging counseling record:', error);
     }
   },
 
-  getCounselingRecords(): CounselingRecord[] {
-    return this.getCounselings();
+  getCounselingRecords: (): CounselingRecord[] => {
+    return storage.getCounselings();
   },
 
   // Schedule
@@ -168,5 +151,35 @@ export const storage = {
   saveCleaningDays: (days: string[]): void => {
     if (typeof window === 'undefined') return;
     localStorage.setItem('decadesCleaningDays', JSON.stringify(days));
+  },
+
+  // Migration helper - if you had encrypted data, this will convert it
+  migrateFromEncrypted: (): void => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const encrypted = localStorage.getItem('decadesBarUsers');
+      if (!encrypted) return;
+      
+      // Check if it's base64 encoded (encrypted)
+      const isBase64 = /^[A-Za-z0-9+/]*={0,2}$/.test(encrypted) && encrypted.length % 4 === 0;
+      
+      if (isBase64) {
+        console.log('Migrating from encrypted data...');
+        try {
+          // Try to decrypt
+          const decrypted = decodeURIComponent(escape(atob(encrypted)));
+          const users = JSON.parse(decrypted);
+          // Save without encryption
+          localStorage.setItem('decadesBarUsers', JSON.stringify(users));
+          console.log('Successfully migrated from encrypted data');
+        } catch (e) {
+          console.error('Failed to decrypt existing data, starting fresh');
+          localStorage.removeItem('decadesBarUsers');
+        }
+      }
+    } catch (error) {
+      console.error('Error during migration:', error);
+    }
   }
 };

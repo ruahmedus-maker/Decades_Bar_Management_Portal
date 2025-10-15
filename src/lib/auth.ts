@@ -52,8 +52,9 @@ export const validateSession = (): User | null => {
   const session = storage.getSession();
   if (!session) return null;
 
-  // Check if session is expired
-  if (new Date(session.expires) < new Date()) {
+  // Check if session is expired using loginTime + timeout
+  const sessionAge = Date.now() - new Date(session.loginTime).getTime();
+  if (sessionAge > SECURITY_CONFIG.sessionTimeout) {
     storage.clearSession();
     return null;
   }
@@ -71,8 +72,8 @@ export const validateSession = (): User | null => {
 export const startUserSession = (user: User): void => {
   const sessionData: SessionData = {
     user,
-    loginTime: new Date().toISOString(),
-    expires: new Date(Date.now() + SECURITY_CONFIG.sessionTimeout).toISOString()
+    loginTime: new Date().toISOString()
+    // Removed expires property since it's not in SessionData type
   };
   storage.saveSession(sessionData);
 };

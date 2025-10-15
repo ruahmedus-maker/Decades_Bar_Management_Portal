@@ -1,6 +1,22 @@
-export default function DrinkSpecialsSection() {
+import { useEffect } from 'react'; // Add this if not present
+import { useApp } from '@/contexts/AppContext'; // Add this if not present
+import ProgressSection from '../ProgressSection'; // Adjust path if necessary
+import { trackSectionVisit } from '@/lib/progress'; // Add this import
+
+
+export default function DrinksSpecialsSection() {
+
+   const { currentUser } = useApp(); // Add this if not present
+
+  // Add this useEffect to track section visit
+  useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'section-id');
+    }
+  }, [currentUser]);
+
   return (
-    <div className="section active" id="drink-specials">
+    <div className="section active" id="drinks-specials">
       <div className="section-header">
         <h3>Drink Specials & Promotions</h3>
         <span className="badge">Current</span>
@@ -34,6 +50,7 @@ export default function DrinkSpecialsSection() {
             </div>
          </div>   
       </div>
+      <ProgressSection />
     </div>
   );
 }
