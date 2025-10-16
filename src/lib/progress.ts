@@ -28,6 +28,14 @@ const EXCLUDED_SECTIONS = [
   'special-events'
 ];
 
+// Positions that should have progress tracking
+const TRACKED_POSITIONS = ['Bartender', 'Trainee'];
+
+// Helper function to check if user should have progress tracked
+const shouldTrackUserProgress = (user: User): boolean => {
+  return TRACKED_POSITIONS.includes(user.position);
+};
+
 // Helper function to get unique valid sections
 const getUniqueValidSections = (visitedSections: string[]): string[] => {
   const uniqueSections: string[] = [];
@@ -44,6 +52,11 @@ const getUniqueValidSections = (visitedSections: string[]): string[] => {
 };
 
 export const calculateProgress = (user: User): number => {
+  // If user shouldn't be tracked, return 0
+  if (!shouldTrackUserProgress(user)) {
+    return 0;
+  }
+
   const visitedSections = user.visitedSections || [];
   const uniqueSections = getUniqueValidSections(visitedSections);
   
@@ -62,6 +75,14 @@ export const trackSectionVisit = (userEmail: string, sectionId: string): void =>
   const user = users[userEmail];
 
   if (!user) return;
+
+  // Only track progress for Bartenders and Trainees
+  if (!shouldTrackUserProgress(user)) {
+    console.log(`Skipping progress tracking for ${user.position}: ${userEmail}`);
+    user.lastActive = new Date().toISOString();
+    storage.saveUsers(users);
+    return;
+  }
 
   if (!user.visitedSections) {
     user.visitedSections = [];
@@ -101,20 +122,31 @@ export const submitAcknowledgement = (userEmail: string): void => {
   const user = users[userEmail];
 
   if (user) {
-    // Only allow acknowledgement if progress is 100%
-    if (user.progress === 100) {
+    // Only allow acknowledgement if progress is 100% and user is tracked
+    if (user.progress === 100 && shouldTrackUserProgress(user)) {
       user.acknowledged = true;
       user.acknowledgementDate = new Date().toISOString();
       storage.saveUsers(users);
       console.log(`Acknowledgement submitted for ${userEmail}`);
     } else {
-      console.warn(`Cannot acknowledge - progress is only ${user.progress}%`);
+      console.warn(`Cannot acknowledge - progress is ${user.progress}% and user position is ${user.position}`);
     }
   }
 };
 
 // Helper function to get progress breakdown
 export const getProgressBreakdown = (user: User) => {
+  // Return empty progress for non-tracked positions
+  if (!shouldTrackUserProgress(user)) {
+    return {
+      sectionsVisited: 0,
+      totalSections: 0,
+      progress: 0,
+      canAcknowledge: false,
+      missingSections: []
+    };
+  }
+
   const visitedSections = user.visitedSections || [];
   const uniqueSections = getUniqueValidSections(visitedSections);
   
@@ -122,8 +154,8 @@ export const getProgressBreakdown = (user: User) => {
   const totalSections = ALL_SECTIONS.length;
   const progress = calculateProgress(user);
   
-  // Can only acknowledge if progress is 100% AND not already acknowledged
-  const canAcknowledge = progress === 100 && !user.acknowledged;
+  // Can only acknowledge if progress is 100% AND not already acknowledged AND user is tracked
+  const canAcknowledge = progress === 100 && !user.acknowledged && shouldTrackUserProgress(user);
   const missingSections = ALL_SECTIONS.filter(section => !uniqueSections.includes(section));
   
   return {
@@ -135,23 +167,28 @@ export const getProgressBreakdown = (user: User) => {
   };
 };
 
-// NEW: Force visit all sections for a user (for testing)
+// Force visit all sections for a user (for testing)
 export const visitAllSections = (userEmail: string): void => {
   const users = storage.getUsers();
   const user = users[userEmail];
 
   if (user) {
-    user.visitedSections = [...ALL_SECTIONS];
-    user.progress = calculateProgress(user);
-    
-    // If progress is 100%, allow acknowledgement
-    if (user.progress === 100 && !user.acknowledged) {
-      user.acknowledged = false; // Reset to allow user to submit
-      user.acknowledgementDate = undefined;
+    // Only set visited sections for tracked positions
+    if (shouldTrackUserProgress(user)) {
+      user.visitedSections = [...ALL_SECTIONS];
+      user.progress = calculateProgress(user);
+      
+      // Reset acknowledgement to allow user to submit
+      if (user.progress === 100) {
+        user.acknowledged = false;
+        user.acknowledgementDate = undefined;
+      }
+      
+      storage.saveUsers(users);
+      console.log(`Force visited all sections for ${userEmail}, progress: ${user.progress}%`);
+    } else {
+      console.log(`Skipping force visit for ${user.position}: ${userEmail}`);
     }
-    
-    storage.saveUsers(users);
-    console.log(`Force visited all sections for ${userEmail}, progress: ${user.progress}%`);
   }
 };
 
@@ -168,7 +205,7 @@ export const resetAcknowledgement = (userEmail: string): void => {
   }
 };
 
-// FIXED: Fix all users progress without logging them out
+// Fix all users progress without logging them out
 export const fixAllUsersProgress = (): void => {
   const users = storage.getUsers();
   Object.keys(users).forEach(email => {
@@ -176,14 +213,14 @@ export const fixAllUsersProgress = (): void => {
     const oldProgress = user.progress;
     user.progress = calculateProgress(user);
     
-    // Auto-reset acknowledgement if progress dropped
-    if (user.acknowledged && user.progress < 100) {
+    // Auto-reset acknowledgement if progress dropped (only for tracked users)
+    if (user.acknowledged && user.progress < 100 && shouldTrackUserProgress(user)) {
       user.acknowledged = false;
       user.acknowledgementDate = undefined;
       console.log(`Auto-reset acknowledgement for ${email} during fix`);
     }
     
-    console.log(`Fixed progress for ${email}: ${oldProgress}% -> ${user.progress}%`);
+    console.log(`Fixed progress for ${email} (${user.position}): ${oldProgress}% -> ${user.progress}%`);
   });
   storage.saveUsers(users);
 };
@@ -194,15 +231,26 @@ export const resetUserProgress = (userEmail: string): void => {
   const user = users[userEmail];
 
   if (user) {
-    user.visitedSections = [];
-    user.progress = 0;
-    user.acknowledged = false;
-    user.acknowledgementDate = undefined;
-    storage.saveUsers(users);
+    // Only reset for tracked positions
+    if (shouldTrackUserProgress(user)) {
+      user.visitedSections = [];
+      user.progress = 0;
+      user.acknowledged = false;
+      user.acknowledgementDate = undefined;
+      storage.saveUsers(users);
+      console.log(`Progress reset for ${userEmail}`);
+    } else {
+      console.log(`Skipping progress reset for ${user.position}: ${userEmail}`);
+    }
   }
 };
 
 // Check if a section should be tracked for progress
 export const shouldTrackSection = (sectionId: string): boolean => {
   return ALL_SECTIONS.includes(sectionId) && !EXCLUDED_SECTIONS.includes(sectionId);
+};
+
+// Check if a user should have progress tracking
+export const shouldTrackUser = (user: User): boolean => {
+  return shouldTrackUserProgress(user);
 };

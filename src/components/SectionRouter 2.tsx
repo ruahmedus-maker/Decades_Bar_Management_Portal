@@ -8,7 +8,7 @@ import ProceduresSection from '@/components/sections/ProceduresSection';
 import AlohaPosSection from '@/components/sections/AlohaPosSection';
 import VideosSection from '@/components/sections/VideosSection';
 import CocktailsSection from '@/components/sections/CocktailsSection';
-import DrinksSpecialsSection from '@/components/sections/DrinksSpecialsSection';
+import DrinkSpecialsSection from '@/components/sections/DrinkSpecialsSection';
 import GlasswareGuideSection from '@/components/sections/GlasswareGuideSection';
 import UniformGuideSection from '@/components/sections/UniformGuideSection';
 import BarCleaningsSection from '@/components/sections/BarCleaningsSection';
@@ -21,7 +21,6 @@ import FAQSection from '@/components/sections/FAQSection';
 import ResourcesSection from '@/components/sections/ResourcesSection';
 import EmployeeCounselingsSection from '@/components/sections/EmployeeCounselingsSection';
 import ScheduleReportSection from '@/components/sections/ScheduleReportSection';
-import MaintenanceSection from './sections/MaintenanceSection';
 
 export default function SectionRouter() {
   const { activeSection } = useApp();
@@ -43,7 +42,7 @@ export default function SectionRouter() {
       case 'cocktails':
         return <CocktailsSection />;
       case 'drink-specials':
-        return <DrinksSpecialsSection />;
+        return <DrinkSpecialsSection />;
       case 'glassware-guide':
         return <GlasswareGuideSection />;
       case 'uniform-guide':
@@ -68,8 +67,6 @@ export default function SectionRouter() {
         return <EmployeeCounselingsSection />;
       case 'schedule-report':
         return <ScheduleReportSection />;
-        case 'maintenance-schedule':
-        return <MaintenanceSection />;
       default:
         return <WelcomeSection />;
     }

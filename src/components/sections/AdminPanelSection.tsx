@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
 import { getProgressBreakdown } from '@/lib/progress';
 import { User } from '@/types';
+import MaintenanceTicketsSection from '../MaintenanceTicketsSection';
 
 interface TestResult {
   score: number;
@@ -39,7 +40,7 @@ export default function AdminPanelSection() {
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
   const [blockEmail, setBlockEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'special-events' | 'tasks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'special-events' | 'tasks' | 'maintenance'>('overview');
 
   useEffect(() => {
     if (isAdmin) {
@@ -294,6 +295,20 @@ export default function AdminPanelSection() {
         >
           ✅ Tasks
         </button>
+        <button
+  className={`tab-button ${activeTab === 'maintenance' ? 'active' : ''}`}
+  onClick={() => setActiveTab('maintenance')}
+  style={{
+    padding: '10px 20px',
+    border: 'none',
+    background: 'none',
+    borderBottom: activeTab === 'maintenance' ? '2px solid #d4af37' : '2px solid transparent',
+    cursor: 'pointer',
+    fontWeight: activeTab === 'maintenance' ? 'bold' : 'normal'
+  }}
+>
+  🔧 Maintenance
+</button>
       </div>
 
       {/* Overview Tab */}
@@ -613,6 +628,8 @@ export default function AdminPanelSection() {
 {activeTab === 'special-events' && <SpecialEventsSection isAdminView={true} />}
       {/* Tasks Tab */}
       {activeTab === 'tasks' && <TasksSection />}
+      {/* Maintenance Tickets Tab */}
+{activeTab === 'maintenance' && <MaintenanceTicketsSection />}
     </div>
   );
 }

@@ -88,3 +88,22 @@ export interface SpecialEvent {
   createdBy: string; // User email
   status: 'planned' | 'in-progress' | 'completed' | 'cancelled';
 }
+
+// Add to your existing types.ts
+// app/types/index.ts
+
+export interface MaintenanceTicket {
+  id: string;
+  floor: '2000s' | '2010s' | 'Hip Hop' | 'Rooftop';
+  location: string;
+  title: string;
+  description: string;
+  reportedBy: string;
+  reportedByEmail: string;
+  status: 'open' | 'assigned' | 'in-progress' | 'completed' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  assignedTo?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}

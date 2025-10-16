@@ -1,5 +1,5 @@
 // storage.ts - Fixed without this keyword issues
-import { User, CounselingRecord, SessionData, EmployeeFolder } from '@/types';
+import { User, CounselingRecord, SessionData, EmployeeFolder, MaintenanceTicket } from '@/types';
 
 export const storage = {
   // User management - WITHOUT encryption to fix progress tracking
@@ -181,5 +181,58 @@ export const storage = {
     } catch (error) {
       console.error('Error during migration:', error);
     }
+  },
+
+getMaintenanceTickets: (): MaintenanceTicket[] => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const tickets = localStorage.getItem('decadesMaintenanceTickets');
+    return tickets ? JSON.parse(tickets) : [];
+  } catch {
+    return [];
   }
+},
+
+saveMaintenanceTickets: (tickets: MaintenanceTicket[]): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('decadesMaintenanceTickets', JSON.stringify(tickets));
+},
+
+createMaintenanceTicket: (ticket: Omit<MaintenanceTicket, 'id' | 'createdAt' | 'updatedAt'>): string => {
+  const tickets = storage.getMaintenanceTickets();
+  const id = `ticket-${Date.now()}`;
+  
+  const newTicket: MaintenanceTicket = {
+    ...ticket,
+    id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const updatedTickets = [...tickets, newTicket];
+  storage.saveMaintenanceTickets(updatedTickets);
+  return id;
+},
+
+updateMaintenanceTicket: (id: string, updates: Partial<MaintenanceTicket>): void => {
+  const tickets = storage.getMaintenanceTickets();
+  const ticketIndex = tickets.findIndex(ticket => ticket.id === id);
+  
+  if (ticketIndex !== -1) {
+    const updatedTickets = [...tickets];
+    updatedTickets[ticketIndex] = {
+      ...updatedTickets[ticketIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    storage.saveMaintenanceTickets(updatedTickets);
+  }
+},
+
+deleteMaintenanceTicket: (id: string): void => {
+  const tickets = storage.getMaintenanceTickets();
+  const filteredTickets = tickets.filter(ticket => ticket.id !== id);
+  storage.saveMaintenanceTickets(filteredTickets);
+}
 };
