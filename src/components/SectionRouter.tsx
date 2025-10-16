@@ -68,7 +68,7 @@ export default function SectionRouter() {
         return <EmployeeCounselingsSection />;
       case 'schedule-report':
         return <ScheduleReportSection />;
-        case 'maintenance-schedule':
+        case 'maintenance':
         return <MaintenanceSection />;
       default:
         return <WelcomeSection />;
