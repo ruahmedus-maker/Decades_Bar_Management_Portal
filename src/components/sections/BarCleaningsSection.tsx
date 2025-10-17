@@ -126,6 +126,38 @@ export default function BarCleaningsSection() {
         <div className="card-header">
           <h4>✅ Opening Checklist</h4>
         </div>
+
+        {/* YouTube Video Section - Added at the top */}
+      <div className="card" style={{marginBottom: '25px'}}>
+        <div className="card-header">
+          <h4>🎥 Bar Cleaning Tutorial</h4>
+        </div>
+        <div className="card-body">
+          <div style={{
+            position: 'relative',
+            paddingBottom: '56.25%', // 16:9 aspect ratio
+            height: 0,
+            overflow: 'hidden',
+            borderRadius: '8px'
+          }}>
+            <iframe
+              src="https://www.youtube.com/watch?v=pfcYoAOTRjA"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none'
+              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Bar Cleaning Tutorial Video"
+            />
+          </div>
+        </div>
+      </div>
+      
         <div className="card-body">
           <div className="checklist-container">
             <label className="checklist-item">

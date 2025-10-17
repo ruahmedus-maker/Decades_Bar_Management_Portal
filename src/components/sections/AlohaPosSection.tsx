@@ -7,94 +7,87 @@ import { trackSectionVisit } from '@/lib/progress'; // Add this import
     {
       id: 'QkMhy-grvO8',
       title: 'Aloha POS functions',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to split a check - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '0:27'
     },
     {
       id: 'H3JPBhvbNqc', 
       title: 'Aloha POS functions',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to splitting payment Card/Cash - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '0:19'
     },
     {
       id: 'WFXIrzqOZvM',
       title: 'Aloha POS functions',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to reprinting a CC receipt before closing the check - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '0:31'
     },
     {
-      id: '',
+      id: '4LYA10HUWek',
       title: 'Aloha POS functions',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to reprinting a check after its been closed - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '0:15'
     },
     {
-      id: 'YOUR_VIDEO_ID_5',
+      id: 'LAxlHa7Y6aU',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to rebooting the car reader - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_6',
+      id: 'sGCBZewlNQo',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to fixing the HOLD on an item - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_7',
+      id: 'neqSRTdVGaw',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to cash transactions - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_8',
+      id: 'LgWaFdrAw9M',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to how to reboot POS - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_9',
+      id: 'Y-g-U6YpGGY',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to start a comp tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_10',
+      id: 'aERsDspXHsw',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to start a tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_11',
+      id: 'e8Ms-UY4_7E',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to close a tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
     },
     {
-      id: 'YOUR_VIDEO_ID_12',
+      id: 'YZdPIyqYCSA',
       title: '',
-      description: 'Step-by-step guide to ',
+      description: 'Step-by-step guide to handle overring - Open in YouTube for full instructions',
       category: 'Aloha POS',
       duration: '6:20'
-    },
-    {
-      id: 'YOUR_VIDEO_ID_13',
-      title: '',
-      description: 'Step-by-step guide to ',
-      category: 'Aloha POS',
-      duration: '6:20'
-    },
+    }
   ];
   
   // YouTube Video Player Component
@@ -230,7 +223,7 @@ import { trackSectionVisit } from '@/lib/progress'; // Add this import
         <div className="card" style={{ marginBottom: '20px' }}>
           <div className="card-body">
             <p style={{ margin: 0 }}>
-              Welcome to the Decades Bar video training library. Here you'll find all the training videos 
+              Welcome to the Aloha POS video Library. Here you'll find all the training videos 
               covering procedures and systems you'll use during your shift. Click on any video to start learning.
             </p>
           </div>
