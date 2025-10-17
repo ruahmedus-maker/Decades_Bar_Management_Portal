@@ -91,70 +91,70 @@ import { trackSectionVisit } from '@/lib/progress'; // Add this import
   ];
   
   // YouTube Video Player Component
-  function YouTubeVideo({ videoId, title, description, duration }: { 
-    videoId: string; 
-    title: string; 
-    description: string;
-    duration: string;
-  }) {
-    return (
-      <div className="card" style={{ marginBottom: '25px' }}>
-        <div className="card-header">
-          <h4>{title}</h4>
-          <span className="badge" style={{ background: '#4a5568', color: 'white' }}>
-            {duration}
-          </span>
+function YouTubeVideo({ videoId, title, description, duration }: { 
+  videoId: string; 
+  title: string; 
+  description: string;
+  duration: string;
+}) {
+  return (
+    <div className="card" style={{ marginBottom: '25px' }}>
+      <div className="card-header">
+        <h4>{title}</h4>
+        <span className="badge" style={{ background: '#4a5568', color: 'white' }}>
+          {duration}
+        </span>
+      </div>
+      <div className="card-body">
+        <p style={{ marginBottom: '15px', color: '#666' }}>{description}</p>
+        
+        {/* YouTube Video Embed */}
+        <div style={{
+          position: 'relative',
+          paddingBottom: '56.25%', // 16:9 aspect ratio
+          height: 0,
+          overflow: 'hidden',
+          borderRadius: '8px',
+          backgroundColor: '#000'
+        }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&controls=1&disablekb=1&fs=1`}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 'none'
+            }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title={title}
+          />
         </div>
-        <div className="card-body">
-          <p style={{ marginBottom: '15px', color: '#666' }}>{description}</p>
-          
-          {/* YouTube Video Embed */}
-          <div style={{
-            position: 'relative',
-            paddingBottom: '56.25%', // 16:9 aspect ratio
-            height: 0,
-            overflow: 'hidden',
-            borderRadius: '8px',
-            backgroundColor: '#000'
-          }}>
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0`}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none'
-              }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title={title}
-            />
-          </div>
-          
-          <div style={{ 
-            marginTop: '10px', 
-            fontSize: '0.9rem', 
-            color: '#666',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span>🔗 <a 
-              href={`https://youtu.be/${videoId}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ color: '#3182ce' }}
-            >
-              Open in YouTube
-            </a></span>
-            <span>📺 YouTube</span>
-          </div>
+        
+        <div style={{ 
+          marginTop: '10px', 
+          fontSize: '0.9rem', 
+          color: '#666',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>🔗 <a 
+            href={`https://youtu.be/${videoId}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#3182ce' }}
+          >
+            Open in YouTube
+          </a></span>
+          <span>📺 YouTube</span>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
   
   // Category filter component
   function CategoryFilter({ activeCategory, onCategoryChange }: {

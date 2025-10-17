@@ -8,6 +8,83 @@ import { trackSectionVisit } from '@/lib/progress';
 
 import { useState, useEffect } from 'react';
 
+const BAR_CLEANING_VIDEOS = [
+  {
+    id: 'pfcYoAOTRjA', // Replace with your actual YouTube video ID
+    title: 'Bar Cleaning Procedures',
+    description: 'Step-by-step guide to proper bar cleaning',
+    category: 'Bar Maintenance',
+    duration: '2:45' // Replace with actual duration
+  }
+];
+
+// YouTube Video Player Component
+function YouTubeVideo({ videoId, title, description, duration }: { 
+  videoId: string; 
+  title: string; 
+  description: string;
+  duration: string;
+}) {
+  return (
+    <div className="card" style={{ marginBottom: '25px' }}>
+      <div className="card-header">
+        <h4>{title}</h4>
+        <span className="badge" style={{ background: '#4a5568', color: 'white' }}>
+          {duration}
+        </span>
+      </div>
+      <div className="card-body">
+        <p style={{ marginBottom: '15px', color: '#666' }}>{description}</p>
+        
+        {/* YouTube Video Embed */}
+        <div style={{
+          position: 'relative',
+          paddingBottom: '56.25%', // 16:9 aspect ratio
+          height: 0,
+          overflow: 'hidden',
+          borderRadius: '8px',
+          backgroundColor: '#000'
+        }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0`}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 'none'
+            }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title={title}
+          />
+        </div>
+        
+        <div style={{ 
+          marginTop: '10px', 
+          fontSize: '0.9rem', 
+          color: '#666',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>🔗 <a 
+            href={`https://youtu.be/${videoId}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#3182ce' }}
+          >
+            Open in YouTube
+          </a></span>
+          <span>📺 YouTube</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export default function BarCleaningsSection() {
 
    const { currentUser } = useApp();
@@ -121,43 +198,23 @@ export default function BarCleaningsSection() {
         <span className="badge">Maintenance</span>
       </div>
 
+      {/* Bar Cleaning Video - Added at the top */}
+      {BAR_CLEANING_VIDEOS.map(video => (
+        <YouTubeVideo
+          key={video.id}
+          videoId={video.id}
+          title={video.title}
+          description={video.description}
+          duration={video.duration}
+        />
+      ))}
+
+
       {/* Opening Checklist */}
       <div className="card" style={{marginBottom: '25px'}}>
         <div className="card-header">
           <h4>✅ Opening Checklist</h4>
         </div>
-
-        {/* YouTube Video Section - Added at the top */}
-      <div className="card" style={{marginBottom: '25px'}}>
-        <div className="card-header">
-          <h4>🎥 Bar Cleaning Tutorial</h4>
-        </div>
-        <div className="card-body">
-          <div style={{
-            position: 'relative',
-            paddingBottom: '56.25%', // 16:9 aspect ratio
-            height: 0,
-            overflow: 'hidden',
-            borderRadius: '8px'
-          }}>
-            <iframe
-              src="https://www.youtube.com/watch?v=pfcYoAOTRjA"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none'
-              }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title="Bar Cleaning Tutorial Video"
-            />
-          </div>
-        </div>
-      </div>
-      
         <div className="card-body">
           <div className="checklist-container">
             <label className="checklist-item">
