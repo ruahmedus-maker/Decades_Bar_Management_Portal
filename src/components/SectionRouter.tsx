@@ -6,7 +6,6 @@ import TrainingSection from '@/components/sections/TrainingSection';
 import TestsSection from '@/components/sections/TestsSection';
 import ProceduresSection from '@/components/sections/ProceduresSection';
 import AlohaPosSection from '@/components/sections/AlohaPosSection';
-import VideosSection from '@/components/sections/VideosSection';
 import CocktailsSection from '@/components/sections/CocktailsSection';
 import DrinksSpecialsSection from '@/components/sections/DrinksSpecialsSection';
 import GlasswareGuideSection from '@/components/sections/GlasswareGuideSection';
@@ -38,8 +37,6 @@ export default function SectionRouter() {
         return <ProceduresSection />;
       case 'aloha-pos':
         return <AlohaPosSection />;
-      case 'videos':
-        return <VideosSection />;
       case 'cocktails':
         return <CocktailsSection />;
       case 'drink-specials':

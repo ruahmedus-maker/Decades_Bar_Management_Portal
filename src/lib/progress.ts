@@ -6,7 +6,6 @@ const ALL_SECTIONS = [
   'welcome',
   'training',
   'uniform-guide',
-  'videos',
   'social-media',
   'resources',
   'procedures',
@@ -30,6 +29,9 @@ const EXCLUDED_SECTIONS = [
 
 // Positions that should have progress tracking
 const TRACKED_POSITIONS = ['Bartender', 'Trainee'];
+
+// Positions that should NOT have progress tracking
+const NON_TRACKED_POSITIONS = ['Admin', 'Manager', 'Owner'];
 
 // Helper function to check if user should have progress tracked
 const shouldTrackUserProgress = (user: User): boolean => {
@@ -136,14 +138,15 @@ export const submitAcknowledgement = (userEmail: string): void => {
 
 // Helper function to get progress breakdown
 export const getProgressBreakdown = (user: User) => {
-  // Return empty progress for non-tracked positions
-  if (!shouldTrackUserProgress(user)) {
+  // Don't calculate progress for admins, managers, or owners
+  if (NON_TRACKED_POSITIONS.includes(user.position)) {
     return {
+      progress: 0, // Changed from 100 to 0 to avoid confusion
       sectionsVisited: 0,
       totalSections: 0,
-      progress: 0,
       canAcknowledge: false,
-      missingSections: []
+      breakdown: {},
+      isTracked: false // Add this flag to indicate this user shouldn't be tracked
     };
   }
 
@@ -163,7 +166,8 @@ export const getProgressBreakdown = (user: User) => {
     totalSections: totalSections,
     progress: progress,
     canAcknowledge: canAcknowledge,
-    missingSections: missingSections
+    missingSections: missingSections,
+    isTracked: true // This user should be tracked
   };
 };
 
@@ -253,4 +257,14 @@ export const shouldTrackSection = (sectionId: string): boolean => {
 // Check if a user should have progress tracking
 export const shouldTrackUser = (user: User): boolean => {
   return shouldTrackUserProgress(user);
+};
+
+// Export the non-tracked positions for use in other files
+export const getNonTrackedPositions = (): string[] => {
+  return [...NON_TRACKED_POSITIONS];
+};
+
+// Export the tracked positions for use in other files
+export const getTrackedPositions = (): string[] => {
+  return [...TRACKED_POSITIONS];
 };

@@ -19,7 +19,6 @@ export const NAV_ITEMS = [
   { id: 'tests', icon: '❓', label: 'Training Tests' },
   { id: 'procedures', icon: '📋', label: 'Standard Procedures' },
   { id: 'aloha-pos', icon: '💻', label: 'Aloha POS' },
-  { id: 'videos', icon: '🎥', label: 'Video Library' },
   { id: 'cocktails', icon: '🍹', label: 'Cocktail Recipes' },
   { id: 'drinks-specials', icon: '🏷️', label: 'Drinks Specials' },
   { id: 'glassware-guide', icon: '🥃', label: 'Glassware Guide' },
@@ -35,6 +34,7 @@ export const NAV_ITEMS = [
   // Add the missing admin-only items
   { id: 'employee-counselings', icon: '📝', label: 'Employee Counselings' },
   { id: 'schedule-report', icon: '📋', label: 'Schedule Report' },
+  { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
 ] as const;
 
 export const TEST_QUESTIONS = [

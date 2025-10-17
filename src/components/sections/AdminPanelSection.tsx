@@ -59,30 +59,40 @@ export default function AdminPanelSection() {
 
     setUsers(userList);
 
-    // Calculate user progress using getProgressBreakdown
-    const progressData = userList.map(user => {
-      const breakdown = getProgressBreakdown(user);
-      
-      const lastActive = new Date(user.lastActive);
-      const now = new Date();
-      const daysSinceActive = Math.floor((now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24));
-      
-      let completionStatus: UserProgress['completionStatus'] = 'poor';
-      if (breakdown.progress === 100 && user.acknowledged) completionStatus = 'excellent';
-      else if (breakdown.progress >= 70) completionStatus = 'good';
-      else if (daysSinceActive > 7) completionStatus = 'inactive';
-      else completionStatus = 'poor';
+  const progressData = userList
+  .filter(user => user.position === 'Bartender' || user.position === 'Trainee') // Only track progress for these
+  .map(user => {
+    const breakdown = getProgressBreakdown(user);
+    // ... rest of your progress calculation
+  
+  
+  const lastActive = new Date(user.lastActive);
+  const now = new Date();
+  const daysSinceActive = Math.floor((now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24));
+  
+  let completionStatus: UserProgress['completionStatus'] = 'poor';
+  
+  // FIXED LOGIC: User has completed training if they've acknowledged AND have high progress
+  if (user.acknowledged && breakdown.progress >= 90) {
+    completionStatus = 'excellent';
+  } else if (breakdown.progress >= 70) {
+    completionStatus = 'good';
+  } else if (daysSinceActive > 7) {
+    completionStatus = 'inactive';
+  } else {
+    completionStatus = 'poor';
+  }
 
-      return {
-        user,
-        sectionsCompleted: breakdown.sectionsVisited,
-        totalSections: breakdown.totalSections,
-        progressPercentage: breakdown.progress,
-        lastActive: user.lastActive,
-        timeSinceLastActive: daysSinceActive === 0 ? 'Today' : `${daysSinceActive} day${daysSinceActive === 1 ? '' : 's'} ago`,
-        completionStatus
-      };
-    });
+  return {
+    user,
+    sectionsCompleted: breakdown.sectionsVisited,
+    totalSections: breakdown.totalSections,
+    progressPercentage: breakdown.progress,
+    lastActive: user.lastActive,
+    timeSinceLastActive: daysSinceActive === 0 ? 'Today' : `${daysSinceActive} day${daysSinceActive === 1 ? '' : 's'} ago`,
+    completionStatus
+  };
+});
 
     setUserProgress(progressData);
 
