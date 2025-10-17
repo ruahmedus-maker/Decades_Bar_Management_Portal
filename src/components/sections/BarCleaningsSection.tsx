@@ -46,7 +46,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           backgroundColor: '#000'
         }}>
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0`}
+            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&controls=1&disablekb=1&fs=1`}
             style={{
               position: 'absolute',
               top: 0,
@@ -83,7 +83,6 @@ function YouTubeVideo({ videoId, title, description, duration }: {
     </div>
   );
 }
-
 
 export default function BarCleaningsSection() {
 
