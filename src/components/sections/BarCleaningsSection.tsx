@@ -6,7 +6,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const BAR_CLEANING_VIDEOS = [
   {
@@ -18,13 +18,49 @@ const BAR_CLEANING_VIDEOS = [
   }
 ];
 
-// YouTube Video Player Component
+// YouTube Video Player with Single Click
 function YouTubeVideo({ videoId, title, description, duration }: { 
   videoId: string; 
   title: string; 
   description: string;
   duration: string;
 }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  // Base YouTube URL
+  const baseVideoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`;
+
+  // Autoplay URL for when user clicks the overlay
+  const autoplayUrl = `${baseVideoUrl}&autoplay=1`;
+
+  const handlePlay = () => {
+    setShowOverlay(false);
+    
+    if (iframeRef.current) {
+      // Switch to autoplay URL to start video immediately
+      iframeRef.current.src = autoplayUrl;
+    }
+
+    // Set timer to reset after video duration
+    const getDurationInMs = () => {
+      try {
+        const [minutes, seconds] = duration.split(':').map(Number);
+        return (minutes * 60 + seconds + 1) * 1000; // Add 1 second buffer
+      } catch {
+        return 61000; // Fallback
+      }
+    };
+
+    setTimeout(() => {
+      setShowOverlay(true);
+      if (iframeRef.current) {
+        // Reset to non-autoplay URL
+        iframeRef.current.src = baseVideoUrl;
+      }
+    }, getDurationInMs());
+  };
+
   return (
     <div className="card" style={{ marginBottom: '25px' }}>
       <div className="card-header">
@@ -36,17 +72,18 @@ function YouTubeVideo({ videoId, title, description, duration }: {
       <div className="card-body">
         <p style={{ marginBottom: '15px', color: '#666' }}>{description}</p>
         
-        {/* YouTube Video Embed */}
         <div style={{
           position: 'relative',
-          paddingBottom: '56.25%', // 16:9 aspect ratio
+          paddingBottom: '56.25%',
           height: 0,
           overflow: 'hidden',
           borderRadius: '8px',
           backgroundColor: '#000'
         }}>
+          {/* YouTube Video */}
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&controls=1&disablekb=1&fs=1`}
+            ref={iframeRef}
+            src={baseVideoUrl}
             style={{
               position: 'absolute',
               top: 0,
@@ -59,8 +96,33 @@ function YouTubeVideo({ videoId, title, description, duration }: {
             allowFullScreen
             title={title}
           />
+          
+          {/* Play Overlay - Only shows before first interaction */}
+          {showOverlay && (
+            <div 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.7)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: 'white',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+              onClick={handlePlay}
+            >
+              <div style={{ fontSize: '64px', marginBottom: '10px' }}>▶️</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: '600' }}>Click to Play</div>
+            </div>
+          )}
         </div>
-        
+
         <div style={{ 
           marginTop: '10px', 
           fontSize: '0.9rem', 
@@ -77,7 +139,6 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           >
             Open in YouTube
           </a></span>
-          <span>📺 YouTube</span>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react'; // Add this if not present
+import { useEffect, useState, useRef} from 'react'; // Add this if not present
 import { useApp } from '@/contexts/AppContext'; // Add this if not present
 import ProgressSection from '../ProgressSection'; // Adjust path if necessary
 import { trackSectionVisit } from '@/lib/progress'; // Add this import
@@ -16,87 +16,123 @@ import { trackSectionVisit } from '@/lib/progress'; // Add this import
       title: 'Aloha POS functions',
       description: 'Step-by-step guide to splitting payment Card/Cash - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '0:19'
+      duration: '0:31'
     },
     {
       id: 'WFXIrzqOZvM',
       title: 'Aloha POS functions',
       description: 'Step-by-step guide to reprinting a CC receipt before closing the check - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '0:31'
+      duration: '0:15'
     },
     {
       id: '4LYA10HUWek',
       title: 'Aloha POS functions',
       description: 'Step-by-step guide to reprinting a check after its been closed - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '0:15'
+      duration: '0:21'
     },
     {
       id: 'LAxlHa7Y6aU',
       title: '',
       description: 'Step-by-step guide to rebooting the car reader - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:40'
     },
     {
       id: 'sGCBZewlNQo',
       title: '',
       description: 'Step-by-step guide to fixing the HOLD on an item - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:16'
     },
     {
       id: 'neqSRTdVGaw',
       title: '',
       description: 'Step-by-step guide to cash transactions - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:19'
     },
     {
       id: 'LgWaFdrAw9M',
       title: '',
       description: 'Step-by-step guide to how to reboot POS - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:34'
     },
     {
       id: 'Y-g-U6YpGGY',
       title: '',
       description: 'Step-by-step guide to start a comp tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:15'
     },
     {
       id: 'aERsDspXHsw',
       title: '',
       description: 'Step-by-step guide to start a tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:22'
     },
     {
       id: 'e8Ms-UY4_7E',
       title: '',
       description: 'Step-by-step guide to close a tab - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:25'
     },
     {
       id: 'YZdPIyqYCSA',
       title: '',
       description: 'Step-by-step guide to handle overring - Open in YouTube for full instructions',
       category: 'Aloha POS',
-      duration: '6:20'
+      duration: '0:23'
     }
   ];
   
-  // YouTube Video Player Component
+// YouTube Video Player with Single Click
 function YouTubeVideo({ videoId, title, description, duration }: { 
   videoId: string; 
   title: string; 
   description: string;
   duration: string;
 }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  // Base YouTube URL
+  const baseVideoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`;
+
+  // Autoplay URL for when user clicks the overlay
+  const autoplayUrl = `${baseVideoUrl}&autoplay=1`;
+
+  const handlePlay = () => {
+    setShowOverlay(false);
+    
+    if (iframeRef.current) {
+      // Switch to autoplay URL to start video immediately
+      iframeRef.current.src = autoplayUrl;
+    }
+
+    // Set timer to reset after video duration
+    const getDurationInMs = () => {
+      try {
+        const [minutes, seconds] = duration.split(':').map(Number);
+        return (minutes * 60 + seconds + 1) * 1000; // Add 1 second buffer
+      } catch {
+        return 61000; // Fallback
+      }
+    };
+
+    setTimeout(() => {
+      setShowOverlay(true);
+      if (iframeRef.current) {
+        // Reset to non-autoplay URL
+        iframeRef.current.src = baseVideoUrl;
+      }
+    }, getDurationInMs());
+  };
+
   return (
     <div className="card" style={{ marginBottom: '25px' }}>
       <div className="card-header">
@@ -108,17 +144,18 @@ function YouTubeVideo({ videoId, title, description, duration }: {
       <div className="card-body">
         <p style={{ marginBottom: '15px', color: '#666' }}>{description}</p>
         
-        {/* YouTube Video Embed */}
         <div style={{
           position: 'relative',
-          paddingBottom: '56.25%', // 16:9 aspect ratio
+          paddingBottom: '56.25%',
           height: 0,
           overflow: 'hidden',
           borderRadius: '8px',
           backgroundColor: '#000'
         }}>
+          {/* YouTube Video */}
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&controls=1&disablekb=1&fs=1`}
+            ref={iframeRef}
+            src={baseVideoUrl}
             style={{
               position: 'absolute',
               top: 0,
@@ -131,8 +168,33 @@ function YouTubeVideo({ videoId, title, description, duration }: {
             allowFullScreen
             title={title}
           />
+          
+          {/* Play Overlay - Only shows before first interaction */}
+          {showOverlay && (
+            <div 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.7)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: 'white',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+              onClick={handlePlay}
+            >
+              <div style={{ fontSize: '64px', marginBottom: '10px' }}>▶️</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: '600' }}>Click to Play</div>
+            </div>
+          )}
         </div>
-        
+
         <div style={{ 
           marginTop: '10px', 
           fontSize: '0.9rem', 
@@ -149,12 +211,12 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           >
             Open in YouTube
           </a></span>
-          <span>📺 YouTube</span>
         </div>
       </div>
     </div>
   );
 }
+
   
   // Category filter component
   function CategoryFilter({ activeCategory, onCategoryChange }: {
