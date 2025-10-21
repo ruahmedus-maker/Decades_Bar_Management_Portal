@@ -4,6 +4,7 @@ import "./globals.css"; // This should be imported
 import DecadesBanner from '@/components/DecadesBanner';
 
 
+
 const inter = Inter({ 
   subsets: ["latin"],
 });
@@ -24,13 +25,15 @@ export default function RootLayout({
         margin: 0, 
         padding: 0,
         minHeight: '100vh',
-        fontFamily: 'system-ui, sans-serif'
+        fontFamily: 'system-ui, sans-serif',
+        background: 'transparent', // Ensure transparent background
       }}>
         <DecadesBanner />
         <div style={{ 
           position: 'relative',
           zIndex: 10,
-          minHeight: '100vh'
+          minHeight: '100vh',
+          background: 'transparent', // Ensure this is transparent too
         }}>
           {children}
         </div>

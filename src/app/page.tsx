@@ -46,9 +46,13 @@ function MainApp() {
   console.log('MainApp - Showing Main Interface'); // Debug
   return (
     <>
-      <div className="container">
+      <div className="container" style={{
+        background: 'transparent', // Ensure container is transparent
+      }}>
         <Sidebar />
-        <div className="main-content">
+        <div className="main-content" style={{
+          background: 'transparent', // Ensure main content area is transparent
+        }}>
           <Header />
           <SectionRouter />
         </div>

@@ -49,16 +49,7 @@ export default function WelcomeSection() {
   }, [currentUser]);
 
   return (
-    <div className="section active" id="welcome" style={{
-      background: 'rgba(255, 255, 255, 0.92)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      borderRadius: '20px',
-      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
-      margin: '24px',
-      overflow: 'hidden'
-    }}>
+    <div className="section active" id="welcome"> 
       <div className="section-header">
         <h3>Welcome to Your Training Hub</h3>
         <span className="badge">New</span>
