@@ -397,7 +397,6 @@ export default function TrainingMaterials() {
           </div>
         </div>
       </div>
-      
       <ProgressSection />
     </div>
   );

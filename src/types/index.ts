@@ -107,3 +107,10 @@ export interface MaintenanceTicket {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  category: 'opening' | 'bank' | 'cash' | 'during-shift' | 'closing';
+}
