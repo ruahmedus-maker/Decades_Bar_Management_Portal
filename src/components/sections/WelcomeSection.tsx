@@ -5,35 +5,22 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 
-
-
-
-
 function DecadesIntroduction() {
   return (
-    <div className="card" style={{
-      marginBottom: '25px', 
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(15px)',
-      border: '1px solid rgba(255, 255, 255, 0.4)',
-      color: '#2d3748' // Ensure good contrast
-    }}>
+    <div className="card decades-intro-card">
       <div className="card-body">
-        <div style={{textAlign: 'center', marginBottom: '25px'}}>
-          <h1 style={{
-            color: '#1a202c', 
-            fontSize: '2.5rem', 
-            marginBottom: '10px',
-            fontWeight: '700',
-            textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-          }}>🎵 Welcome to Decades 🎵</h1>
-          <p style={{
-            fontSize: '1.3rem', 
-            color: '#4a5568',
-            fontWeight: '500'
-          }}>Where Every Floor is a Different Era</p>
+        <div className="intro-header">
+          <h1>🎵 Welcome to Decades 🎵</h1>
+          <p className="intro-subtitle">Where Every Floor is a Different Era</p>
         </div>
-        {/* Rest of your content with proper text colors */}
+        
+        <div style={{textAlign: 'center', marginBottom: '20px'}}>
+          <p style={{fontSize: '1.1rem', color: '#4a5568', lineHeight: '1.6'}}>
+            Your journey to becoming an exceptional Decades bartender starts here. 
+            This comprehensive training portal will guide you through everything you need to know 
+            to excel in our high-volume, multi-floor nightclub environment.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -57,7 +44,10 @@ export default function WelcomeSection() {
 
       <DecadesIntroduction />
 
-      <p>Welcome to the Decades Bar Resource Center, your comprehensive guide to excellence in high-volume nightclub bartending. This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.</p>
+      <p style={{fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '25px'}}>
+        Welcome to the Decades Bar Resource Center, your comprehensive guide to excellence in high-volume nightclub bartending. 
+        This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.
+      </p>
       
       <div className="card-grid">
         <div className="card">
@@ -66,7 +56,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Begin your Decades journey with our structured training program. Follow the step-by-step guide to build your skills from foundation to mastery.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>Review training materials & procedures</li>
               <li>Study Decades-specific standards</li>
               <li>Complete POS system training</li>
@@ -85,7 +75,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Watch our comprehensive training videos covering everything from Aloha POS operations to advanced mixology techniques and bar cleaning procedures.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>POS system tutorials</li>
               <li>Pouring technique demonstrations</li>
               <li>Cocktail preparation videos</li>
@@ -104,7 +94,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Access our complete recipe database featuring Decades signature cocktails, classic preparations, and seasonal specials with detailed instructions and presentation standards.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>Signature Decades cocktails</li>
               <li>Classic drink preparations</li>
               <li>Seasonal specials</li>
@@ -123,7 +113,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Master the operational side of Decades including cleaning procedures, inventory management, closing protocols, and high-volume service strategies.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>Daily cleaning checklists</li>
               <li>Inventory & cost control</li>
               <li>Closing procedures</li>
@@ -142,7 +132,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Learn the unique requirements and service styles for each Decades floor - from the high-energy 2000's to the premium Rooftop experience.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>2000's Floor procedures</li>
               <li>Hip Hop Floor service</li>
               <li>Rooftop bottle service</li>
@@ -161,7 +151,7 @@ export default function WelcomeSection() {
           </div>
           <div className="card-body">
             <p>Monitor your training progress and completion status across all sections. Track which materials you've reviewed and identify areas for further study.</p>
-            <ul style={{paddingLeft: '20px', marginBottom: '0'}}>
+            <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
               <li>Section completion tracking</li>
               <li>Training progress overview</li>
               <li>Skill assessment readiness</li>
@@ -176,29 +166,29 @@ export default function WelcomeSection() {
       </div>
 
       {/* Quick Start Guide */}
-      <div className="card" style={{marginTop: '25px'}}>
+      <div className="card quick-start-card">
         <div className="card-header">
           <h4>🎯 Your First Week at Decades</h4>
         </div>
         <div className="card-body">
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px'}}>
-            <div style={{textAlign: 'center', padding: '15px', background: '#e8f5e8', borderRadius: '8px'}}>
-              <div style={{fontSize: '2rem', marginBottom: '10px'}}>📚</div>
+          <div className="week-grid">
+            <div className="week-day week-day-1">
+              <span className="day-icon">📚</span>
               <h5>Days 1-2</h5>
               <p><strong>Portal Review</strong><br/>Complete all training sections in this portal</p>
             </div>
-            <div style={{textAlign: 'center', padding: '15px', background: '#fff3cd', borderRadius: '8px'}}>
-              <div style={{fontSize: '2rem', marginBottom: '10px'}}>👀</div>
+            <div className="week-day week-day-2">
+              <span className="day-icon">👀</span>
               <h5>Day 3</h5>
               <p><strong>Observation Shift</strong><br/>Shadow on 2000's Floor - focus on learning</p>
             </div>
-            <div style={{textAlign: 'center', padding: '15px', background: '#d4edda', borderRadius: '8px'}}>
-              <div style={{fontSize: '2rem', marginBottom: '10px'}}>🛠️</div>
+            <div className="week-day week-day-3">
+              <span className="day-icon">🛠️</span>
               <h5>Day 4</h5>
               <p><strong>Hands-On Training</strong><br/>Practice on Hip Hop & Rooftop floors</p>
             </div>
-            <div style={{textAlign: 'center', padding: '15px', background: '#cce7ff', borderRadius: '8px'}}>
-              <div style={{fontSize: '2rem', marginBottom: '10px'}}>🎓</div>
+            <div className="week-day week-day-4">
+              <span className="day-icon">🎓</span>
               <h5>Day 5</h5>
               <p><strong>Assessment</strong><br/>Final test and evaluation for shift readiness</p>
             </div>
