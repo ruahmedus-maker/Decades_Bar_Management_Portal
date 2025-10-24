@@ -21,7 +21,7 @@ export default function StandardOperatingProceduresSection() {
 
   const loadChecklist = () => {
     const defaultChecklist: ChecklistItem[] = [
-      // Opening Procedures
+      // Your checklist items remain the same...
       { id: '1', text: 'Arrive 15 minutes before scheduled shift time', completed: false, category: 'opening' },
       { id: '2', text: 'Clock in using the POS system', completed: false, category: 'opening' },
       { id: '3', text: 'Check daily specials and event board', completed: false, category: 'opening' },
@@ -109,21 +109,66 @@ export default function StandardOperatingProceduresSection() {
   const filteredItems = getCategoryItems(activeCategory);
 
   return (
-    <div className="section active" id="procedures">
-      <div className="section-header">
-        <div className="header-content">
-          <div>
-            <h3>Standard Operating Procedures</h3>
-            <p className="section-subtitle">Checklist for all staff - follow carefully</p>
-          </div>
-          <div className="progress-badge">
-            {getCompletedCount()} / {checklist.length} Completed
-          </div>
-        </div>
+    <div 
+  className="active" 
+  id="procedures"
+  style={{
+    marginBottom: '30px',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(15px) saturate(170%)',
+    border: '1px solid rgba(255, 255, 255, 0.22)',
+    boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
+  }}
+>
+  <div style={{
+    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
+    padding: '20px',
+    borderBottom: '1px solid rgba(212, 175, 55, 0.4)',
+    backdropFilter: 'blur(10px)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+      <div>
+        <h3 style={{
+          color: '#ffffff',
+          fontSize: '1.4rem',
+          fontWeight: 700,
+          margin: 0,
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+        }}>
+          Standard Operating Procedures
+        </h3>
+        <p style={{ 
+          margin: 0, 
+          opacity: 0.9, 
+          color: 'rgba(255, 255, 255, 0.9)', 
+          fontSize: '0.95rem',
+          marginTop: '4px'
+        }}>
+          Checklist for all staff - follow carefully
+        </p>
       </div>
+      <div style={{ 
+        background: 'rgba(255, 255, 255, 0.2)', 
+        padding: '8px 16px', 
+        borderRadius: '20px', 
+        fontSize: '0.9rem', 
+        color: 'white', 
+        fontWeight: '600',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.2)'
+      }}>
+        {getCompletedCount()} / {checklist.length} Completed
+      </div>
+    </div>
+  </div>
 
       {/* Progress Bar */}
-      <div className="progress-bar-container">
+      <div style={{ margin: '20px 0', padding: '0 20px' }}>
         <div className="progress-bar">
           <div 
             className="progress-fill" 
@@ -133,32 +178,47 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Category Filters */}
-      <div className="category-filters">
+      <div style={{ display: 'flex', gap: '8px', margin: '20px', flexWrap: 'wrap' }}>
         {categories.map(category => (
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            className={`category-filter ${activeCategory === category.id ? 'active' : ''}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 18px',
+              borderRadius: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: activeCategory === category.id ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.9)',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(10px)',
+              borderColor: activeCategory === category.id ? 'rgba(212, 175, 55, 0.4)' : 'rgba(255, 255, 255, 0.2)'
+            }}
           >
-            <span className="filter-icon">{category.icon}</span>
-            <span className="filter-label">{category.label}</span>
+            <span>{category.icon}</span>
+            <span>{category.label}</span>
           </button>
         ))}
       </div>
 
       {/* Action Buttons */}
-      <div className="action-buttons">
+      <div style={{ display: 'flex', gap: '12px', margin: '20px', flexWrap: 'wrap' }}>
         <button className="btn" onClick={resetChecklist}>
-  <span className="btn-icon">🔄</span>
-  Reset Checklist
-</button>
-<button 
-  className="btn login-btn" 
-  onClick={() => showToast('Checklist progress saved!')}
->
-  <span className="btn-icon">💾</span>
-  Save Progress
-</button>
+          <span>🔄</span>
+          Reset Checklist
+        </button>
+        <button 
+          className="login-btn" 
+          onClick={() => showToast('Checklist progress saved!')}
+        >
+          <span>💾</span>
+          Save Progress
+        </button>
       </div>
 
       {/* Important Notice */}
@@ -185,22 +245,41 @@ export default function StandardOperatingProceduresSection() {
           </div>
           <div className="card-body">
             {filteredItems.length === 0 ? (
-              <p className="no-items">No items found for this category.</p>
+              <p style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', padding: '20px' }}>
+                No items found for this category.
+              </p>
             ) : (
-              <div className="checklist-container">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {filteredItems.map(item => (
                   <div
                     key={item.id}
-                    className={`checklist-item ${item.completed ? 'completed' : ''}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '12px',
+                      padding: '14px',
+                      background: item.completed ? 'rgba(56, 161, 105, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                      border: item.completed ? '1px solid rgba(56, 161, 105, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '10px',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer',
+                      color: 'rgba(255, 255, 255, 0.9)'
+                    }}
                     onClick={() => toggleChecklistItem(item.id)}
                   >
                     <input
                       type="checkbox"
                       checked={item.completed}
                       onChange={() => toggleChecklistItem(item.id)}
-                      className="checklist-checkbox"
+                      style={{ marginTop: '2px', width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--accent)' }}
                     />
-                    <span className="checklist-text">
+                    <span style={{ 
+                      flex: 1, 
+                      lineHeight: 1.5, 
+                      fontSize: '0.95rem',
+                      textDecoration: item.completed ? 'line-through' : 'none',
+                      color: item.completed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)'
+                    }}>
                       {item.text}
                     </span>
                   </div>
@@ -212,35 +291,61 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Quick Reference Card */}
-      <div className="card quick-reference-card">
+      <div className="card" style={{ marginTop: '20px' }}>
         <div className="card-header">
           <h4>💰 Bank Quick Reference</h4>
         </div>
         <div className="card-body">
-          <div className="reference-grid">
-            <div className="reference-item">
-              <h5>Standard Bank:</h5>
-              <ul>
-                <li>2 × $100 in $1 bills ($200)</li>
-                <li>1 × $100 in $5 bills ($100)</li>
-                <li><strong>Total: $300</strong></li>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
+            <div>
+              <h5 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '1rem', fontWeight: '600' }}>
+                Standard Bank:
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  2 × $100 in $1 bills ($200)
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  1 × $100 in $5 bills ($100)
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  <strong>Total: $300</strong>
+                </li>
               </ul>
             </div>
-            <div className="reference-item">
-              <h5>Bank Contents:</h5>
-              <ul>
-                <li>Cash (as above)</li>
-                <li>Counterfeit pen</li>
-                <li>Card reader cleaner</li>
+            <div>
+              <h5 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '1rem', fontWeight: '600' }}>
+                Bank Contents:
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  Cash (as above)
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  Counterfeit pen
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  Card reader cleaner
+                </li>
               </ul>
             </div>
-            <div className="reference-item">
-              <h5>Important:</h5>
-              <ul>
-                <li>Count bank before shift</li>
-                <li>Report discrepancies immediately</li>
-                <li>You're responsible for counterfeits</li>
-                <li>$5 pen replacement fee</li>
+            <div>
+              <h5 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '1rem', fontWeight: '600' }}>
+                Important:
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  Count bank before shift
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  Report discrepancies immediately
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  You're responsible for counterfeits
+                </li>
+                <li style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px', lineHeight: 1.4, fontSize: '0.9rem' }}>
+                  $5 pen replacement fee
+                </li>
               </ul>
             </div>
           </div>
