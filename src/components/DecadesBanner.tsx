@@ -1,9 +1,14 @@
+// DecadesBanner.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 
 const bannerImages = [
   '/images/decades/banner-main.jpg',
+  '/images/decades/banner-main2.jpg',
+  '/images/decades/banner-main3.jpg',
+  '/images/decades/banner-main4.jpg',
+  '/images/decades/banner-main5.jpg',
 ];
 
 export default function DecadesBanner() {
@@ -24,7 +29,7 @@ export default function DecadesBanner() {
       position: 'fixed',
       top: 0,
       left: 0,
-      width: '100%',
+      width: '100vw',
       height: '100vh',
       zIndex: -1,
       overflow: 'hidden',
@@ -33,6 +38,10 @@ export default function DecadesBanner() {
         src={bannerImages[currentBanner]}
         alt="Decades Bar & Lounge"
         onLoad={() => setImageLoaded(true)}
+        onError={(e) => {
+          console.error('Failed to load image:', bannerImages[currentBanner]);
+          e.currentTarget.style.display = 'none';
+        }}
         style={{
           width: '100%',
           height: '100%',
@@ -40,18 +49,21 @@ export default function DecadesBanner() {
           objectPosition: 'center',
           filter: imageLoaded ? 'brightness(0.4) contrast(1.1) saturate(1.1)' : 'none',
           transition: 'filter 0.5s ease-in-out',
-          transform: 'scale(1.01)', // Prevents white edges
+          position: 'fixed',
+          top: 0,
+          left: 0,
         }}
       />
       
-      {/* Gradient overlay */}
+      {/* Enhanced gradient overlay */}
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(0,0,0,0.6) 70%)',
+        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(0,0,0,0.8) 100%)',
+        pointerEvents: 'none',
       }}></div>
     </div>
   );

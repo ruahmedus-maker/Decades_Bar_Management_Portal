@@ -1,3 +1,4 @@
+// page.tsx
 'use client';
 
 import { AppProvider, useApp } from '@/contexts/AppContext';
@@ -7,25 +8,30 @@ import Header from '@/components/Header';
 import SectionRouter from '@/components/SectionRouter';
 import Toast from '@/components/Toast';
 
-
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
 
-  console.log('MainApp - Current User:', currentUser); // Debug
-  console.log('MainApp - Is Loading:', isLoading); // Debug
+  console.log('MainApp - Current User:', currentUser);
+  console.log('MainApp - Is Loading:', isLoading);
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner">
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '50px',
-            color: 'white'
-          }}>
-            <h3>Loading Decades Bar Training Portal...</h3>
-            <div style={{ marginTop: '20px' }}>Please wait</div>
-          </div>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'transparent',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+        color: 'white'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h3>Loading Decades Bar Training Portal...</h3>
+          <div style={{ marginTop: '20px' }}>Please wait</div>
         </div>
       </div>
     );
@@ -43,15 +49,24 @@ function MainApp() {
       </>
     );
   }
-  console.log('MainApp - Showing Main Interface'); // Debug
+
   return (
     <>
-      <div className="container" style={{
-        background: 'transparent', // Ensure container is transparent
+      <div style={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: 'transparent',
+        position: 'relative',
+        zIndex: 10,
       }}>
         <Sidebar />
-        <div className="main-content" style={{
-          background: 'transparent', // Ensure main content area is transparent
+        <div style={{
+          flex: 1,
+          marginLeft: '280px',
+          padding: '30px',
+          minHeight: '100vh',
+          background: 'transparent',
+          width: 'calc(100% - 280px)',
         }}>
           <Header />
           <SectionRouter />
@@ -73,5 +88,3 @@ export default function HomePage() {
     </AppProvider>
   );
 }
-
-

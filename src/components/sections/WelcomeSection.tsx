@@ -1,3 +1,4 @@
+// WelcomeSection.tsx
 'use client';
 
 import { useEffect } from 'react';
@@ -7,15 +8,27 @@ import { trackSectionVisit } from '@/lib/progress';
 
 function DecadesIntroduction() {
   return (
-    <div className="card decades-intro-card">
+    <div className="card"> {/* Removed decades-intro-card class */}
       <div className="card-body">
         <div className="intro-header">
-          <h1>🎵 Welcome to Decades 🎵</h1>
-          <p className="intro-subtitle">Where Every Floor is a Different Era</p>
+          <h1 style={{color: 'white', textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'}}>🎵 Welcome to Decades 🎵</h1>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.9)',
+            fontSize: '1.3rem',
+            fontWeight: 500,
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+          }}>
+            Where Every Floor is a Different Era
+          </p>
         </div>
         
         <div style={{textAlign: 'center', marginBottom: '20px'}}>
-          <p style={{fontSize: '1.1rem', color: '#4a5568', lineHeight: '1.6'}}>
+          <p style={{
+            fontSize: '1.1rem', 
+            color: 'rgba(255, 255, 255, 0.9)', 
+            lineHeight: '1.6',
+            textShadow: '0 1px 1px rgba(0, 0, 0, 0.1)'
+          }}>
             Your journey to becoming an exceptional Decades bartender starts here. 
             This comprehensive training portal will guide you through everything you need to know 
             to excel in our high-volume, multi-floor nightclub environment.
@@ -44,12 +57,18 @@ export default function WelcomeSection() {
 
       <DecadesIntroduction />
 
-      <p style={{fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '25px'}}>
+      <p style={{
+        fontSize: '1.1rem', 
+        lineHeight: '1.6', 
+        marginBottom: '25px',
+        color: 'rgba(255, 255, 255, 0.9)'
+      }}>
         Welcome to the Decades Bar Resource Center, your comprehensive guide to excellence in high-volume nightclub bartending. 
         This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.
       </p>
       
       <div className="card-grid">
+        {/* ... rest of your card grid remains the same ... */}
         <div className="card">
           <div className="card-header">
             <h4>🚀 Getting Started Guide</h4>

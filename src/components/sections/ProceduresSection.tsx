@@ -1,29 +1,25 @@
-import { useEffect, useState } from 'react'; // Add this if not present
-import { useApp } from '@/contexts/AppContext'; // Add this if not present
-import ProgressSection from '../ProgressSection'; // Adjust path if necessary
-import { trackSectionVisit } from '@/lib/progress'; // Add this import
+import { useEffect, useState } from 'react';
+import { useApp } from '@/contexts/AppContext';
+import ProgressSection from '../ProgressSection';
+import { trackSectionVisit } from '@/lib/progress';
 import { ChecklistItem } from '@/types';
 
-
- export default function StandardOperatingProceduresSection() {
+export default function StandardOperatingProceduresSection() {
   const { currentUser, showToast } = useApp();
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-   useEffect(() => {
+  useEffect(() => {
     if (currentUser) {
-      trackSectionVisit(currentUser.email, 'welcome');
+      trackSectionVisit(currentUser.email, 'procedures');
     }
   }, [currentUser]);
-
-
 
   useEffect(() => {
     loadChecklist();
   }, []);
 
   const loadChecklist = () => {
-    // In a real app, this would come from your database
     const defaultChecklist: ChecklistItem[] = [
       // Opening Procedures
       { id: '1', text: 'Arrive 15 minutes before scheduled shift time', completed: false, category: 'opening' },
@@ -113,123 +109,68 @@ import { ChecklistItem } from '@/types';
   const filteredItems = getCategoryItems(activeCategory);
 
   return (
-    <div className="section active">
-      <div className="section-header" style={{ 
-        background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
-        color: 'white',
-        borderRadius: '8px',
-        padding: '20px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="section active" id="procedures">
+      <div className="section-header">
+        <div className="header-content">
           <div>
             <h3>Standard Operating Procedures</h3>
-            <p style={{ margin: 0, opacity: 0.9 }}>Checklist for all staff - follow carefully</p>
+            <p className="section-subtitle">Checklist for all staff - follow carefully</p>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ 
-              background: 'rgba(255,255,255,0.2)', 
-              padding: '8px 16px', 
-              borderRadius: '20px',
-              fontSize: '0.9rem'
-            }}>
-              {getCompletedCount()} / {checklist.length} Completed
-            </div>
+          <div className="progress-badge">
+            {getCompletedCount()} / {checklist.length} Completed
           </div>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div style={{ 
-        background: '#e2e8f0', 
-        borderRadius: '10px', 
-        height: '8px', 
-        margin: '15px 0',
-        overflow: 'hidden'
-      }}>
-        <div style={{ 
-          background: 'linear-gradient(90deg, #48bb78, #38a169)',
-          height: '100%', 
-          width: `${(getCompletedCount() / checklist.length) * 100}%`,
-          transition: 'width 0.3s ease',
-          borderRadius: '10px'
-        }}></div>
+      <div className="progress-bar-container">
+        <div className="progress-bar">
+          <div 
+            className="progress-fill" 
+            style={{ width: `${(getCompletedCount() / checklist.length) * 100}%` }}
+          ></div>
+        </div>
       </div>
 
       {/* Category Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '8px', 
-        marginBottom: '20px',
-        flexWrap: 'wrap'
-      }}>
+      <div className="category-filters">
         {categories.map(category => (
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              border: 'none',
-              background: activeCategory === category.id ? '#d4af37' : '#f7fafc',
-              color: activeCategory === category.id ? 'white' : '#4a5568',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.2s ease'
-            }}
+            className={`category-filter ${activeCategory === category.id ? 'active' : ''}`}
           >
-            <span>{category.icon}</span>
-            {category.label}
+            <span className="filter-icon">{category.icon}</span>
+            <span className="filter-label">{category.label}</span>
           </button>
         ))}
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button 
-          className="btn"
-          onClick={resetChecklist}
-          style={{ 
-            background: '#e53e3e', 
-            color: 'white',
-            fontSize: '0.9rem'
-          }}
-        >
-          🔄 Reset Checklist
+      <div className="action-buttons">
+        <button className="btn btn-secondary" onClick={resetChecklist}>
+          <span className="btn-icon">🔄</span>
+          Reset Checklist
         </button>
         <button 
-          className="btn"
+          className="btn login-btn" 
           onClick={() => showToast('Checklist progress saved!')}
-          style={{ 
-            background: '#3182ce', 
-            color: 'white',
-            fontSize: '0.9rem'
-          }}
         >
-          💾 Save Progress
+          <span className="btn-icon">💾</span>
+          Save Progress
         </button>
       </div>
 
       {/* Important Notice */}
-      <div style={{
-        background: '#fff3cd',
-        border: '1px solid #ffeaa7',
-        borderRadius: '8px',
-        padding: '15px',
-        marginBottom: '20px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-          <span style={{ fontSize: '1.2rem' }}>⚠️</span>
-          <div>
-            <strong>Bank & Cash Handling Notice:</strong>
-            <p style={{ margin: '5px 0 0 0', fontSize: '0.9rem' }}>
-              Banks must be counted before each shift. You are financially responsible for counterfeit bills. 
-              Counterfeit pens must be returned with bank bag - $5 replacement fee applies if missing.
-            </p>
-          </div>
+      <div className="card policy-notice">
+        <div className="policy-header">
+          <h4>⚠️ Bank & Cash Handling Notice</h4>
+        </div>
+        <div className="policy-content">
+          <p>
+            <strong>Important:</strong> Banks must be counted before each shift. You are financially responsible for counterfeit bills. 
+            Counterfeit pens must be returned with bank bag - $5 replacement fee applies if missing.
+          </p>
         </div>
       </div>
 
@@ -238,55 +179,28 @@ import { ChecklistItem } from '@/types';
         <div className="card">
           <div className="card-header">
             <h4>{getCategoryName(activeCategory)}</h4>
-            <span style={{ 
-              padding: '4px 12px', 
-              background: '#edf2f7', 
-              borderRadius: '12px',
-              fontSize: '0.8rem',
-              fontWeight: 'bold'
-            }}>
+            <span className="badge">
               {filteredItems.length} items
             </span>
           </div>
           <div className="card-body">
             {filteredItems.length === 0 ? (
-              <p>No items found for this category.</p>
+              <p className="no-items">No items found for this category.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div className="checklist-container">
                 {filteredItems.map(item => (
                   <div
                     key={item.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '12px',
-                      padding: '12px',
-                      background: item.completed ? '#f0fff4' : '#f8f9fa',
-                      border: `1px solid ${item.completed ? '#c6f6d5' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      transition: 'all 0.2s ease'
-                    }}
+                    className={`checklist-item ${item.completed ? 'completed' : ''}`}
+                    onClick={() => toggleChecklistItem(item.id)}
                   >
                     <input
                       type="checkbox"
                       checked={item.completed}
                       onChange={() => toggleChecklistItem(item.id)}
-                      style={{
-                        marginTop: '2px',
-                        width: '18px',
-                        height: '18px',
-                        cursor: 'pointer'
-                      }}
+                      className="checklist-checkbox"
                     />
-                    <span
-                      style={{
-                        flex: 1,
-                        textDecoration: item.completed ? 'line-through' : 'none',
-                        color: item.completed ? '#718096' : '#2d3748',
-                        fontSize: '0.95rem',
-                        lineHeight: '1.4'
-                      }}
-                    >
+                    <span className="checklist-text">
                       {item.text}
                     </span>
                   </div>
@@ -298,31 +212,31 @@ import { ChecklistItem } from '@/types';
       </div>
 
       {/* Quick Reference Card */}
-      <div className="card" style={{ marginTop: '20px', background: '#f8f9fa' }}>
+      <div className="card quick-reference-card">
         <div className="card-header">
           <h4>💰 Bank Quick Reference</h4>
         </div>
         <div className="card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-            <div>
-              <strong>Standard Bank:</strong>
-              <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+          <div className="reference-grid">
+            <div className="reference-item">
+              <h5>Standard Bank:</h5>
+              <ul>
                 <li>2 × $100 in $1 bills ($200)</li>
                 <li>1 × $100 in $5 bills ($100)</li>
                 <li><strong>Total: $300</strong></li>
               </ul>
             </div>
-            <div>
-              <strong>Bank Contents:</strong>
-              <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+            <div className="reference-item">
+              <h5>Bank Contents:</h5>
+              <ul>
                 <li>Cash (as above)</li>
                 <li>Counterfeit pen</li>
                 <li>Card reader cleaner</li>
               </ul>
             </div>
-            <div>
-              <strong>Important:</strong>
-              <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+            <div className="reference-item">
+              <h5>Important:</h5>
+              <ul>
                 <li>Count bank before shift</li>
                 <li>Report discrepancies immediately</li>
                 <li>You're responsible for counterfeits</li>
@@ -332,6 +246,8 @@ import { ChecklistItem } from '@/types';
           </div>
         </div>
       </div>
+
+      <ProgressSection />
     </div>
   );
 }

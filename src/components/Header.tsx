@@ -5,6 +5,8 @@ import { useApp } from '@/contexts/AppContext';
 export default function Header() {
   const { currentUser, logout } = useApp();
 
+  
+
   return (
     <div className="header">
       {/* REMOVE all inline styles from this div - let CSS handle it */}

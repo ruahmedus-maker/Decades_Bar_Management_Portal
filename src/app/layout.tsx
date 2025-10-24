@@ -26,14 +26,15 @@ export default function RootLayout({
         padding: 0,
         minHeight: '100vh',
         fontFamily: 'system-ui, sans-serif',
-        background: 'transparent', // Ensure transparent background
+        background: 'transparent',
+        overflowX: 'hidden',
       }}>
         <DecadesBanner />
         <div style={{ 
           position: 'relative',
           zIndex: 10,
           minHeight: '100vh',
-          background: 'transparent', // Ensure this is transparent too
+          background: 'transparent',
         }}>
           {children}
         </div>
