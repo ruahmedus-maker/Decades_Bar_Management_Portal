@@ -148,17 +148,17 @@ export default function StandardOperatingProceduresSection() {
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button className="btn btn-secondary" onClick={resetChecklist}>
-          <span className="btn-icon">🔄</span>
-          Reset Checklist
-        </button>
-        <button 
-          className="btn login-btn" 
-          onClick={() => showToast('Checklist progress saved!')}
-        >
-          <span className="btn-icon">💾</span>
-          Save Progress
-        </button>
+        <button className="btn" onClick={resetChecklist}>
+  <span className="btn-icon">🔄</span>
+  Reset Checklist
+</button>
+<button 
+  className="btn login-btn" 
+  onClick={() => showToast('Checklist progress saved!')}
+>
+  <span className="btn-icon">💾</span>
+  Save Progress
+</button>
       </div>
 
       {/* Important Notice */}
