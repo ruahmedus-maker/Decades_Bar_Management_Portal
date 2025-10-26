@@ -7,6 +7,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import SectionRouter from '@/components/SectionRouter';
 import Toast from '@/components/Toast';
+import ErrorBoundary from '@/components/ErrorBoundary'; 
 
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
@@ -69,7 +70,9 @@ function MainApp() {
           width: 'calc(100% - 280px)',
         }}>
           <Header />
-          <SectionRouter />
+           <ErrorBoundary>
+            <SectionRouter />
+          </ErrorBoundary>
         </div>
       </div>
       <Toast 

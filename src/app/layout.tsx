@@ -36,7 +36,9 @@ export default function RootLayout({
           minHeight: '100vh',
           background: 'transparent',
         }}>
-          {children}
+          
+            {children}
+          
         </div>
       </body>
     </html>

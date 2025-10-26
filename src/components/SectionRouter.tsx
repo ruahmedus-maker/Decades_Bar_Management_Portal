@@ -39,7 +39,7 @@ export default function SectionRouter() {
         return <AlohaPosSection />;
       case 'cocktails':
         return <CocktailsSection />;
-      case 'drink-specials':
+      case 'drinks-specials':
         return <DrinksSpecialsSection />;
       case 'glassware-guide':
         return <GlasswareGuideSection />;
