@@ -20,6 +20,238 @@ export default function EmployeeCounselingSection() {
     employeeSignature: ''
   });
 
+  // Styles object for the component
+  const styles = {
+    section: {
+      background: 'linear-gradient(135deg, rgba(255, 245, 245, 0.1) 0%, rgba(255, 215, 215, 0.15) 50%, rgba(175, 238, 238, 0.1) 100%)',
+      backdropFilter: 'blur(12px)',
+      borderRadius: '20px',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      padding: '25px',
+      margin: '20px 0',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+      position: 'relative' as const,
+      overflow: 'hidden',
+    },
+    sectionHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '25px',
+      paddingBottom: '15px',
+      borderBottom: '2px solid rgba(239, 108, 117, 0.3)',
+    },
+    headerTitle: {
+      color: '#2c5aa0',
+      fontSize: '24px',
+      fontWeight: '700',
+      margin: '0',
+      textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    },
+    badge: {
+      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
+      color: 'white',
+      padding: '6px 12px',
+      borderRadius: '12px',
+      fontSize: '12px',
+      fontWeight: 'bold',
+      boxShadow: '0 4px 12px rgba(239, 108, 117, 0.3)',
+    },
+    tabNavigation: {
+      marginBottom: '25px',
+      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
+      display: 'flex',
+    },
+    tabButton: {
+      padding: '12px 24px',
+      border: 'none',
+      background: 'none',
+      cursor: 'pointer',
+      fontWeight: '600',
+      fontSize: '15px',
+      transition: 'all 0.3s ease',
+      position: 'relative' as const,
+      overflow: 'hidden',
+      color: '#5a6c8c',
+    },
+    tabButtonActive: {
+      borderBottom: '3px solid #2c5aa0',
+      color: '#2c5aa0',
+      fontWeight: '700',
+    },
+    tabButtonHover: {
+      background: 'linear-gradient(135deg, rgba(44, 90, 160, 0.05), rgba(175, 238, 238, 0.1))',
+      color: '#2c5aa0',
+    },
+    counselingForm: {
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 245, 245, 0.3) 100%)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: '16px',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      padding: '25px',
+      marginBottom: '30px',
+      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
+      transition: 'all 0.3s ease',
+    },
+    formTitle: {
+      color: '#2c5aa0',
+      fontSize: '20px',
+      fontWeight: '600',
+      marginBottom: '20px',
+      paddingBottom: '10px',
+      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
+    },
+    formGroup: {
+      marginBottom: '20px',
+    },
+    label: {
+      display: 'block',
+      marginBottom: '8px',
+      fontWeight: '600',
+      color: '#2c5aa0',
+      fontSize: '14px',
+    },
+    formControl: {
+      width: '100%',
+      padding: '12px 15px',
+      borderRadius: '10px',
+      border: '1px solid rgba(44, 90, 160, 0.2)',
+      background: 'rgba(255, 255, 255, 0.7)',
+      fontSize: '15px',
+      transition: 'all 0.3s ease',
+      boxSizing: 'border-box' as const,
+    },
+    formControlFocus: {
+      outline: 'none',
+      borderColor: '#2c5aa0',
+      boxShadow: '0 0 0 3px rgba(44, 90, 160, 0.2)',
+      background: 'rgba(255, 255, 255, 0.9)',
+    },
+    textarea: {
+      minHeight: '100px',
+      resize: 'vertical' as const,
+      fontFamily: 'inherit',
+    },
+    button: {
+      background: 'linear-gradient(135deg, #2c5aa0, #3a6bc0)',
+      color: 'white',
+      border: 'none',
+      padding: '12px 25px',
+      borderRadius: '10px',
+      fontSize: '16px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 4px 15px rgba(44, 90, 160, 0.3)',
+    },
+    buttonHover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 6px 20px rgba(44, 90, 160, 0.4)',
+      background: 'linear-gradient(135deg, #3a6bc0, #4a7bd0)',
+    },
+    buttonSecondary: {
+      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
+      color: 'white',
+      border: 'none',
+      padding: '8px 16px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 3px 10px rgba(239, 108, 117, 0.3)',
+      marginRight: '10px',
+    },
+    buttonSecondaryHover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 5px 15px rgba(239, 108, 117, 0.4)',
+      background: 'linear-gradient(135deg, #ff8e9e, #ffa5b3)',
+    },
+    foldersGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+      gap: '20px',
+      marginTop: '20px',
+    },
+    employeeFolder: {
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(175, 238, 238, 0.15) 100%)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: '16px',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      padding: '20px',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
+    },
+    employeeFolderHover: {
+      transform: 'translateY(-5px)',
+      boxShadow: '0 12px 25px rgba(0, 0, 0, 0.15)',
+      borderColor: 'rgba(44, 90, 160, 0.4)',
+    },
+    folderHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '15px',
+      paddingBottom: '10px',
+      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
+    },
+    folderTitle: {
+      color: '#2c5aa0',
+      fontSize: '18px',
+      fontWeight: '600',
+      margin: '0',
+    },
+    positionBadge: {
+      background: 'linear-gradient(135deg, #20b2aa, #40e0d0)',
+      color: 'white',
+      padding: '4px 10px',
+      borderRadius: '10px',
+      fontSize: '12px',
+      fontWeight: '500',
+    },
+    recordItem: {
+      background: 'rgba(255, 255, 255, 0.6)',
+      borderRadius: '10px',
+      padding: '15px',
+      marginBottom: '15px',
+      border: '1px solid rgba(44, 90, 160, 0.1)',
+      transition: 'all 0.3s ease',
+    },
+    recordItemHover: {
+      transform: 'translateX(5px)',
+      borderColor: 'rgba(44, 90, 160, 0.3)',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+    },
+    recordHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '10px',
+    },
+    recordType: {
+      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
+      color: 'white',
+      padding: '4px 8px',
+      borderRadius: '6px',
+      fontSize: '12px',
+      fontWeight: '500',
+    },
+    recordDate: {
+      color: '#5a6c8c',
+      fontSize: '12px',
+    },
+    recordDescription: {
+      color: '#4a5568',
+      fontSize: '14px',
+      lineHeight: '1.5',
+      marginBottom: '10px',
+    },
+    recordActions: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+    },
+  };
+
   useEffect(() => {
     loadEmployeeFolders();
   }, []);
@@ -256,10 +488,10 @@ export default function EmployeeCounselingSection() {
 
   if (!currentUser || currentUser.position !== 'Admin') {
     return (
-      <div className="section active" id="employee-counselings">
-        <div className="section-header">
-          <h3>Employee Counselings & Write-ups</h3>
-          <span className="badge">Admin Only</span>
+      <div style={styles.section} id="employee-counselings">
+        <div style={styles.sectionHeader}>
+          <h3 style={styles.headerTitle}>Employee Counselings & Write-ups</h3>
+          <span style={styles.badge}>Admin Only</span>
         </div>
         <p>Access to this section is restricted to management only.</p>
       </div>
@@ -267,55 +499,65 @@ export default function EmployeeCounselingSection() {
   }
 
   return (
-    <div className="section active" id="employee-counselings">
-      <div className="section-header">
-        <h3>Employee Counselings & Write-ups</h3>
-        <span className="badge">Admin Only</span>
+    <div style={styles.section} id="employee-counselings">
+      <div style={styles.sectionHeader}>
+        <h3 style={styles.headerTitle}>Employee Counselings & Write-ups</h3>
+        <span style={styles.badge}>Admin Only</span>
       </div>
 
       {/* Tab Navigation */}
-      <div className="tab-navigation" style={{ marginBottom: '20px', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={styles.tabNavigation}>
         <button
-          className={`tab-button ${activeTab === 'violation' ? 'active' : ''}`}
-          onClick={() => setActiveTab('violation')}
           style={{
-            padding: '10px 20px',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'violation' ? '2px solid #d4af37' : '2px solid transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'violation' ? 'bold' : 'normal'
+            ...styles.tabButton,
+            ...(activeTab === 'violation' ? styles.tabButtonActive : {}),
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = styles.tabButtonHover.background;
+            e.currentTarget.style.color = styles.tabButtonHover.color;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none';
+            e.currentTarget.style.color = activeTab === 'violation' ? styles.tabButtonActive.color : styles.tabButton.color;
+          }}
+          onClick={() => setActiveTab('violation')}
         >
           📝 Violation & Counseling
         </button>
         <button
-          className={`tab-button ${activeTab === 'writeup' ? 'active' : ''}`}
-          onClick={() => setActiveTab('writeup')}
           style={{
-            padding: '10px 20px',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'writeup' ? '2px solid #d4af37' : '2px solid transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'writeup' ? 'bold' : 'normal'
+            ...styles.tabButton,
+            ...(activeTab === 'writeup' ? styles.tabButtonActive : {}),
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = styles.tabButtonHover.background;
+            e.currentTarget.style.color = styles.tabButtonHover.color;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none';
+            e.currentTarget.style.color = activeTab === 'writeup' ? styles.tabButtonActive.color : styles.tabButton.color;
+          }}
+          onClick={() => setActiveTab('writeup')}
         >
           ⚠️ Formal Write-up
         </button>
       </div>
 
       {/* Counseling Form */}
-      <div className="counseling-form">
-        <h4>{activeTab === 'violation' ? 'Employee Violation & Counseling' : 'Formal Employee Write-up'}</h4>
+      <div style={styles.counselingForm}>
+        <h4 style={styles.formTitle}>
+          {activeTab === 'violation' ? 'Employee Violation & Counseling' : 'Formal Employee Write-up'}
+        </h4>
         
-        <div className="form-group">
-          <label htmlFor="counseling-employee">Employee *</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-employee" style={styles.label}>Employee *</label>
           <select 
             id="counseling-employee"
             value={selectedEmployee}
             onChange={(e) => setSelectedEmployee(e.target.value)}
-            className="form-control"
+            style={styles.formControl}
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           >
             <option value="">Select Employee</option>
             {employees.map(employee => (
@@ -326,13 +568,15 @@ export default function EmployeeCounselingSection() {
           </select>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="counseling-type">Type *</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-type" style={styles.label}>Type *</label>
           <select 
             id="counseling-type"
             value={formData.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
-            className="form-control"
+            style={styles.formControl}
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           >
             <option value="observation">Observation Note</option>
             <option value="verbal">Verbal Warning</option>
@@ -342,133 +586,184 @@ export default function EmployeeCounselingSection() {
           </select>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="counseling-date">Date of Incident *</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-date" style={styles.label}>Date of Incident *</label>
           <input
             type="date"
             id="counseling-date"
             value={formData.date}
             onChange={(e) => handleInputChange('date', e.target.value)}
-            className="form-control"
+            style={styles.formControl}
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="counseling-manager">Manager's Name *</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-manager" style={styles.label}>Manager's Name *</label>
           <input
             type="text"
             id="counseling-manager"
             value={formData.managerName}
             onChange={(e) => handleInputChange('managerName', e.target.value)}
-            className="form-control"
+            style={styles.formControl}
             placeholder="Enter manager's full name"
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="counseling-description">
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-description" style={styles.label}>
             {activeTab === 'violation' ? 'Violation Details *' : 'Incident Description *'}
           </label>
           <textarea
             id="counseling-description"
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
-            className="form-control"
+            style={{...styles.formControl, ...styles.textarea}}
             rows={4}
             placeholder={activeTab === 'violation' 
               ? 'Describe the violation or performance issue...' 
               : 'Provide detailed description of the policy violation or incident...'
             }
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="counseling-action">
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-action" style={styles.label}>
             {activeTab === 'violation' ? 'Counseling & Action Plan *' : 'Corrective Actions *'}
           </label>
           <textarea
             id="counseling-action"
             value={formData.actionPlan}
             onChange={(e) => handleInputChange('actionPlan', e.target.value)}
-            className="form-control"
+            style={{...styles.formControl, ...styles.textarea}}
             rows={3}
             placeholder={activeTab === 'violation'
               ? 'Outline the counseling provided and expected improvements...'
               : 'Specify required corrective actions and timeline...'
             }
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           />
         </div>
 
         {activeTab === 'writeup' && (
-          <div className="form-group">
-            <label htmlFor="counseling-consequences">Consequences</label>
+          <div style={styles.formGroup}>
+            <label htmlFor="counseling-consequences" style={styles.label}>Consequences</label>
             <textarea
               id="counseling-consequences"
               value={formData.consequences}
               onChange={(e) => handleInputChange('consequences', e.target.value)}
-              className="form-control"
+              style={{...styles.formControl, ...styles.textarea}}
               rows={2}
               placeholder="Outline potential consequences for non-compliance..."
+              onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+              onBlur={(e) => Object.assign(e.target, styles.formControl)}
             />
           </div>
         )}
 
-        <div className="form-group">
-          <label htmlFor="counseling-signature">Employee Signature (for acknowledgment)</label>
+        <div style={styles.formGroup}>
+          <label htmlFor="counseling-signature" style={styles.label}>Employee Signature (for acknowledgment)</label>
           <input
             type="text"
             id="counseling-signature"
             value={formData.employeeSignature}
             onChange={(e) => handleInputChange('employeeSignature', e.target.value)}
-            className="form-control"
+            style={styles.formControl}
             placeholder="Employee's signature (if present)"
+            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
+            onBlur={(e) => Object.assign(e.target, styles.formControl)}
           />
         </div>
 
-        <button className="btn" onClick={submitCounselingRecord}>
+        <button 
+          style={styles.button}
+          onMouseEnter={(e) => Object.assign(e.target, styles.buttonHover)}
+          onMouseLeave={(e) => {
+            e.target.style.transform = 'none';
+            e.target.style.boxShadow = styles.button.boxShadow;
+            e.target.style.background = styles.button.background;
+          }}
+          onClick={submitCounselingRecord}
+        >
           {activeTab === 'violation' ? 'Save Violation Record' : 'Create Write-up'}
         </button>
       </div>
 
       {/* Employee Folders */}
-      <div className="employee-folders" style={{ marginTop: '30px' }}>
-        <h4>Employee Records</h4>
+      <div style={{ marginTop: '30px' }}>
+        <h4 style={{...styles.formTitle, borderBottom: 'none', marginBottom: '15px'}}>Employee Records</h4>
         
         {employees.length === 0 ? (
           <p>No employee records found.</p>
         ) : (
-          <div className="folders-grid">
+          <div style={styles.foldersGrid}>
             {employees.map(employee => (
-              <div key={employee.email} className="employee-folder">
-                <div className="folder-header">
-                  <h5>{employee.name}</h5>
-                  <span className="position-badge">{employee.position}</span>
+              <div 
+                key={employee.email} 
+                style={styles.employeeFolder}
+                onMouseEnter={(e) => Object.assign(e.currentTarget, styles.employeeFolderHover)}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = styles.employeeFolder.boxShadow;
+                  e.currentTarget.style.borderColor = styles.employeeFolder.border;
+                }}
+              >
+                <div style={styles.folderHeader}>
+                  <h5 style={styles.folderTitle}>{employee.name}</h5>
+                  <span style={styles.positionBadge}>{employee.position}</span>
                 </div>
-                <div className="folder-content">
+                <div>
                   <p><strong>Email:</strong> {employee.email}</p>
                   <p><strong>Hire Date:</strong> {new Date(employee.hireDate).toLocaleDateString()}</p>
                   <p><strong>Total Records:</strong> {employee.counselingRecords.length}</p>
                   
                   {employee.counselingRecords.length > 0 && (
-                    <div className="records-list">
-                      <h6>Recent Records:</h6>
+                    <div style={{marginTop: '15px'}}>
+                      <h6 style={{margin: '0 0 10px 0', color: '#2c5aa0', fontSize: '16px'}}>Recent Records:</h6>
                       {employee.counselingRecords.slice(0, 3).map(record => (
-                        <div key={record.id} className={`record-item ${record.type}`}>
-                          <div className="record-header">
-                            <span className="record-type">{record.type}</span>
-                            <span className="record-date">{new Date(record.date).toLocaleDateString()}</span>
+                        <div 
+                          key={record.id} 
+                          style={styles.recordItem}
+                          onMouseEnter={(e) => Object.assign(e.currentTarget, styles.recordItemHover)}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.borderColor = styles.recordItem.border;
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <div style={styles.recordHeader}>
+                            <span style={styles.recordType}>{record.type}</span>
+                            <span style={styles.recordDate}>{new Date(record.date).toLocaleDateString()}</span>
                           </div>
-                          <p className="record-description">{record.description.substring(0, 100)}...</p>
-                          <div className="record-actions">
+                          <p style={styles.recordDescription}>{record.description.substring(0, 100)}...</p>
+                          <div style={styles.recordActions}>
                             <button 
-                              className="btn-secondary"
+                              style={styles.buttonSecondary}
+                              onMouseEnter={(e) => Object.assign(e.target, styles.buttonSecondaryHover)}
+                              onMouseLeave={(e) => {
+                                e.target.style.transform = 'none';
+                                e.target.style.boxShadow = styles.buttonSecondary.boxShadow;
+                                e.target.style.background = styles.buttonSecondary.background;
+                              }}
                               onClick={() => activeTab === 'violation' ? exportViolation(record) : exportWriteUp(record)}
                             >
                               Export
                             </button>
                             {!record.acknowledged && (
                               <button 
-                                className="btn"
+                                style={styles.button}
+                                onMouseEnter={(e) => Object.assign(e.target, styles.buttonHover)}
+                                onMouseLeave={(e) => {
+                                  e.target.style.transform = 'none';
+                                  e.target.style.boxShadow = styles.button.boxShadow;
+                                  e.target.style.background = styles.button.background;
+                                }}
                                 onClick={() => acknowledgeRecord(record.id)}
                               >
                                 Mark Acknowledged

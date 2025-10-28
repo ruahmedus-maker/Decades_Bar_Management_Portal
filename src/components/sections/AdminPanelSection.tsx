@@ -1,23 +1,19 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
-import { User, MaintenanceTicket } from '@/types';
+import { User, MaintenanceTicket, Task } from '@/types';
+import SpecialEventsSection from './SpecialEventsSection';
+import TasksSection from './TasksSection';
 
-// Define the section color for admin panel - Coral theme
-const SECTION_COLOR = '#E97451'; // Deep coral
-const SECTION_COLOR_RGB = '233, 116, 81';
-
-interface TestResult {
-  score: number;
-  total: number;
-  percentage: number;
-  passed: boolean;
-  date: string;
-  testName: string;
-}
+// Modern color theme for admin panel
+const SECTION_COLOR = '#2563eb';
+const SECTION_COLOR_RGB = '37, 99, 235';
+const ACCENT_COLOR = '#8b5cf6';
+const SUCCESS_COLOR = '#10b981';
+const WARNING_COLOR = '#f59e0b';
+const DANGER_COLOR = '#ef4444';
 
 interface UserProgress {
   user: User;
@@ -29,6 +25,24 @@ interface UserProgress {
   completionStatus: 'excellent' | 'good' | 'poor' | 'inactive';
 }
 
+interface TestResult {
+  score: number;
+  total: number;
+  percentage: number;
+  passed: boolean;
+  date: string;
+  testName: string;
+}
+
+interface QuickStats {
+  totalUsers: number;
+  activeUsers: number;
+  pendingTickets: number;
+  completedTasks: number;
+  totalTasks: number;
+  excellentProgress: number;
+}
+
 // List of users who should be hidden from other users in admin panel
 const HIDDEN_USERS = [
   'riaz11@hotmail.com',
@@ -36,21 +50,26 @@ const HIDDEN_USERS = [
   'user3@decadesbar.com'
 ];
 
-// Fixed progress breakdown function
-const getFixedProgressBreakdown = (email: string) => {
+// Enhanced progress tracking
+const getEnhancedProgressBreakdown = (email: string) => {
   try {
-    // Get user's visited sections from localStorage
     const visitedSections = JSON.parse(localStorage.getItem(`progress-${email}`) || '[]');
-    const totalSections = 10; // Adjust this based on your actual total sections
+    const totalSections = 10;
     
     const sectionsCompleted = visitedSections.length;
     const progressPercentage = Math.round((sectionsCompleted / totalSections) * 100);
+    
+    const lastActivity = localStorage.getItem(`last-activity-${email}`);
+    const isActiveRecently = lastActivity ? 
+      (Date.now() - new Date(lastActivity).getTime()) < (24 * 60 * 60 * 1000) : false;
     
     return {
       completedSections: sectionsCompleted,
       totalSections: totalSections,
       percentage: progressPercentage,
-      sectionsVisited: visitedSections
+      sectionsVisited: visitedSections,
+      isActive: isActiveRecently,
+      lastActivity: lastActivity
     };
   } catch (error) {
     console.error('Error getting progress breakdown:', error);
@@ -58,275 +77,367 @@ const getFixedProgressBreakdown = (email: string) => {
       completedSections: 0,
       totalSections: 10,
       percentage: 0,
-      sectionsVisited: []
+      sectionsVisited: [],
+      isActive: false,
+      lastActivity: null
     };
   }
 };
 
-// Animated Card Component for Admin Panel
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
+// Enhanced Card Component
+function AdminCard({ title, value, change, icon, color, onClick }: any) {
   const [isHovered, setIsHovered] = useState(false);
-
-  const glowColors = [
-    'linear-gradient(45deg, #E97451, #ED8B6F, transparent)',
-    'linear-gradient(45deg, #ED8B6F, #F2A28D, transparent)',
-    'linear-gradient(45deg, #D45A3A, #E97451, transparent)',
-    'linear-gradient(45deg, #BF4A2E, #E97451, transparent)'
-  ];
-
-  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #ED8B6F, transparent)`;
 
   return (
     <div 
       style={{
-        borderRadius: '16px',
-        margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(233, 116, 81, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        position: 'relative'
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-          backdropFilter: 'blur(8px)'
-        }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
-            {title}
-          </h4>
-        </div>
-        <div style={{ padding: '20px' }}>
-          {children || (
-            <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
-                {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-        {footer && (
-          <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <span>{footer.left}</span>
-            <span>{footer.right}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Maintenance Card Component with Enhanced Glow Effects
-function MaintenanceCard({ title, description, tickets, status, priority, index }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const maintenanceColors = [
-    'linear-gradient(45deg, #E97451, transparent)',
-    'linear-gradient(45deg, #ED8B6F, transparent)',
-    'linear-gradient(45deg, #D45A3A, transparent)',
-    'linear-gradient(45deg, #BF4A2E, transparent)'
-  ];
-
-  const maintenanceColor = maintenanceColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, transparent)`;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return '#e53e3e';
-      case 'in-progress': return '#d69e2e';
-      case 'assigned': return '#d69e2e';
-      case 'completed': return '#38a169';
-      case 'closed': return '#718096';
-      default: return '#718096';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return '#e53e3e';
-      case 'high': return '#ed8936';
-      case 'medium': return '#d69e2e';
-      case 'low': return '#38a169';
-      default: return '#718096';
-    }
-  };
-
-  return (
-    <div 
-      style={{
-        textAlign: 'left',
-        padding: '20px',
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '20px',
+        border: `1px solid rgba(255, 255, 255, 0.15)`,
+        backdropFilter: 'blur(10px)',
+        cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.3s ease',
         transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        backdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        WebkitBackdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden'
+        boxShadow: isHovered ? `0 10px 30px rgba(${color}, 0.3)` : 'none',
+        borderLeft: `4px solid ${color}`
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
     >
-      {/* Individual Maintenance Color Glow */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '14px',
-          background: maintenanceColor,
-          zIndex: 0,
-          opacity: 0.6
-        }} />
-      )}
-      
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <h5 style={{
-          color: isHovered ? SECTION_COLOR : 'white',
-          marginBottom: '15px',
-          fontSize: '1.1rem',
-          fontWeight: 600,
-          borderBottom: `1px solid ${isHovered ? `rgba(${SECTION_COLOR_RGB}, 0.6)` : `rgba(${SECTION_COLOR_RGB}, 0.3)`}`,
-          paddingBottom: '8px',
-          transition: 'all 0.3s ease',
-          textShadow: isHovered ? `0 0 10px rgba(${SECTION_COLOR_RGB}, 0.3)` : 'none'
-        }}>
-          {title}
-        </h5>
-        
-        {description && (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
           <p style={{ 
-            color: 'rgba(255, 255, 255, 0.9)', 
-            marginBottom: '15px',
-            lineHeight: 1.5
-          }}>
-            {description}
-          </p>
-        )}
-        
-        <div style={{ marginBottom: '15px' }}>
-          <div style={{
-            color: SECTION_COLOR,
-            fontSize: '0.95rem',
-            fontWeight: '600',
+            margin: 0, 
+            color: 'rgba(255, 255, 255, 0.7)', 
+            fontSize: '0.9rem',
             marginBottom: '8px'
           }}>
-            Status:
-          </div>
-          <span style={{ 
-            padding: '4px 12px', 
-            borderRadius: '12px', 
-            fontSize: '0.8rem',
-            fontWeight: 'bold',
-            background: `${getStatusColor(status)}20`,
-            color: getStatusColor(status),
-            textTransform: 'capitalize'
+            {title}
+          </p>
+          <h3 style={{ 
+            margin: 0, 
+            color: 'white', 
+            fontSize: '1.8rem',
+            fontWeight: 'bold'
           }}>
-            {status.replace('-', ' ')}
-          </span>
-        </div>
-        
-        {priority && (
-          <div style={{ marginBottom: '15px' }}>
-            <div style={{
-              color: SECTION_COLOR,
-              fontSize: '0.95rem',
-              fontWeight: '600',
-              marginBottom: '8px'
-            }}>
-              Priority:
-            </div>
-            <span style={{ 
-              padding: '4px 12px', 
-              borderRadius: '12px', 
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              background: `${getPriorityColor(priority)}20`,
-              color: getPriorityColor(priority),
-              textTransform: 'capitalize'
-            }}>
-              {priority}
-            </span>
-          </div>
-        )}
-        
-        {tickets && (
-          <div>
-            <div style={{
-              color: SECTION_COLOR,
-              fontSize: '0.95rem',
-              fontWeight: '600',
-              marginBottom: '8px'
-            }}>
-              Tickets:
-            </div>
+            {value}
+          </h3>
+          {change && (
             <p style={{ 
-              color: 'rgba(255, 255, 255, 0.9)', 
-              margin: 0,
-              fontSize: '0.9rem',
-              lineHeight: 1.4
+              margin: '5px 0 0 0', 
+              color: change > 0 ? SUCCESS_COLOR : DANGER_COLOR,
+              fontSize: '0.8rem',
+              fontWeight: '600'
             }}>
-              {tickets}
+              {change > 0 ? '↑' : '↓'} {Math.abs(change)}%
             </p>
-          </div>
-        )}
+          )}
+        </div>
+        <div style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '10px',
+          background: `rgba(${color}, 0.2)`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.5rem'
+        }}>
+          {icon}
+        </div>
       </div>
     </div>
   );
 }
 
-// Maintenance Tickets Content Component with New Styling
+// Task Creation Modal
+function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
+  const { currentUser, showToast } = useApp();
+  const [taskForm, setTaskForm] = useState({
+    title: '',
+    description: '',
+    assignedTo: '',
+    dueDate: '',
+    priority: 'medium' as 'low' | 'medium' | 'high',
+    eventId: ''
+  });
+
+  // Get only bartenders and trainees for task assignment
+  const users = Object.values(storage.getUsers()).filter(user => 
+    (user.position === 'Bartender' || user.position === 'Trainee') &&
+    (!HIDDEN_USERS.includes(user.email) || user.email === currentUser?.email)
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!currentUser) return;
+
+    const taskData = {
+      id: `task-${Date.now()}`,
+      title: taskForm.title,
+      description: taskForm.description,
+      assignedTo: taskForm.assignedTo,
+      dueDate: taskForm.dueDate,
+      completed: false,
+      createdAt: new Date().toISOString(),
+      priority: taskForm.priority,
+      eventId: taskForm.eventId || undefined
+    };
+
+    const existingTasks = JSON.parse(localStorage.getItem('decadesTasks') || '[]');
+    const updatedTasks = [...existingTasks, taskData];
+    localStorage.setItem('decadesTasks', JSON.stringify(updatedTasks));
+
+    showToast('Task created successfully!');
+    onTaskCreated();
+    onClose();
+    
+    setTaskForm({
+      title: '',
+      description: '',
+      assignedTo: '',
+      dueDate: '',
+      priority: 'medium',
+      eventId: ''
+    });
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      backdropFilter: 'blur(5px)'
+    }}>
+      <div style={{
+        background: 'rgba(30, 41, 59, 0.95)',
+        borderRadius: '16px',
+        padding: '30px',
+        width: '90%',
+        maxWidth: '500px',
+        border: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '25px',
+          paddingBottom: '15px',
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`
+        }}>
+          <h3 style={{ margin: 0, color: 'white' }}>Create New Task</h3>
+          <button 
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              padding: '5px'
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ 
+              display: 'block', 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              marginBottom: '8px',
+              fontWeight: '600'
+            }}>
+              Task Title *
+            </label>
+            <input
+              type="text"
+              value={taskForm.title}
+              onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+              placeholder="Enter task title"
+              style={{ 
+                width: '100%', 
+                padding: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '8px',
+                color: 'white',
+                backdropFilter: 'blur(10px)'
+              }}
+              required
+            />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ 
+              display: 'block', 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              marginBottom: '8px',
+              fontWeight: '600'
+            }}>
+              Description
+            </label>
+            <textarea
+              value={taskForm.description}
+              onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+              placeholder="Task description..."
+              rows={3}
+              style={{ 
+                width: '100%', 
+                padding: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '8px',
+                color: 'white',
+                backdropFilter: 'blur(10px)',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+            <div>
+              <label style={{ 
+                display: 'block', 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                marginBottom: '8px',
+                fontWeight: '600'
+              }}>
+                Assign To *
+              </label>
+              <select
+                value={taskForm.assignedTo}
+                onChange={(e) => setTaskForm({ ...taskForm, assignedTo: e.target.value })}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  backdropFilter: 'blur(10px)'
+                }}
+                required
+              >
+                <option value="">Select employee</option>
+                {users.map(user => (
+                  <option key={user.email} value={user.email}>
+                    {user.name} ({user.position})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label style={{ 
+                display: 'block', 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                marginBottom: '8px',
+                fontWeight: '600'
+              }}>
+                Priority *
+              </label>
+              <select
+                value={taskForm.priority}
+                onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value as any })}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  backdropFilter: 'blur(10px)'
+                }}
+                required
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '25px' }}>
+            <label style={{ 
+              display: 'block', 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              marginBottom: '8px',
+              fontWeight: '600'
+            }}>
+              Due Date
+            </label>
+            <input
+              type="date"
+              value={taskForm.dueDate}
+              onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })}
+              style={{ 
+                width: '100%', 
+                padding: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '8px',
+                color: 'white',
+                backdropFilter: 'blur(10px)'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button 
+              type="button"
+              onClick={onClose}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              style={{
+                background: SECTION_COLOR,
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Create Task
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Maintenance Tickets Content Component
 function MaintenanceTicketsContent() {
   const { showToast, currentUser } = useApp();
   const [tickets, setTickets] = useState<MaintenanceTicket[]>([]);
@@ -341,10 +452,18 @@ function MaintenanceTicketsContent() {
     setTickets(allTickets);
   };
 
-  const handleUpdateStatus = (ticketId: string, newStatus: 'open' | 'in-progress' | 'assigned' | 'completed' | 'closed') => {
+  const handleUpdateStatus = (ticketId: string, newStatus: MaintenanceTicket['status']) => {
     storage.updateMaintenanceTicket(ticketId, { status: newStatus });
     showToast(`Ticket status updated to ${newStatus.replace('-', ' ')}`);
     loadTickets();
+  };
+
+  const handleDeleteTicket = (ticketId: string) => {
+    if (window.confirm('Are you sure you want to delete this maintenance ticket?')) {
+      storage.deleteMaintenanceTicket(ticketId);
+      showToast('Maintenance ticket deleted successfully!');
+      loadTickets();
+    }
   };
 
   const filteredTickets = tickets.filter(ticket => {
@@ -360,10 +479,10 @@ function MaintenanceTicketsContent() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return '#e53e3e';
-      case 'in-progress': return '#d69e2e';
-      case 'assigned': return '#d69e2e';
-      case 'completed': return '#38a169';
+      case 'open': return DANGER_COLOR;
+      case 'in-progress': return WARNING_COLOR;
+      case 'assigned': return WARNING_COLOR;
+      case 'completed': return SUCCESS_COLOR;
       case 'closed': return '#718096';
       default: return '#718096';
     }
@@ -371,10 +490,10 @@ function MaintenanceTicketsContent() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return '#e53e3e';
+      case 'urgent': return DANGER_COLOR;
       case 'high': return '#ed8936';
-      case 'medium': return '#d69e2e';
-      case 'low': return '#38a169';
+      case 'medium': return WARNING_COLOR;
+      case 'low': return SUCCESS_COLOR;
       default: return '#718096';
     }
   };
@@ -382,49 +501,46 @@ function MaintenanceTicketsContent() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Quick Stats */}
-      <AnimatedCard
-        title="📊 Maintenance Overview"
-        index={0}
-      >
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '15px',
-          marginTop: '10px'
-        }}>
-          <MaintenanceCard
-            title="Open Tickets"
-            tickets={openTickets}
-            status="open"
-            index={0}
-          />
-          <MaintenanceCard
-            title="In Progress"
-            tickets={inProgressTickets + assignedTickets}
-            status="in-progress"
-            index={1}
-          />
-          <MaintenanceCard
-            title="Completed"
-            tickets={completedTickets}
-            status="completed"
-            index={2}
-          />
-          <MaintenanceCard
-            title="Closed"
-            tickets={closedTickets}
-            status="closed"
-            index={3}
-          />
-        </div>
-      </AnimatedCard>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '15px'
+      }}>
+        <AdminCard
+          title="Open Tickets"
+          value={openTickets}
+          icon="🔧"
+          color="239, 68, 68"
+        />
+        <AdminCard
+          title="In Progress"
+          value={inProgressTickets + assignedTickets}
+          icon="🔄"
+          color="245, 158, 11"
+        />
+        <AdminCard
+          title="Completed"
+          value={completedTickets}
+          icon="✅"
+          color="16, 185, 129"
+        />
+        <AdminCard
+          title="Closed"
+          value={closedTickets}
+          icon="📁"
+          color="113, 128, 150"
+        />
+      </div>
 
       {/* Filters */}
-      <AnimatedCard
-        title="🔍 Filter Tickets"
-        index={1}
-      >
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap', marginTop: '10px' }}>
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '12px',
+        padding: '20px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div>
             <label style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Status:</label>
             <select 
@@ -433,7 +549,7 @@ function MaintenanceTicketsContent() {
               style={{ 
                 marginLeft: '8px', 
                 padding: '8px 12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 color: 'white',
@@ -464,26 +580,28 @@ function MaintenanceTicketsContent() {
               alignItems: 'center',
               gap: '8px'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = `0 6px 20px rgba(${SECTION_COLOR_RGB}, 0.4)`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
           >
             🔄 Refresh
           </button>
         </div>
-      </AnimatedCard>
+      </div>
 
       {/* Tickets List */}
-      <AnimatedCard
-        title="📋 Maintenance Tickets"
-        description={`Showing ${filteredTickets.length} tickets matching your filters`}
-        index={2}
-      >
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '12px',
+        padding: '20px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <h4 style={{ 
+          color: 'white', 
+          margin: '0 0 15px 0',
+          fontSize: '1.2rem'
+        }}>
+          Maintenance Tickets ({filteredTickets.length})
+        </h4>
+        
         {filteredTickets.length === 0 ? (
           <div style={{ 
             textAlign: 'center', 
@@ -494,28 +612,26 @@ function MaintenanceTicketsContent() {
             No maintenance tickets found matching your filters.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {filteredTickets.map((ticket, index) => (
               <div 
                 key={ticket.id}
                 style={{
                   padding: '20px',
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                   transition: 'all 0.3s ease',
-                  backdropFilter: 'blur(10px)',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  backdropFilter: 'blur(10px)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
                   e.currentTarget.style.borderColor = `rgba(${SECTION_COLOR_RGB}, 0.4)`;
                   e.currentTarget.style.transform = 'translateY(-3px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -592,7 +708,7 @@ function MaintenanceTicketsContent() {
                       <button 
                         onClick={() => handleUpdateStatus(ticket.id, 'assigned')}
                         style={{ 
-                          background: '#d69e2e',
+                          background: WARNING_COLOR,
                           color: 'white',
                           border: 'none',
                           padding: '8px 16px',
@@ -601,14 +717,6 @@ function MaintenanceTicketsContent() {
                           fontSize: '0.8rem',
                           fontWeight: '600',
                           transition: 'all 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(214, 158, 46, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
                         }}
                       >
                         Assign to Me
@@ -618,7 +726,7 @@ function MaintenanceTicketsContent() {
                       <button 
                         onClick={() => handleUpdateStatus(ticket.id, 'completed')}
                         style={{ 
-                          background: '#38a169',
+                          background: SUCCESS_COLOR,
                           color: 'white',
                           border: 'none',
                           padding: '8px 16px',
@@ -627,14 +735,6 @@ function MaintenanceTicketsContent() {
                           fontSize: '0.8rem',
                           fontWeight: '600',
                           transition: 'all 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 161, 105, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
                         }}
                       >
                         Mark Completed
@@ -654,25 +754,33 @@ function MaintenanceTicketsContent() {
                           fontWeight: '600',
                           transition: 'all 0.3s ease'
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(113, 128, 150, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
                       >
                         Close Ticket
                       </button>
                     )}
+                    <button 
+                      onClick={() => handleDeleteTicket(ticket.id)}
+                      style={{ 
+                        background: DANGER_COLOR,
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Delete Ticket
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </AnimatedCard>
+      </div>
     </div>
   );
 }
@@ -683,8 +791,17 @@ export default function AdminPanelSection() {
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
   const [blockEmail, setBlockEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events | tasks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events' | 'tasks'>('overview');
   const [isHovered, setIsHovered] = useState(false);
+  const [quickStats, setQuickStats] = useState<QuickStats>({
+    totalUsers: 0,
+    activeUsers: 0,
+    pendingTickets: 0,
+    completedTasks: 0,
+    totalTasks: 0,
+    excellentProgress: 0
+  });
+  const [showTaskModal, setShowTaskModal] = useState(false);
 
   useEffect(() => {
     if (isAdmin && currentUser) {
@@ -693,37 +810,66 @@ export default function AdminPanelSection() {
   }, [isAdmin, currentUser]);
 
   const loadAllData = () => {
-  // Fix: Convert Record<string, User> to User[]
-  const usersRecord = storage.getUsers();
-  const allUsers: User[] = Object.values(usersRecord);
-  
-  const filteredUsers = allUsers.filter(user => 
-    !HIDDEN_USERS.includes(user.email) || user.email === currentUser?.email
-  );
-  setUsers(filteredUsers);
+    // Load users with corrected hidden user logic
+    const usersRecord = storage.getUsers();
+    const allUsers: User[] = Object.values(usersRecord);
+    
+    // Fixed hidden user logic: only show hidden users to other hidden users
+    const filteredUsers = allUsers.filter(user => {
+      // Always show the current user
+      if (user.email === currentUser?.email) return true;
+      
+      // If current user is hidden, show all users (including other hidden users)
+      if (currentUser && HIDDEN_USERS.includes(currentUser.email)) {
+        return true;
+      }
+      
+      // If current user is not hidden, filter out hidden users
+      return !HIDDEN_USERS.includes(user.email);
+    });
+    
+    // Filter to only show bartenders and trainees (not admins) in progress/management
+    const bartendersAndTrainees = filteredUsers.filter(user => 
+      user.position === 'Bartender' || user.position === 'Trainee'
+    );
+    
+    setUsers(bartendersAndTrainees);
 
-  // Load user progress using our fixed function
-  const progressData: UserProgress[] = filteredUsers.map(user => {
-    const progress = getFixedProgressBreakdown(user.email);
-    return {
-      user,
-      sectionsCompleted: progress.completedSections,
-      totalSections: progress.totalSections,
-      progressPercentage: progress.percentage,
-      lastActive: user.lastActive || 'Never',
-      timeSinceLastActive: getTimeSince(user.lastActive),
-      completionStatus: getCompletionStatus(progress.percentage)
-    };
-  });
-  setUserProgress(progressData);
+    // Load user progress - only for bartenders and trainees
+    const progressData: UserProgress[] = bartendersAndTrainees.map(user => {
+      const progress = getEnhancedProgressBreakdown(user.email);
+      return {
+        user,
+        sectionsCompleted: progress.completedSections,
+        totalSections: progress.totalSections,
+        progressPercentage: progress.percentage,
+        lastActive: user.lastActive || 'Never',
+        timeSinceLastActive: getTimeSince(user.lastActive),
+        completionStatus: getCompletionStatus(progress.percentage)
+      };
+    });
+    setUserProgress(progressData);
 
-  // Load test results
-  const testData = filteredUsers.map(user => {
-    const results = user.testResults || {};
-    return { email: user.email, user, results };
-  });
-  setTestResults(testData);
-};
+    // Load test results - only for bartenders and trainees
+    const testData = bartendersAndTrainees.map(user => {
+      const results = user.testResults || {};
+      return { email: user.email, user, results };
+    });
+    setTestResults(testData);
+
+    // Load quick stats
+    const maintenanceTickets = storage.getMaintenanceTickets();
+    const tasks = JSON.parse(localStorage.getItem('decadesTasks') || '[]');
+    
+    setQuickStats({
+      totalUsers: bartendersAndTrainees.length,
+      activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
+      pendingTickets: maintenanceTickets.filter(t => t.status === 'open' || t.status === 'assigned').length,
+      completedTasks: tasks.filter((t: Task) => t.completed).length,
+      totalTasks: tasks.length,
+      excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
+    });
+  };
 
   const getTimeSince = (dateString: string) => {
     if (!dateString || dateString === 'Never') return 'Never';
@@ -755,7 +901,6 @@ export default function AdminPanelSection() {
     if (blockEmail && blockEmail !== currentUser?.email) {
       const usersRecord = storage.getUsers();
       if (usersRecord[blockEmail]) {
-        // Fix: Update user status to 'blocked' instead of isBlocked
         usersRecord[blockEmail] = { 
           ...usersRecord[blockEmail], 
           status: 'blocked' as const 
@@ -765,7 +910,7 @@ export default function AdminPanelSection() {
         setBlockEmail('');
         loadAllData();
       } else {
-        showToast('User not found, error');
+        showToast('User not found');
       }
     }
   };
@@ -773,7 +918,6 @@ export default function AdminPanelSection() {
   const handleUnblockUser = (email: string) => {
     const usersRecord = storage.getUsers();
     if (usersRecord[email]) {
-      // Fix: Update user status to 'active' instead of removing isBlocked
       usersRecord[email] = { 
         ...usersRecord[email], 
         status: 'active' as const 
@@ -800,11 +944,10 @@ export default function AdminPanelSection() {
           ? '1px solid rgba(255, 255, 255, 0.3)' 
           : '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: isHovered 
-          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(233, 116, 81, 0.15)'
+          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(37, 99, 235, 0.15)'
           : '0 16px 50px rgba(0, 0, 0, 0.2)',
         transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        animation: 'fadeIn 0.5s ease'
+        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)'
       }}
       className="active"
       onMouseEnter={() => setIsHovered(true)}
@@ -814,7 +957,7 @@ export default function AdminPanelSection() {
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
-        padding: '20px',
+        padding: '25px',
         borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
         backdropFilter: 'blur(10px)',
         display: 'flex',
@@ -824,77 +967,87 @@ export default function AdminPanelSection() {
         <div>
           <h3 style={{
             color: '#ffffff',
-            fontSize: '1.4rem',
+            fontSize: '1.6rem',
             fontWeight: 700,
             margin: 0,
             textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
           }}>
-            Admin Dashboard
+            Manager Command Center
           </h3>
           <p style={{
             margin: 0,
             opacity: 0.9,
             color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            fontSize: '1rem',
+            marginTop: '8px'
           }}>
-            Management tools and employee oversight
+            Complete oversight and management tools for venue operations
           </p>
         </div>
-        <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          fontSize: '0.9rem',
-          color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          Admin Only
-        </span>
-        {HIDDEN_USERS.includes(currentUser?.email || '') && (
-          <span style={{ 
-            marginLeft: '10px', 
-            fontSize: '0.8rem', 
-            color: '#d69e2e',
-            background: '#fefcbf',
-            padding: '2px 8px',
-            borderRadius: '12px'
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <span style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            fontSize: '0.9rem',
+            color: 'white',
+            fontWeight: '600',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
-            🔒 Hidden User Mode
+            Admin Access
           </span>
-        )}
+          {currentUser && HIDDEN_USERS.includes(currentUser.email) && (
+            <span style={{ 
+              fontSize: '0.8rem', 
+              color: WARNING_COLOR,
+              background: 'rgba(245, 158, 11, 0.2)',
+              padding: '4px 12px',
+              borderRadius: '12px'
+            }}>
+              🔒 Hidden User Mode
+            </span>
+          )}
+        </div>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Tab Navigation */}
+        {/* Tab Navigation - Fixed double icons */}
         <div style={{
           display: 'flex',
           gap: '0',
-          marginBottom: '20px',
+          marginBottom: '25px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          background: 'rgba(255, 255, 255, 0.05)',
+          borderRadius: '12px',
+          padding: '5px'
         }}>
           {[
-            { id: 'overview', label: '📊 Overview' },
-            { id: 'progress', label: '📈 Progress' },
-            { id: 'tests', label: '🎯 Tests' },
-            { id: 'management', label: '👥 Management' },
-            { id: 'maintenance', label: '🔧 Maintenance' }
+            { id: 'overview', label: 'Dashboard', icon: '📊' },
+            { id: 'progress', label: 'Progress', icon: '📈' },
+            { id: 'tests', label: 'Tests', icon: '🎯' },
+            { id: 'management', label: 'Team', icon: '👥' },
+            { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
+            { id: 'events', label: 'Events', icon: '🎉' },
+            { id: 'tasks', label: 'Tasks', icon: '✅' }
           ].map(tab => (
             <button
               key={tab.id}
               style={{
-                padding: '12px 24px',
+                padding: '12px 20px',
                 border: 'none',
-                background: 'none',
-                borderBottom: `2px solid ${activeTab === tab.id ? SECTION_COLOR : 'transparent'}`,
+                background: activeTab === tab.id ? `rgba(${SECTION_COLOR_RGB}, 0.2)` : 'transparent',
+                borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: activeTab === tab.id ? 600 : 500,
                 color: activeTab === tab.id ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
                 transition: 'all 0.3s ease',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.9rem'
               }}
               onClick={() => setActiveTab(tab.id as any)}
               onMouseEnter={(e) => {
@@ -906,10 +1059,11 @@ export default function AdminPanelSection() {
               onMouseLeave={(e) => {
                 if (activeTab !== tab.id) {
                   e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
-                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.background = 'transparent';
                 }
               }}
             >
+              <span>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
@@ -917,201 +1071,280 @@ export default function AdminPanelSection() {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-            <AnimatedCard title="📊 Quick Stats" index={0}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                gap: '15px',
-                marginTop: '10px'
+          <div>
+            {/* Quick Stats */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+              gap: '20px',
+              marginBottom: '30px'
+            }}>
+              <AdminCard 
+                title="Total Employees"
+                value={quickStats.totalUsers}
+                change={5}
+                icon="👥"
+                color={SECTION_COLOR_RGB}
+                onClick={() => setActiveTab('management')}
+              />
+              <AdminCard 
+                title="Active Users"
+                value={quickStats.activeUsers}
+                change={3}
+                icon="🟢"
+                color="16, 185, 129"
+                onClick={() => setActiveTab('progress')}
+              />
+              <AdminCard 
+                title="Pending Tickets"
+                value={quickStats.pendingTickets}
+                change={-2}
+                icon="🔧"
+                color="239, 68, 68"
+                onClick={() => setActiveTab('maintenance')}
+              />
+              <AdminCard 
+                title="Tasks Completed"
+                value={`${quickStats.completedTasks}/${quickStats.totalTasks}`}
+                change={8}
+                icon="✅"
+                color="139, 92, 246"
+                onClick={() => setActiveTab('tasks')}
+              />
+            </div>
+
+            {/* Quick Actions */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '25px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              marginBottom: '30px',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: '0 0 20px 0',
+                fontSize: '1.2rem'
               }}>
-                <div style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)'
-                }}>
-                  <h4 style={{ margin: 0, color: SECTION_COLOR, fontSize: '1.8rem' }}>{users.length}</h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Total Users</p>
-                </div>
-                <div style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)'
-                }}>
-                  <h4 style={{ margin: 0, color: '#38a169', fontSize: '1.8rem' }}>
-                    {userProgress.filter(u => u.progressPercentage >= 90).length}
-                  </h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Excellent Progress</p>
-                </div>
-                <div style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)'
-                }}>
-                  <h4 style={{ margin: 0, color: '#d69e2e', fontSize: '1.8rem' }}>{blockedUsers.length}</h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Blocked Users</p>
-                </div>
-              </div>
-            </AnimatedCard>
-
-            <AnimatedCard title="📈 Progress Overview" index={1}>
-              <div style={{ marginTop: '15px' }}>
-                {userProgress.slice(0, 5).map((progress, index) => (
-                  <div key={progress.user.email} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '12px 0',
-                    borderBottom: index < 4 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
-                  }}>
-                    <div>
-                      <div style={{ color: 'white', fontWeight: 600 }}>{progress.user.name}</div>
-                      <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem' }}>
-                        {progress.sectionsCompleted}/{progress.totalSections} sections
-                      </div>
-                    </div>
-                    <div style={{
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      background: 
-                        progress.completionStatus === 'excellent' ? 'rgba(56, 161, 105, 0.2)' :
-                        progress.completionStatus === 'good' ? 'rgba(214, 158, 46, 0.2)' :
-                        progress.completionStatus === 'poor' ? 'rgba(229, 62, 62, 0.2)' :
-                        'rgba(113, 128, 150, 0.2)',
-                      color: 
-                        progress.completionStatus === 'excellent' ? '#38a169' :
-                        progress.completionStatus === 'good' ? '#d69e2e' :
-                        progress.completionStatus === 'poor' ? '#e53e3e' :
-                        '#718096'
-                    }}>
-                      {progress.progressPercentage}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </AnimatedCard>
-
-            <AnimatedCard title="⚡ Quick Actions" index={2}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+                ⚡ Quick Actions
+              </h4>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: '15px' 
+              }}>
                 <button 
-                  onClick={loadAllData}
+                  onClick={() => setShowTaskModal(true)}
                   style={{
-                    background: SECTION_COLOR,
+                    background: 'rgba(139, 92, 246, 0.2)',
                     color: 'white',
-                    border: 'none',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
+                    border: '1px solid rgba(139, 92, 246, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = `0 6px 20px rgba(${SECTION_COLOR_RGB}, 0.4)`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
+                    gap: '10px',
+                    justifyContent: 'center'
                   }}
                 >
-                  🔄 Refresh Data
+                  <span>➕</span> Create Task
                 </button>
                 <button 
                   onClick={() => setActiveTab('management')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(37, 99, 235, 0.2)',
                     color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
+                    border: '1px solid rgba(37, 99, 235, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    gap: '10px',
+                    justifyContent: 'center'
                   }}
                 >
-                  👥 User Management
+                  <span>👥</span> Manage Team
                 </button>
                 <button 
-                  onClick={() => setActiveTab('maintenance')}
+                  onClick={() => setActiveTab('events')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(245, 158, 11, 0.2)',
                     color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
+                    border: '1px solid rgba(245, 158, 11, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    gap: '10px',
+                    justifyContent: 'center'
                   }}
                 >
-                  🔧 Maintenance
+                  <span>🎉</span> Plan Event
+                </button>
+                <button 
+                  onClick={loadAllData}
+                  style={{
+                    background: 'rgba(16, 185, 129, 0.2)',
+                    color: 'white',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <span>🔄</span> Refresh Data
                 </button>
               </div>
-            </AnimatedCard>
+            </div>
+
+            {/* Recent Activity */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '25px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: '0 0 20px 0',
+                fontSize: '1.2rem'
+              }}>
+                📈 Top Performers
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {userProgress
+                  .filter(p => p.progressPercentage > 0)
+                  .sort((a, b) => b.progressPercentage - a.progressPercentage)
+                  .slice(0, 5)
+                  .map((progress, index) => (
+                    <div 
+                      key={progress.user.email}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '15px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          background: `linear-gradient(135deg, ${SECTION_COLOR}, ${ACCENT_COLOR})`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '1rem'
+                        }}>
+                          {index + 1}
+                        </div>
+                        <div>
+                          <div style={{ color: 'white', fontWeight: '600' }}>
+                            {progress.user.name}
+                          </div>
+                          <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem' }}>
+                            {progress.user.position} • Last active: {progress.timeSinceLastActive}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ 
+                        padding: '6px 12px', 
+                        borderRadius: '12px', 
+                        fontSize: '0.9rem',
+                        fontWeight: 'bold',
+                        background: 
+                          progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
+                          progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                          progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
+                          'rgba(113, 128, 150, 0.2)',
+                        color: 
+                          progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                          progress.completionStatus === 'good' ? WARNING_COLOR :
+                          progress.completionStatus === 'poor' ? DANGER_COLOR :
+                          '#718096'
+                      }}>
+                        {progress.progressPercentage}%
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Progress Tab */}
+        {/* Progress Tab - Only shows bartenders/trainees */}
         {activeTab === 'progress' && (
-          <AnimatedCard
-            title="📈 Employee Progress Tracking"
-            description="Monitor employee training progress and completion rates"
-            index={0}
-          >
-            <div style={{ marginTop: '15px' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: 0,
+                fontSize: '1.2rem'
+              }}>
+                📈 Employee Progress Tracking
+              </h4>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button 
+                  onClick={loadAllData}
+                  style={{ 
+                    background: SECTION_COLOR,
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {userProgress.map((progress, index) => (
                 <div 
                   key={progress.user.email}
                   style={{
                     padding: '20px',
-                    background: 'rgba(255, 255, 255, 0.08)',
+                    background: 'rgba(255, 255, 255, 0.06)',
                     borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    marginBottom: '15px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
-                    e.currentTarget.style.borderColor = `rgba(${SECTION_COLOR_RGB}, 0.4)`;
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
@@ -1130,14 +1363,14 @@ export default function AdminPanelSection() {
                         fontSize: '0.9rem',
                         fontWeight: 'bold',
                         background: 
-                          progress.completionStatus === 'excellent' ? 'rgba(56, 161, 105, 0.2)' :
-                          progress.completionStatus === 'good' ? 'rgba(214, 158, 46, 0.2)' :
-                          progress.completionStatus === 'poor' ? 'rgba(229, 62, 62, 0.2)' :
+                          progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
+                          progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                          progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
                           'rgba(113, 128, 150, 0.2)',
                         color: 
-                          progress.completionStatus === 'excellent' ? '#38a169' :
-                          progress.completionStatus === 'good' ? '#d69e2e' :
-                          progress.completionStatus === 'poor' ? '#e53e3e' :
+                          progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                          progress.completionStatus === 'good' ? WARNING_COLOR :
+                          progress.completionStatus === 'poor' ? DANGER_COLOR :
                           '#718096'
                       }}>
                         {progress.progressPercentage}% Complete
@@ -1159,9 +1392,9 @@ export default function AdminPanelSection() {
                       style={{ 
                         height: '100%', 
                         background: 
-                          progress.completionStatus === 'excellent' ? '#38a169' :
-                          progress.completionStatus === 'good' ? '#d69e2e' :
-                          progress.completionStatus === 'poor' ? '#e53e3e' :
+                          progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                          progress.completionStatus === 'good' ? WARNING_COLOR :
+                          progress.completionStatus === 'poor' ? DANGER_COLOR :
                           '#718096',
                         width: `${progress.progressPercentage}%`,
                         transition: 'width 0.5s ease'
@@ -1181,37 +1414,35 @@ export default function AdminPanelSection() {
                 </div>
               ))}
             </div>
-          </AnimatedCard>
+          </div>
         )}
 
-        {/* Tests Tab */}
+        {/* Tests Tab - Only shows bartenders/trainees */}
         {activeTab === 'tests' && (
-          <AnimatedCard
-            title="🎯 Test Results & Performance"
-            description="View employee test scores and assessment performance"
-            index={0}
-          >
-            <div style={{ marginTop: '15px' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <h4 style={{ 
+              color: 'white', 
+              margin: '0 0 20px 0',
+              fontSize: '1.2rem'
+            }}>
+              🎯 Test Results & Performance
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {testResults.map((userResult, userIndex) => (
                 <div 
                   key={userResult.email}
                   style={{
                     padding: '20px',
-                    background: 'rgba(255, 255, 255, 0.08)',
+                    background: 'rgba(255, 255, 255, 0.06)',
                     borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    marginBottom: '15px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
-                    e.currentTarget.style.borderColor = `rgba(${SECTION_COLOR_RGB}, 0.4)`;
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   <h5 style={{ color: SECTION_COLOR, margin: '0 0 15px 0', fontSize: '1.1rem', fontWeight: 600 }}>
@@ -1229,9 +1460,9 @@ export default function AdminPanelSection() {
                           key={testName}
                           style={{
                             padding: '15px',
-                            background: 'rgba(255, 255, 255, 0.06)',
+                            background: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '8px',
-                            border: `1px solid ${result.passed ? 'rgba(56, 161, 105, 0.3)' : 'rgba(229, 62, 62, 0.3)'}`
+                            border: `1px solid ${result.passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
                           }}
                         >
                           <div style={{ 
@@ -1252,8 +1483,8 @@ export default function AdminPanelSection() {
                               borderRadius: '10px', 
                               fontSize: '0.7rem',
                               fontWeight: 'bold',
-                              background: result.passed ? 'rgba(56, 161, 105, 0.2)' : 'rgba(229, 62, 62, 0.2)',
-                              color: result.passed ? '#38a169' : '#e53e3e'
+                              background: result.passed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                              color: result.passed ? SUCCESS_COLOR : DANGER_COLOR
                             }}>
                               {result.passed ? 'PASS' : 'FAIL'}
                             </span>
@@ -1278,18 +1509,27 @@ export default function AdminPanelSection() {
                 </div>
               ))}
             </div>
-          </AnimatedCard>
+          </div>
         )}
 
-        {/* Management Tab */}
+        {/* Management Tab - Only shows bartenders/trainees */}
         {activeTab === 'management' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <AnimatedCard
-              title="👥 User Management"
-              description="Manage user accounts and access permissions"
-              index={0}
-            >
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap', marginTop: '15px' }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '25px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: '0 0 20px 0',
+                fontSize: '1.2rem'
+              }}>
+                👥 User Management
+              </h4>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <input
                   type="email"
                   placeholder="Enter email to block"
@@ -1298,7 +1538,7 @@ export default function AdminPanelSection() {
                   style={{
                     flex: 1,
                     minWidth: '200px',
-                    padding: '10px 15px',
+                    padding: '12px 15px',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
@@ -1310,10 +1550,10 @@ export default function AdminPanelSection() {
                   onClick={handleBlockUser}
                   disabled={!blockEmail || blockEmail === currentUser?.email}
                   style={{
-                    background: blockEmail && blockEmail !== currentUser?.email ? '#e53e3e' : 'rgba(229, 62, 62, 0.5)',
+                    background: blockEmail && blockEmail !== currentUser?.email ? DANGER_COLOR : 'rgba(239, 68, 68, 0.5)',
                     color: 'white',
                     border: 'none',
-                    padding: '10px 20px',
+                    padding: '12px 24px',
                     borderRadius: '8px',
                     cursor: blockEmail && blockEmail !== currentUser?.email ? 'pointer' : 'not-allowed',
                     fontWeight: '600',
@@ -1322,29 +1562,26 @@ export default function AdminPanelSection() {
                     alignItems: 'center',
                     gap: '8px'
                   }}
-                  onMouseEnter={(e) => {
-                    if (blockEmail && blockEmail !== currentUser?.email) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(229, 62, 62, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (blockEmail && blockEmail !== currentUser?.email) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }
-                  }}
                 >
                   🚫 Block User
                 </button>
               </div>
-            </AnimatedCard>
+            </div>
 
-            <AnimatedCard
-              title="🚫 Blocked Users"
-              description={`${blockedUsers.length} users currently blocked from access`}
-              index={1}
-            >
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '25px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: '0 0 20px 0',
+                fontSize: '1.2rem'
+              }}>
+                🚫 Blocked Users ({blockedUsers.length})
+              </h4>
               {blockedUsers.length === 0 ? (
                 <div style={{ 
                   textAlign: 'center', 
@@ -1355,7 +1592,7 @@ export default function AdminPanelSection() {
                   No users are currently blocked.
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {blockedUsers.map((user, index) => (
                     <div 
                       key={user.email}
@@ -1364,18 +1601,10 @@ export default function AdminPanelSection() {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '15px',
-                        background: 'rgba(255, 255, 255, 0.08)',
+                        background: 'rgba(255, 255, 255, 0.06)',
                         borderRadius: '8px',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                         transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
-                        e.currentTarget.style.borderColor = 'rgba(229, 62, 62, 0.4)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
                       }}
                     >
                       <div>
@@ -1387,7 +1616,7 @@ export default function AdminPanelSection() {
                       <button 
                         onClick={() => handleUnblockUser(user.email)}
                         style={{
-                          background: '#38a169',
+                          background: SUCCESS_COLOR,
                           color: 'white',
                           border: 'none',
                           padding: '8px 16px',
@@ -1397,14 +1626,6 @@ export default function AdminPanelSection() {
                           fontWeight: '600',
                           transition: 'all 0.3s ease'
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 161, 105, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
                       >
                         Unblock
                       </button>
@@ -1412,13 +1633,48 @@ export default function AdminPanelSection() {
                   ))}
                 </div>
               )}
-            </AnimatedCard>
+            </div>
           </div>
         )}
 
-        {/* Maintenance Tab */}
-        {activeTab === 'maintenance' && <MaintenanceTicketsContent />}
+        {/* Maintenance Tab - Now shows actual maintenance tickets */}
+        {activeTab === 'maintenance' && (
+          <MaintenanceTicketsContent />
+        )}
+
+        {/* Events Tab */}
+        {activeTab === 'events' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <SpecialEventsSection isAdminView={true} />
+          </div>
+        )}
+
+        {/* Tasks Tab */}
+        {activeTab === 'tasks' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <TasksSection />
+          </div>
+        )}
       </div>
+
+      {/* Task Creation Modal */}
+      <TaskCreationModal 
+        isOpen={showTaskModal}
+        onClose={() => setShowTaskModal(false)}
+        onTaskCreated={loadAllData}
+      />
     </div>
   );
 }
