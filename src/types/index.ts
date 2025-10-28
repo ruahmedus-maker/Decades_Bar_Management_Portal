@@ -13,6 +13,8 @@ export interface User {
   passwordHash: string;
   visitedSections?: string[];
   testResults?: Record<string, TestResult>;
+  sectionVisits?: { [sectionId: string]: SectionVisit };
+  
 }
 
 export interface RegistrationData {
@@ -113,4 +115,13 @@ export interface ChecklistItem {
   text: string;
   completed: boolean;
   category: 'opening' | 'bank' | 'cash' | 'during-shift' | 'closing';
+}
+
+export interface SectionVisit {
+  sectionId: string;
+  firstVisit: string;
+  lastVisit: string;
+  totalTime: number;
+  completed: boolean;
+  quizPassed?: boolean;
 }

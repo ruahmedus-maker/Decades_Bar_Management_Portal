@@ -4,9 +4,265 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
 import { CounselingRecord, EmployeeFolder } from '@/types';
+import { trackSectionVisit } from '@/lib/progress';
+
+// Define the section color for employee counseling - teal blue theme
+const SECTION_COLOR = '#0D9488'; // Teal color for counseling
+const SECTION_COLOR_RGB = '13, 148, 136';
+
+// Animated Card Component with Colored Glow Effects
+function AnimatedCard({ title, description, items, footer, index, children }: any) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Different glow colors for different cards - teal theme for counseling
+  const glowColors = [
+    'linear-gradient(45deg, #0D9488, #14B8A6, transparent)',
+    'linear-gradient(45deg, #14B8A6, #2DD4BF, transparent)',
+    'linear-gradient(45deg, #0F766E, #0D9488, transparent)',
+    'linear-gradient(45deg, #115E59, #0D9488, transparent)'
+  ];
+
+  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #14B8A6, transparent)`;
+
+  return (
+    <div 
+      style={{
+        borderRadius: '16px',
+        margin: '15px 0',
+        boxShadow: isHovered 
+          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(13, 148, 136, 0.1)' 
+          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
+        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
+        border: isHovered 
+          ? '1px solid rgba(255, 255, 255, 0.3)' 
+          : '1px solid rgba(255, 255, 255, 0.18)',
+        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        position: 'relative'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Colored Glow Effect */}
+      {isHovered && (
+        <div style={{
+          position: 'absolute',
+          top: '-2px',
+          left: '-2px',
+          right: '-2px',
+          bottom: '-2px',
+          borderRadius: '18px',
+          background: glowColor,
+          zIndex: 0,
+          opacity: 0.7,
+          animation: 'pulse 2s infinite'
+        }} />
+      )}
+      
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{
+          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          padding: '20px',
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          backdropFilter: 'blur(8px)'
+        }}>
+          <h4 style={{
+            color: '#ffffff',
+            margin: 0,
+            fontSize: '1.2rem',
+            fontWeight: 600
+          }}>
+            {title}
+          </h4>
+          {description && (
+            <p style={{
+              margin: '8px 0 0 0',
+              opacity: 0.9,
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: '0.9rem'
+            }}>
+              {description}
+            </p>
+          )}
+        </div>
+        <div style={{ padding: '20px' }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Counseling Record Item Component
+function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const getTypeColor = (type: string) => {
+    const colors: { [key: string]: string } = {
+      observation: '#3B82F6',
+      verbal: '#F59E0B',
+      written: '#EF4444',
+      suspension: '#8B5CF6',
+      termination: '#DC2626'
+    };
+    return colors[type] || SECTION_COLOR;
+  };
+
+  return (
+    <div 
+      style={{
+        padding: '20px',
+        background: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '12px',
+        border: isHovered 
+          ? '1px solid rgba(13, 148, 136, 0.4)' 
+          : '1px solid rgba(255, 255, 255, 0.15)',
+        transition: 'all 0.3s ease',
+        transform: isHovered ? 'translateY(-3px)' : 'translateY(0)',
+        backdropFilter: 'blur(10px)',
+        cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered && (
+        <div style={{
+          position: 'absolute',
+          top: '-2px',
+          left: '-2px',
+          right: '-2px',
+          bottom: '-2px',
+          borderRadius: '12px',
+          background: `linear-gradient(45deg, rgba(${SECTION_COLOR_RGB}, 0.3), transparent)`,
+          zIndex: 0,
+          opacity: 0.6
+        }} />
+      )}
+      
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+          <span style={{
+            background: `linear-gradient(135deg, ${getTypeColor(record.type)}, ${getTypeColor(record.type)}99)`,
+            color: 'white',
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            textTransform: 'capitalize'
+          }}>
+            {record.type.replace('_', ' ')}
+          </span>
+          <span style={{ 
+            color: 'rgba(255, 255, 255, 0.7)', 
+            fontSize: '0.8rem',
+            fontWeight: '500'
+          }}>
+            {new Date(record.date).toLocaleDateString()}
+          </span>
+        </div>
+        
+        <h5 style={{ 
+          color: isHovered ? SECTION_COLOR : 'white', 
+          margin: '0 0 8px 0',
+          fontSize: '1rem',
+          fontWeight: 600,
+          transition: 'color 0.3s ease'
+        }}>
+          {record.employeeName}
+        </h5>
+        
+        <p style={{ 
+          color: 'rgba(255, 255, 255, 0.7)', 
+          margin: '0 0 12px 0',
+          fontSize: '0.9rem',
+          lineHeight: 1.5
+        }}>
+          {record.description.substring(0, 120)}...
+        </p>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            color: record.acknowledged ? '#10B981' : 'rgba(255, 255, 255, 0.5)',
+            fontSize: '0.8rem',
+            fontWeight: '500'
+          }}>
+            {record.acknowledged ? '✅ Acknowledged' : '⏳ Pending'}
+          </span>
+          
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              style={{
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '6px',
+                color: 'white',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                fontSize: '0.8rem',
+                fontWeight: '500',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={(e) => {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = 'rgba(13, 148, 136, 0.3)';
+                target.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = 'rgba(255, 255, 255, 0.1)';
+                target.style.transform = 'translateY(0)';
+              }}
+              onClick={() => onExport(record)}
+            >
+              Export
+            </button>
+            
+            {!record.acknowledged && (
+              <button 
+                style={{
+                  padding: '6px 12px',
+                  background: 'rgba(13, 148, 136, 0.3)',
+                  border: '1px solid rgba(13, 148, 136, 0.5)',
+                  borderRadius: '6px',
+                  color: 'white',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontSize: '0.8rem',
+                  fontWeight: '500',
+                  backdropFilter: 'blur(10px)'
+                }}
+                onMouseEnter={(e) => {
+                  const target = e.currentTarget as HTMLButtonElement;
+                  target.style.background = 'rgba(13, 148, 136, 0.5)';
+                  target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  const target = e.currentTarget as HTMLButtonElement;
+                  target.style.background = 'rgba(13, 148, 136, 0.3)';
+                  target.style.transform = 'translateY(0)';
+                }}
+                onClick={() => onAcknowledge(record.id)}
+              >
+                Acknowledge
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function EmployeeCounselingSection() {
   const { currentUser } = useApp();
+  const [isHovered, setIsHovered] = useState(false);
   const [activeTab, setActiveTab] = useState<'violation' | 'writeup'>('violation');
   const [employees, setEmployees] = useState<EmployeeFolder[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState('');
@@ -20,241 +276,12 @@ export default function EmployeeCounselingSection() {
     employeeSignature: ''
   });
 
-  // Styles object for the component
-  const styles = {
-    section: {
-      background: 'linear-gradient(135deg, rgba(255, 245, 245, 0.1) 0%, rgba(255, 215, 215, 0.15) 50%, rgba(175, 238, 238, 0.1) 100%)',
-      backdropFilter: 'blur(12px)',
-      borderRadius: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      padding: '25px',
-      margin: '20px 0',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-      position: 'relative' as const,
-      overflow: 'hidden',
-    },
-    sectionHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '25px',
-      paddingBottom: '15px',
-      borderBottom: '2px solid rgba(239, 108, 117, 0.3)',
-    },
-    headerTitle: {
-      color: '#2c5aa0',
-      fontSize: '24px',
-      fontWeight: '700',
-      margin: '0',
-      textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    badge: {
-      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
-      color: 'white',
-      padding: '6px 12px',
-      borderRadius: '12px',
-      fontSize: '12px',
-      fontWeight: 'bold',
-      boxShadow: '0 4px 12px rgba(239, 108, 117, 0.3)',
-    },
-    tabNavigation: {
-      marginBottom: '25px',
-      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
-      display: 'flex',
-    },
-    tabButton: {
-      padding: '12px 24px',
-      border: 'none',
-      background: 'none',
-      cursor: 'pointer',
-      fontWeight: '600',
-      fontSize: '15px',
-      transition: 'all 0.3s ease',
-      position: 'relative' as const,
-      overflow: 'hidden',
-      color: '#5a6c8c',
-    },
-    tabButtonActive: {
-      borderBottom: '3px solid #2c5aa0',
-      color: '#2c5aa0',
-      fontWeight: '700',
-    },
-    tabButtonHover: {
-      background: 'linear-gradient(135deg, rgba(44, 90, 160, 0.05), rgba(175, 238, 238, 0.1))',
-      color: '#2c5aa0',
-    },
-    counselingForm: {
-      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 245, 245, 0.3) 100%)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      padding: '25px',
-      marginBottom: '30px',
-      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
-      transition: 'all 0.3s ease',
-    },
-    formTitle: {
-      color: '#2c5aa0',
-      fontSize: '20px',
-      fontWeight: '600',
-      marginBottom: '20px',
-      paddingBottom: '10px',
-      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
-    },
-    formGroup: {
-      marginBottom: '20px',
-    },
-    label: {
-      display: 'block',
-      marginBottom: '8px',
-      fontWeight: '600',
-      color: '#2c5aa0',
-      fontSize: '14px',
-    },
-    formControl: {
-      width: '100%',
-      padding: '12px 15px',
-      borderRadius: '10px',
-      border: '1px solid rgba(44, 90, 160, 0.2)',
-      background: 'rgba(255, 255, 255, 0.7)',
-      fontSize: '15px',
-      transition: 'all 0.3s ease',
-      boxSizing: 'border-box' as const,
-    },
-    formControlFocus: {
-      outline: 'none',
-      borderColor: '#2c5aa0',
-      boxShadow: '0 0 0 3px rgba(44, 90, 160, 0.2)',
-      background: 'rgba(255, 255, 255, 0.9)',
-    },
-    textarea: {
-      minHeight: '100px',
-      resize: 'vertical' as const,
-      fontFamily: 'inherit',
-    },
-    button: {
-      background: 'linear-gradient(135deg, #2c5aa0, #3a6bc0)',
-      color: 'white',
-      border: 'none',
-      padding: '12px 25px',
-      borderRadius: '10px',
-      fontSize: '16px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(44, 90, 160, 0.3)',
-    },
-    buttonHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 6px 20px rgba(44, 90, 160, 0.4)',
-      background: 'linear-gradient(135deg, #3a6bc0, #4a7bd0)',
-    },
-    buttonSecondary: {
-      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
-      color: 'white',
-      border: 'none',
-      padding: '8px 16px',
-      borderRadius: '8px',
-      fontSize: '14px',
-      fontWeight: '500',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 3px 10px rgba(239, 108, 117, 0.3)',
-      marginRight: '10px',
-    },
-    buttonSecondaryHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 5px 15px rgba(239, 108, 117, 0.4)',
-      background: 'linear-gradient(135deg, #ff8e9e, #ffa5b3)',
-    },
-    foldersGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-      gap: '20px',
-      marginTop: '20px',
-    },
-    employeeFolder: {
-      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(175, 238, 238, 0.15) 100%)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      padding: '20px',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
-    },
-    employeeFolderHover: {
-      transform: 'translateY(-5px)',
-      boxShadow: '0 12px 25px rgba(0, 0, 0, 0.15)',
-      borderColor: 'rgba(44, 90, 160, 0.4)',
-    },
-    folderHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '15px',
-      paddingBottom: '10px',
-      borderBottom: '1px solid rgba(44, 90, 160, 0.2)',
-    },
-    folderTitle: {
-      color: '#2c5aa0',
-      fontSize: '18px',
-      fontWeight: '600',
-      margin: '0',
-    },
-    positionBadge: {
-      background: 'linear-gradient(135deg, #20b2aa, #40e0d0)',
-      color: 'white',
-      padding: '4px 10px',
-      borderRadius: '10px',
-      fontSize: '12px',
-      fontWeight: '500',
-    },
-    recordItem: {
-      background: 'rgba(255, 255, 255, 0.6)',
-      borderRadius: '10px',
-      padding: '15px',
-      marginBottom: '15px',
-      border: '1px solid rgba(44, 90, 160, 0.1)',
-      transition: 'all 0.3s ease',
-    },
-    recordItemHover: {
-      transform: 'translateX(5px)',
-      borderColor: 'rgba(44, 90, 160, 0.3)',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-    },
-    recordHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '10px',
-    },
-    recordType: {
-      background: 'linear-gradient(135deg, #ef6c75, #ff8e9e)',
-      color: 'white',
-      padding: '4px 8px',
-      borderRadius: '6px',
-      fontSize: '12px',
-      fontWeight: '500',
-    },
-    recordDate: {
-      color: '#5a6c8c',
-      fontSize: '12px',
-    },
-    recordDescription: {
-      color: '#4a5568',
-      fontSize: '14px',
-      lineHeight: '1.5',
-      marginBottom: '10px',
-    },
-    recordActions: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-  };
-
   useEffect(() => {
+    if (currentUser) {
+      trackSectionVisit(currentUser.email, 'counseling');
+    }
     loadEmployeeFolders();
-  }, []);
+  }, [currentUser]);
 
   const loadEmployeeFolders = () => {
     const folders = storage.getEmployeeFolders();
@@ -488,297 +515,492 @@ export default function EmployeeCounselingSection() {
 
   if (!currentUser || currentUser.position !== 'Admin') {
     return (
-      <div style={styles.section} id="employee-counselings">
-        <div style={styles.sectionHeader}>
-          <h3 style={styles.headerTitle}>Employee Counselings & Write-ups</h3>
-          <span style={styles.badge}>Admin Only</span>
+      <div 
+        id="employee-counseling-section"
+        style={{
+          marginBottom: '30px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
+        }}
+        className="active"
+      >
+        <div style={{
+          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+          padding: '20px',
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+          backdropFilter: 'blur(10px)'
+        }}>
+          <h3 style={{
+            color: '#ffffff',
+            fontSize: '1.4rem',
+            fontWeight: 700,
+            margin: 0,
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          }}>
+            Employee Counselings & Write-ups
+          </h3>
+          <span style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            color: 'white',
+            fontWeight: '600',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            marginTop: '8px',
+            display: 'inline-block'
+          }}>
+            Admin Only
+          </span>
         </div>
-        <p>Access to this section is restricted to management only.</p>
+        <div style={{ padding: '25px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.8)' }}>
+          <p>Access to this section is restricted to management only.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={styles.section} id="employee-counselings">
-      <div style={styles.sectionHeader}>
-        <h3 style={styles.headerTitle}>Employee Counselings & Write-ups</h3>
-        <span style={styles.badge}>Admin Only</span>
+    <div 
+      id="employee-counseling-section"
+      style={{
+        marginBottom: '30px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(15px) saturate(170%)',
+        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+        border: isHovered 
+          ? '1px solid rgba(255, 255, 255, 0.3)' 
+          : '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: isHovered 
+          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(13, 148, 136, 0.15)'
+          : '0 16px 50px rgba(0, 0, 0, 0.2)',
+        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
+        animation: 'fadeIn 0.5s ease'
+      }}
+      className="active"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      
+      {/* Section Header */}
+      <div style={{
+        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        padding: '20px',
+        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        backdropFilter: 'blur(10px)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div>
+          <h3 style={{
+            color: '#ffffff',
+            fontSize: '1.4rem',
+            fontWeight: 700,
+            margin: 0,
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          }}>
+            Employee Counselings & Write-ups
+          </h3>
+          <p style={{
+            margin: 0,
+            opacity: 0.9,
+            color: 'rgba(255, 255, 255, 0.9)',
+            fontSize: '0.95rem',
+            marginTop: '4px'
+          }}>
+            Manage employee counseling records and formal write-ups
+          </p>
+        </div>
+        <span style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          fontSize: '0.9rem',
+          color: 'white',
+          fontWeight: '600',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        }}>
+          Admin Only
+        </span>
       </div>
 
-      {/* Tab Navigation */}
-      <div style={styles.tabNavigation}>
-        <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'violation' ? styles.tabButtonActive : {}),
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = styles.tabButtonHover.background;
-            e.currentTarget.style.color = styles.tabButtonHover.color;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'none';
-            e.currentTarget.style.color = activeTab === 'violation' ? styles.tabButtonActive.color : styles.tabButton.color;
-          }}
-          onClick={() => setActiveTab('violation')}
-        >
-          📝 Violation & Counseling
-        </button>
-        <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'writeup' ? styles.tabButtonActive : {}),
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = styles.tabButtonHover.background;
-            e.currentTarget.style.color = styles.tabButtonHover.color;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'none';
-            e.currentTarget.style.color = activeTab === 'writeup' ? styles.tabButtonActive.color : styles.tabButton.color;
-          }}
-          onClick={() => setActiveTab('writeup')}
-        >
-          ⚠️ Formal Write-up
-        </button>
-      </div>
-
-      {/* Counseling Form */}
-      <div style={styles.counselingForm}>
-        <h4 style={styles.formTitle}>
-          {activeTab === 'violation' ? 'Employee Violation & Counseling' : 'Formal Employee Write-up'}
-        </h4>
-        
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-employee" style={styles.label}>Employee *</label>
-          <select 
-            id="counseling-employee"
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-            style={styles.formControl}
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
+      <div style={{ padding: '25px' }}>
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+          <button
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'violation' 
+                ? `rgba(${SECTION_COLOR_RGB}, 0.3)` 
+                : 'rgba(255, 255, 255, 0.1)',
+              border: activeTab === 'violation'
+                ? `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`
+                : '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              backdropFilter: 'blur(10px)'
+            }}
+            onMouseEnter={(e) => {
+              if (activeTab !== 'violation') {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = `rgba(${SECTION_COLOR_RGB}, 0.2)`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeTab !== 'violation') {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onClick={() => setActiveTab('violation')}
           >
-            <option value="">Select Employee</option>
-            {employees.map(employee => (
-              <option key={employee.email} value={employee.email}>
-                {employee.name} ({employee.position})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-type" style={styles.label}>Type *</label>
-          <select 
-            id="counseling-type"
-            value={formData.type}
-            onChange={(e) => handleInputChange('type', e.target.value)}
-            style={styles.formControl}
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
+            📝 Violation & Counseling
+          </button>
+          <button
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'writeup' 
+                ? `rgba(${SECTION_COLOR_RGB}, 0.3)` 
+                : 'rgba(255, 255, 255, 0.1)',
+              border: activeTab === 'writeup'
+                ? `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`
+                : '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              backdropFilter: 'blur(10px)'
+            }}
+            onMouseEnter={(e) => {
+              if (activeTab !== 'writeup') {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = `rgba(${SECTION_COLOR_RGB}, 0.2)`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeTab !== 'writeup') {
+                const target = e.currentTarget as HTMLButtonElement;
+                target.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onClick={() => setActiveTab('writeup')}
           >
-            <option value="observation">Observation Note</option>
-            <option value="verbal">Verbal Warning</option>
-            <option value="written">Written Warning</option>
-            <option value="suspension">Suspension Notice</option>
-            <option value="termination">Termination Notice</option>
-          </select>
+            ⚠️ Formal Write-up
+          </button>
         </div>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-date" style={styles.label}>Date of Incident *</label>
-          <input
-            type="date"
-            id="counseling-date"
-            value={formData.date}
-            onChange={(e) => handleInputChange('date', e.target.value)}
-            style={styles.formControl}
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
-          />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-manager" style={styles.label}>Manager's Name *</label>
-          <input
-            type="text"
-            id="counseling-manager"
-            value={formData.managerName}
-            onChange={(e) => handleInputChange('managerName', e.target.value)}
-            style={styles.formControl}
-            placeholder="Enter manager's full name"
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
-          />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-description" style={styles.label}>
-            {activeTab === 'violation' ? 'Violation Details *' : 'Incident Description *'}
-          </label>
-          <textarea
-            id="counseling-description"
-            value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            style={{...styles.formControl, ...styles.textarea}}
-            rows={4}
-            placeholder={activeTab === 'violation' 
-              ? 'Describe the violation or performance issue...' 
-              : 'Provide detailed description of the policy violation or incident...'
-            }
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
-          />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-action" style={styles.label}>
-            {activeTab === 'violation' ? 'Counseling & Action Plan *' : 'Corrective Actions *'}
-          </label>
-          <textarea
-            id="counseling-action"
-            value={formData.actionPlan}
-            onChange={(e) => handleInputChange('actionPlan', e.target.value)}
-            style={{...styles.formControl, ...styles.textarea}}
-            rows={3}
-            placeholder={activeTab === 'violation'
-              ? 'Outline the counseling provided and expected improvements...'
-              : 'Specify required corrective actions and timeline...'
-            }
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
-          />
-        </div>
-
-        {activeTab === 'writeup' && (
-          <div style={styles.formGroup}>
-            <label htmlFor="counseling-consequences" style={styles.label}>Consequences</label>
-            <textarea
-              id="counseling-consequences"
-              value={formData.consequences}
-              onChange={(e) => handleInputChange('consequences', e.target.value)}
-              style={{...styles.formControl, ...styles.textarea}}
-              rows={2}
-              placeholder="Outline potential consequences for non-compliance..."
-              onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-              onBlur={(e) => Object.assign(e.target, styles.formControl)}
-            />
-          </div>
-        )}
-
-        <div style={styles.formGroup}>
-          <label htmlFor="counseling-signature" style={styles.label}>Employee Signature (for acknowledgment)</label>
-          <input
-            type="text"
-            id="counseling-signature"
-            value={formData.employeeSignature}
-            onChange={(e) => handleInputChange('employeeSignature', e.target.value)}
-            style={styles.formControl}
-            placeholder="Employee's signature (if present)"
-            onFocus={(e) => Object.assign(e.target, styles.formControlFocus)}
-            onBlur={(e) => Object.assign(e.target, styles.formControl)}
-          />
-        </div>
-
-        <button 
-          style={styles.button}
-          onMouseEnter={(e) => Object.assign(e.target, styles.buttonHover)}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'none';
-            e.target.style.boxShadow = styles.button.boxShadow;
-            e.target.style.background = styles.button.background;
-          }}
-          onClick={submitCounselingRecord}
+        {/* Counseling Form */}
+        <AnimatedCard
+          title={activeTab === 'violation' ? 'Employee Violation & Counseling' : 'Formal Employee Write-up'}
+          description="Create new counseling records and manage employee documentation"
+          index={0}
         >
-          {activeTab === 'violation' ? 'Save Violation Record' : 'Create Write-up'}
-        </button>
-      </div>
-
-      {/* Employee Folders */}
-      <div style={{ marginTop: '30px' }}>
-        <h4 style={{...styles.formTitle, borderBottom: 'none', marginBottom: '15px'}}>Employee Records</h4>
-        
-        {employees.length === 0 ? (
-          <p>No employee records found.</p>
-        ) : (
-          <div style={styles.foldersGrid}>
-            {employees.map(employee => (
-              <div 
-                key={employee.email} 
-                style={styles.employeeFolder}
-                onMouseEnter={(e) => Object.assign(e.currentTarget, styles.employeeFolderHover)}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = styles.employeeFolder.boxShadow;
-                  e.currentTarget.style.borderColor = styles.employeeFolder.border;
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+                Employee *
+              </label>
+              <select 
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  fontSize: '0.9rem'
                 }}
               >
-                <div style={styles.folderHeader}>
-                  <h5 style={styles.folderTitle}>{employee.name}</h5>
-                  <span style={styles.positionBadge}>{employee.position}</span>
-                </div>
-                <div>
-                  <p><strong>Email:</strong> {employee.email}</p>
-                  <p><strong>Hire Date:</strong> {new Date(employee.hireDate).toLocaleDateString()}</p>
-                  <p><strong>Total Records:</strong> {employee.counselingRecords.length}</p>
+                <option value="">Select Employee</option>
+                {employees.map(employee => (
+                  <option key={employee.email} value={employee.email}>
+                    {employee.name} ({employee.position})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+                Type *
+              </label>
+              <select 
+                value={formData.type}
+                onChange={(e) => handleInputChange('type', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  fontSize: '0.9rem'
+                }}
+              >
+                <option value="observation">Observation Note</option>
+                <option value="verbal">Verbal Warning</option>
+                <option value="written">Written Warning</option>
+                <option value="suspension">Suspension Notice</option>
+                <option value="termination">Termination Notice</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+                Date of Incident *
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleInputChange('date', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  fontSize: '0.9rem'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+                Manager's Name *
+              </label>
+              <input
+                type="text"
+                value={formData.managerName}
+                onChange={(e) => handleInputChange('managerName', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  fontSize: '0.9rem'
+                }}
+                placeholder="Enter manager's full name"
+              />
+            </div>
+          </div>
+
+          <div style={{ marginTop: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+              {activeTab === 'violation' ? 'Violation Details *' : 'Incident Description *'}
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                fontSize: '0.9rem',
+                minHeight: '80px',
+                resize: 'vertical'
+              }}
+              placeholder={activeTab === 'violation' 
+                ? 'Describe the violation or performance issue...' 
+                : 'Provide detailed description of the policy violation or incident...'
+              }
+            />
+          </div>
+
+          <div style={{ marginTop: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+              {activeTab === 'violation' ? 'Counseling & Action Plan *' : 'Corrective Actions *'}
+            </label>
+            <textarea
+              value={formData.actionPlan}
+              onChange={(e) => handleInputChange('actionPlan', e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                fontSize: '0.9rem',
+                minHeight: '60px',
+                resize: 'vertical'
+              }}
+              placeholder={activeTab === 'violation'
+                ? 'Outline the counseling provided and expected improvements...'
+                : 'Specify required corrective actions and timeline...'
+              }
+            />
+          </div>
+
+          {activeTab === 'writeup' && (
+            <div style={{ marginTop: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+                Consequences
+              </label>
+              <textarea
+                value={formData.consequences}
+                onChange={(e) => handleInputChange('consequences', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  fontSize: '0.9rem',
+                  minHeight: '60px',
+                  resize: 'vertical'
+                }}
+                placeholder="Outline potential consequences for non-compliance..."
+              />
+            </div>
+          )}
+
+          <div style={{ marginTop: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
+              Employee Signature (for acknowledgment)
+            </label>
+            <input
+              type="text"
+              value={formData.employeeSignature}
+              onChange={(e) => handleInputChange('employeeSignature', e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                fontSize: '0.9rem'
+              }}
+              placeholder="Employee's signature (if present)"
+            />
+          </div>
+
+          <button 
+            style={{
+              marginTop: '20px',
+              padding: '12px 24px',
+              background: `rgba(${SECTION_COLOR_RGB}, 0.3)`,
+              border: `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`,
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              backdropFilter: 'blur(10px)'
+            }}
+            onMouseEnter={(e) => {
+              const target = e.currentTarget as HTMLButtonElement;
+              target.style.background = `rgba(${SECTION_COLOR_RGB}, 0.5)`;
+              target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              const target = e.currentTarget as HTMLButtonElement;
+              target.style.background = `rgba(${SECTION_COLOR_RGB}, 0.3)`;
+              target.style.transform = 'translateY(0)';
+            }}
+            onClick={submitCounselingRecord}
+          >
+            {activeTab === 'violation' ? 'Save Violation Record' : 'Create Write-up'}
+          </button>
+        </AnimatedCard>
+
+        {/* Employee Records */}
+        <AnimatedCard
+          title="📁 Employee Records"
+          description="View and manage counseling records for all employees"
+          index={1}
+        >
+          {employees.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
+              No employee records found.
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '15px',
+              marginTop: '15px'
+            }}>
+              {employees.map((employee, index) => (
+                <div key={employee.email} style={{
+                  padding: '15px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <h5 style={{ color: 'white', margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                      {employee.name}
+                    </h5>
+                    <span style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.7rem',
+                      fontWeight: '500'
+                    }}>
+                      {employee.position}
+                    </span>
+                  </div>
                   
+                  <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem', marginBottom: '10px' }}>
+                    <div>Email: {employee.email}</div>
+                    <div>Hire Date: {new Date(employee.hireDate).toLocaleDateString()}</div>
+                    <div>Total Records: {employee.counselingRecords.length}</div>
+                  </div>
+
                   {employee.counselingRecords.length > 0 && (
-                    <div style={{marginTop: '15px'}}>
-                      <h6 style={{margin: '0 0 10px 0', color: '#2c5aa0', fontSize: '16px'}}>Recent Records:</h6>
-                      {employee.counselingRecords.slice(0, 3).map(record => (
-                        <div 
-                          key={record.id} 
-                          style={styles.recordItem}
-                          onMouseEnter={(e) => Object.assign(e.currentTarget, styles.recordItemHover)}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.borderColor = styles.recordItem.border;
-                            e.currentTarget.style.boxShadow = 'none';
-                          }}
-                        >
-                          <div style={styles.recordHeader}>
-                            <span style={styles.recordType}>{record.type}</span>
-                            <span style={styles.recordDate}>{new Date(record.date).toLocaleDateString()}</span>
-                          </div>
-                          <p style={styles.recordDescription}>{record.description.substring(0, 100)}...</p>
-                          <div style={styles.recordActions}>
-                            <button 
-                              style={styles.buttonSecondary}
-                              onMouseEnter={(e) => Object.assign(e.target, styles.buttonSecondaryHover)}
-                              onMouseLeave={(e) => {
-                                e.target.style.transform = 'none';
-                                e.target.style.boxShadow = styles.buttonSecondary.boxShadow;
-                                e.target.style.background = styles.buttonSecondary.background;
-                              }}
-                              onClick={() => activeTab === 'violation' ? exportViolation(record) : exportWriteUp(record)}
-                            >
-                              Export
-                            </button>
-                            {!record.acknowledged && (
-                              <button 
-                                style={styles.button}
-                                onMouseEnter={(e) => Object.assign(e.target, styles.buttonHover)}
-                                onMouseLeave={(e) => {
-                                  e.target.style.transform = 'none';
-                                  e.target.style.boxShadow = styles.button.boxShadow;
-                                  e.target.style.background = styles.button.background;
-                                }}
-                                onClick={() => acknowledgeRecord(record.id)}
-                              >
-                                Mark Acknowledged
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                    <div style={{ marginTop: '10px' }}>
+                      <h6 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
+                        Recent Records:
+                      </h6>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {employee.counselingRecords.slice(0, 2).map((record, recordIndex) => (
+                          <CounselingRecordItem
+                            key={record.id}
+                            record={record}
+                            onExport={activeTab === 'violation' ? exportViolation : exportWriteUp}
+                            onAcknowledge={acknowledgeRecord}
+                            index={recordIndex}
+                          />
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </AnimatedCard>
       </div>
     </div>
   );

@@ -52,36 +52,25 @@ function MainApp() {
   }
 
   return (
-    <>
-      <div style={{
-        display: 'flex',
-        minHeight: '100vh',
-        background: 'transparent',
-        position: 'relative',
-        zIndex: 10,
-      }}>
-        <Sidebar />
-        <div style={{
-          flex: 1,
-          marginLeft: '280px',
-          padding: '30px',
-          minHeight: '100vh',
-          background: 'transparent',
-          width: 'calc(100% - 280px)',
-        }}>
-          <Header />
-           <ErrorBoundary>
+  <>
+    <div className="container">
+      <Header />
+      <Sidebar />
+      <div className="main-content">
+        <div className="content-wrapper"> {/* Add this wrapper */}
+          <ErrorBoundary>
             <SectionRouter />
           </ErrorBoundary>
         </div>
       </div>
-      <Toast 
-        message={toast.message} 
-        show={toast.show} 
-        onHide={hideToast} 
-      />
-    </>
-  );
+    </div>
+    <Toast 
+      message={toast.message} 
+      show={toast.show} 
+      onHide={hideToast} 
+    />
+  </>
+);
 }
 
 export default function HomePage() {

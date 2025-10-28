@@ -33,15 +33,28 @@ const TRACKED_POSITIONS = ['Bartender', 'Trainee'];
 // Positions that should NOT have progress tracking
 const NON_TRACKED_POSITIONS = ['Admin', 'Manager', 'Owner'];
 
+// Minimum time required in each section (in seconds)
+const MINIMUM_SECTION_TIME = 30; // 30 seconds minimum per section
+
+// Enhanced section visit tracking interface
+export interface SectionVisit {
+  sectionId: string;
+  firstVisit: string;
+  lastVisit: string;
+  totalTime: number; // in seconds
+  completed: boolean;
+  quizPassed?: boolean;
+}
+
 // Helper function to check if user should have progress tracked
 const shouldTrackUserProgress = (user: User): boolean => {
   return TRACKED_POSITIONS.includes(user.position);
 };
 
 // Helper function to get unique valid sections
-const getUniqueValidSections = (visitedSections: string[]): string[] => {
+const getUniqueValidSections = (visitedSections: string[] | undefined): string[] => {
   const uniqueSections: string[] = [];
-  visitedSections.forEach(section => {
+  (visitedSections || []).forEach(section => {
     const isValid = ALL_SECTIONS.includes(section);
     const isExcluded = EXCLUDED_SECTIONS.includes(section);
     const isUnique = !uniqueSections.includes(section);
@@ -53,26 +66,35 @@ const getUniqueValidSections = (visitedSections: string[]): string[] => {
   return uniqueSections;
 };
 
+// Enhanced progress calculation using section visits
 export const calculateProgress = (user: User): number => {
   // If user shouldn't be tracked, return 0
   if (!shouldTrackUserProgress(user)) {
     return 0;
   }
 
-  const visitedSections = user.visitedSections || [];
-  const uniqueSections = getUniqueValidSections(visitedSections);
-  
+  // Use enhanced section visits if available, otherwise fall back to visitedSections
+  if (user.sectionVisits) {
+    const completedSections = ALL_SECTIONS.filter(sectionId => {
+      const visit = user.sectionVisits?.[sectionId];
+      return visit?.completed || false;
+    }).length;
+    
+    const progress = Math.round((completedSections / ALL_SECTIONS.length) * 100);
+    return Math.min(progress, 100);
+  }
+
+  // Fallback to original calculation
+  const uniqueSections = getUniqueValidSections(user.visitedSections);
   const uniqueVisitedCount = uniqueSections.length;
   const totalSections = ALL_SECTIONS.length;
   
-  // Simple calculation: (visited / total) * 100
   const progress = Math.round((uniqueVisitedCount / totalSections) * 100);
-  
-  // Cap at 100%
   return Math.min(progress, 100);
 };
 
-export const trackSectionVisit = (userEmail: string, sectionId: string): void => {
+// Enhanced section visit tracking with time requirements
+export const trackSectionVisit = (userEmail: string, sectionId: string, timeSpent: number = 0): void => {
   const users = storage.getUsers();
   const user = users[userEmail];
 
@@ -86,23 +108,55 @@ export const trackSectionVisit = (userEmail: string, sectionId: string): void =>
     return;
   }
 
+  // Initialize section visits tracking if not exists
+  if (!user.sectionVisits) {
+    user.sectionVisits = {};
+  }
+
+  // Initialize visitedSections for backward compatibility if not exists
   if (!user.visitedSections) {
     user.visitedSections = [];
   }
 
-  // Only track if it's a valid section and not excluded
-  const isValid = ALL_SECTIONS.includes(sectionId);
-  const isExcluded = EXCLUDED_SECTIONS.includes(sectionId);
-  const notVisited = !user.visitedSections.includes(sectionId);
+  const now = new Date().toISOString();
   
-  if (isValid && !isExcluded && notVisited) {
+  // Get existing visit or create new one - SAFE ACCESS
+  const existingVisit = user.sectionVisits[sectionId];
+  
+  if (existingVisit) {
+    // Update existing visit
+    existingVisit.lastVisit = now;
+    existingVisit.totalTime += timeSpent;
+    
+    // Mark as completed if minimum time met
+    if (!existingVisit.completed && existingVisit.totalTime >= MINIMUM_SECTION_TIME) {
+      existingVisit.completed = true;
+      console.log(`Section ${sectionId} marked as completed for ${userEmail} (${existingVisit.totalTime}s)`);
+    }
+  } else {
+    // Create new visit record
+    user.sectionVisits[sectionId] = {
+      sectionId,
+      firstVisit: now,
+      lastVisit: now,
+      totalTime: timeSpent,
+      completed: timeSpent >= MINIMUM_SECTION_TIME
+    };
+    
+    if (timeSpent >= MINIMUM_SECTION_TIME) {
+      console.log(`Section ${sectionId} completed on first visit for ${userEmail}`);
+    }
+  }
+
+  // Update visitedSections for backward compatibility - SAFE ACCESS
+  const currentSectionVisit = user.sectionVisits[sectionId];
+  const shouldAddToVisited = currentSectionVisit?.completed && 
+                            user.visitedSections &&
+                            !user.visitedSections.includes(sectionId);
+  
+  if (shouldAddToVisited) {
     user.visitedSections.push(sectionId);
-    console.log(`Added section: ${sectionId} to visited sections`);
-  } else if (!isValid || isExcluded) {
-    // If it's an excluded section, don't track but still update lastActive
-    user.lastActive = new Date().toISOString();
-    storage.saveUsers(users);
-    return;
+    console.log(`Added section: ${sectionId} to visited sections for ${userEmail}`);
   }
 
   // Recalculate progress
@@ -115,8 +169,68 @@ export const trackSectionVisit = (userEmail: string, sectionId: string): void =>
     console.log(`Auto-reset acknowledgement for ${userEmail} - progress dropped to ${user.progress}%`);
   }
 
-  user.lastActive = new Date().toISOString();
+  user.lastActive = now;
   storage.saveUsers(users);
+};
+
+// Get section completion details for UI display
+export const getSectionCompletionDetails = (user: User, sectionId: string) => {
+  // SAFE ACCESS with optional chaining
+  const visit = user.sectionVisits?.[sectionId];
+  
+  if (!visit) {
+    return {
+      completed: false,
+      timeSpent: 0,
+      timeRequired: MINIMUM_SECTION_TIME,
+      progress: 0
+    };
+  }
+
+  const timeRequired = MINIMUM_SECTION_TIME;
+  const timeSpent = visit.totalTime;
+  const progress = Math.min(Math.round((timeSpent / timeRequired) * 100), 100);
+
+  return {
+    completed: visit.completed,
+    timeSpent,
+    timeRequired,
+    progress
+  };
+};
+
+// Simple quiz submission for critical sections
+export const submitSectionQuiz = (userEmail: string, sectionId: string, score: number): boolean => {
+  const users = storage.getUsers();
+  const user = users[userEmail];
+
+  // SAFE ACCESS with optional chaining
+  const visit = user?.sectionVisits?.[sectionId];
+  
+  if (!user || !visit) {
+    return false;
+  }
+
+  const passed = score >= 0.7; // 70% or higher to pass
+
+  if (passed) {
+    visit.quizPassed = true;
+    
+    // Auto-complete if time requirement also met
+    if (!visit.completed && visit.totalTime >= MINIMUM_SECTION_TIME) {
+      visit.completed = true;
+      
+      // Add to visitedSections for backward compatibility - SAFE ACCESS
+      if (user.visitedSections && !user.visitedSections.includes(sectionId)) {
+        user.visitedSections.push(sectionId);
+      }
+    }
+    
+    storage.saveUsers(users);
+    console.log(`Quiz passed for section ${sectionId} by ${userEmail}`);
+  }
+
+  return passed;
 };
 
 export const submitAcknowledgement = (userEmail: string): void => {
@@ -136,38 +250,55 @@ export const submitAcknowledgement = (userEmail: string): void => {
   }
 };
 
-// Helper function to get progress breakdown
+// Enhanced progress breakdown with time tracking
 export const getProgressBreakdown = (user: User) => {
   // Don't calculate progress for admins, managers, or owners
   if (NON_TRACKED_POSITIONS.includes(user.position)) {
     return {
-      progress: 0, // Changed from 100 to 0 to avoid confusion
+      progress: 0,
       sectionsVisited: 0,
       totalSections: 0,
       canAcknowledge: false,
       breakdown: {},
-      isTracked: false // Add this flag to indicate this user shouldn't be tracked
+      isTracked: false,
+      sectionDetails: []
     };
   }
 
-  const visitedSections = user.visitedSections || [];
-  const uniqueSections = getUniqueValidSections(visitedSections);
-  
-  const uniqueVisitedCount = uniqueSections.length;
+  // Use enhanced section details if available
+  const sectionDetails = ALL_SECTIONS.map(sectionId => {
+    const completion = getSectionCompletionDetails(user, sectionId);
+    return {
+      id: sectionId,
+      label: sectionId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' '),
+      completed: completion.completed,
+      timeSpent: completion.timeSpent,
+      timeRequired: completion.timeRequired,
+      progress: completion.progress
+    };
+  });
+
+  const completedSections = sectionDetails.filter(s => s.completed).length;
   const totalSections = ALL_SECTIONS.length;
   const progress = calculateProgress(user);
   
   // Can only acknowledge if progress is 100% AND not already acknowledged AND user is tracked
   const canAcknowledge = progress === 100 && !user.acknowledged && shouldTrackUserProgress(user);
-  const missingSections = ALL_SECTIONS.filter(section => !uniqueSections.includes(section));
+  const missingSections = ALL_SECTIONS.filter(sectionId => {
+    const details = getSectionCompletionDetails(user, sectionId);
+    return !details.completed;
+  });
   
   return {
-    sectionsVisited: uniqueVisitedCount,
+    sectionsVisited: completedSections,
     totalSections: totalSections,
     progress: progress,
     canAcknowledge: canAcknowledge,
     missingSections: missingSections,
-    isTracked: true // This user should be tracked
+    isTracked: true,
+    sectionDetails: sectionDetails
   };
 };
 
@@ -180,6 +311,22 @@ export const visitAllSections = (userEmail: string): void => {
     // Only set visited sections for tracked positions
     if (shouldTrackUserProgress(user)) {
       user.visitedSections = [...ALL_SECTIONS];
+      
+      // Initialize section visits with completed status
+      if (!user.sectionVisits) {
+        user.sectionVisits = {};
+      }
+      
+      ALL_SECTIONS.forEach(sectionId => {
+        user.sectionVisits![sectionId] = {
+          sectionId,
+          firstVisit: new Date().toISOString(),
+          lastVisit: new Date().toISOString(),
+          totalTime: MINIMUM_SECTION_TIME,
+          completed: true
+        };
+      });
+      
       user.progress = calculateProgress(user);
       
       // Reset acknowledgement to allow user to submit
@@ -214,7 +361,7 @@ export const fixAllUsersProgress = (): void => {
   const users = storage.getUsers();
   Object.keys(users).forEach(email => {
     const user = users[email];
-    const oldProgress = user.progress;
+    const oldProgress = user.progress || 0;
     user.progress = calculateProgress(user);
     
     // Auto-reset acknowledgement if progress dropped (only for tracked users)
@@ -238,6 +385,7 @@ export const resetUserProgress = (userEmail: string): void => {
     // Only reset for tracked positions
     if (shouldTrackUserProgress(user)) {
       user.visitedSections = [];
+      user.sectionVisits = {};
       user.progress = 0;
       user.acknowledged = false;
       user.acknowledgementDate = undefined;
@@ -267,4 +415,57 @@ export const getNonTrackedPositions = (): string[] => {
 // Export the tracked positions for use in other files
 export const getTrackedPositions = (): string[] => {
   return [...TRACKED_POSITIONS];
+};
+
+// Migrate existing users to enhanced tracking
+export const migrateToEnhancedTracking = (): void => {
+  const users = storage.getUsers();
+  Object.keys(users).forEach(email => {
+    const user = users[email];
+    
+    if (shouldTrackUserProgress(user) && user.visitedSections && user.visitedSections.length > 0) {
+      // Initialize section visits if not exists
+      if (!user.sectionVisits) {
+        user.sectionVisits = {};
+      }
+      
+      // Migrate existing visited sections to enhanced tracking
+      user.visitedSections.forEach(sectionId => {
+        if (shouldTrackSection(sectionId) && !user.sectionVisits![sectionId]) {
+          user.sectionVisits![sectionId] = {
+            sectionId,
+            firstVisit: user.lastActive || new Date().toISOString(),
+            lastVisit: user.lastActive || new Date().toISOString(),
+            totalTime: MINIMUM_SECTION_TIME, // Assume they spent enough time
+            completed: true
+          };
+        }
+      });
+      
+      console.log(`Migrated ${user.visitedSections.length} sections for ${email}`);
+    }
+  });
+  storage.saveUsers(users);
+  console.log('Enhanced tracking migration completed');
+};
+
+// Get all completed sections for a user (safe version)
+export const getCompletedSections = (user: User): string[] => {
+  if (!user.sectionVisits) {
+    return getUniqueValidSections(user.visitedSections);
+  }
+  
+  return ALL_SECTIONS.filter(sectionId => {
+    const visit = user.sectionVisits?.[sectionId];
+    return visit?.completed || false;
+  });
+};
+
+// Check if a specific section is completed (safe version)
+export const isSectionCompleted = (user: User, sectionId: string): boolean => {
+  if (user.sectionVisits?.[sectionId]) {
+    return user.sectionVisits[sectionId].completed;
+  }
+  
+  return user.visitedSections?.includes(sectionId) || false;
 };

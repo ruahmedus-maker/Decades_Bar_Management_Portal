@@ -21,6 +21,59 @@ export const ADMIN_CODES: string[] = [
   "DECADESADMIN"
 ];
 
+// Add this function to auth.ts
+export const initializeTestUsers = (): void => {
+  const users = storage.getUsers();
+  
+  // Only create test users if they don't exist
+  const testUsers = [
+    {
+      email: 'bartender@decadesbar.com',
+      name: 'Test Bartender',
+      position: 'Bartender' as const,
+      password: 'password123'
+    },
+    {
+      email: 'trainee@decadesbar.com', 
+      name: 'Test Trainee',
+      position: 'Trainee' as const,
+      password: 'password123'
+    },
+    {
+      email: 'admin@decadesbar.com',
+      name: 'Test Admin',
+      position: 'Admin' as const,
+      password: 'admin123'
+    }
+  ];
+
+  let createdAny = false;
+  
+  testUsers.forEach(testUser => {
+    if (!users[testUser.email]) {
+      users[testUser.email] = {
+        name: testUser.name,
+        email: testUser.email,
+        position: testUser.position,
+        status: 'active',
+        registeredDate: new Date().toISOString(),
+        progress: 0,
+        acknowledged: false,
+        passwordHash: hashPassword(testUser.password),
+        loginCount: 0,
+        lastActive: new Date().toISOString(),
+        visitedSections: []
+      };
+      createdAny = true;
+    }
+  });
+
+  if (createdAny) {
+    storage.saveUsers(users);
+    console.log('Test users initialized');
+  }
+};
+
 export const hashPassword = (password: string): string => {
   let hash = 0;
   for (let i = 0; i < password.length; i++) {

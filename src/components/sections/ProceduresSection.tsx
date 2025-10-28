@@ -69,6 +69,8 @@ export default function StandardOperatingProceduresSection() {
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [isQuickRefHovered, setIsQuickRefHovered] = useState(false);
 
   // Track section visit when currentUser is available
   useEffect(() => {
@@ -120,15 +122,30 @@ export default function StandardOperatingProceduresSection() {
   const completedCount = getCompletedCount();
   const progressPercentage = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0;
 
-  // Style objects moved inside component but memoized patterns
-  const mainContainerStyle = {
-    marginBottom: '30px',
-    borderRadius: '20px',
-    overflow: 'hidden' as const,
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(15px) saturate(170%)',
+  // Base glass styles
+  const glassStyle = {
+    background: 'linear-gradient(135deg, rgba(74, 21, 75, 0.8), rgba(74, 21, 75, 0.95))',
+    backdropFilter: 'blur(12px)',
     border: '1px solid rgba(255, 255, 255, 0.22)',
-    boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
+    borderRadius: '20px',
+    color: 'white',
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+    transition: 'all 0.3s ease'
+  };
+
+  // Hover effects with deep purple glow
+  const hoverGlowStyle = {
+    border: '1px solid rgba(255, 127, 80, 0.6)',
+    boxShadow: '0 0 30px rgba(74, 21, 75, 0.8), 0 0 50px rgba(255, 127, 80, 0.3)',
+    transform: 'translateY(-2px)'
+  };
+
+  // Main container style
+  const mainContainerStyle = {
+    ...glassStyle,
+    marginBottom: '30px',
+    ...(isHeaderHovered && hoverGlowStyle)
   };
 
   const headerStyle = {
@@ -171,6 +188,14 @@ export default function StandardOperatingProceduresSection() {
     color: 'rgba(255, 255, 255, 0.9)'
   });
 
+  // Quick reference card style with hover effect
+  const quickRefStyle = {
+    ...glassStyle,
+    margin: '20px',
+    marginTop: '20px',
+    ...(isQuickRefHovered && hoverGlowStyle)
+  };
+
   if (isLoading) {
     return (
       <div style={mainContainerStyle}>
@@ -207,6 +232,8 @@ export default function StandardOperatingProceduresSection() {
       className="active" 
       id="procedures"
       style={mainContainerStyle}
+      onMouseEnter={() => setIsHeaderHovered(true)}
+      onMouseLeave={() => setIsHeaderHovered(false)}
     >
       {/* Header Section */}
       <div style={headerStyle}>
@@ -337,7 +364,8 @@ export default function StandardOperatingProceduresSection() {
         overflow: 'hidden',
         marginBottom: '25px',
         backdropFilter: 'blur(15px) saturate(180%)',
-        boxShadow: '0 8px 32px rgba(212, 175, 55, 0.2)'
+        boxShadow: '0 8px 32px rgba(212, 175, 55, 0.2)',
+        margin: '20px'
       }}>
         <div style={{
           background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
@@ -466,15 +494,11 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Quick Reference Card */}
-      <div style={{ 
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px) saturate(160%)',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.18)',
-        margin: '20px',
-        marginTop: '20px'
-      }}>
+      <div 
+        style={quickRefStyle}
+        onMouseEnter={() => setIsQuickRefHovered(true)}
+        onMouseLeave={() => setIsQuickRefHovered(false)}
+      >
         <div style={{
           background: 'rgba(255, 255, 255, 0.15)',
           padding: '20px',
