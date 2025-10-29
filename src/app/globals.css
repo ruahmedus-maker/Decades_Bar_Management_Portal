@@ -2,7 +2,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Decades Bar Training Portal Styles - PERFORMANCE OPTIMIZED */
+/* Decades Bar Training Portal Styles - ULTRA PERFORMANCE */
 :root {
   --primary: #1a365d;
   --secondary: #2d3748;
@@ -23,6 +23,8 @@
 
 html {
   background: transparent !important;
+  /* Prevent elastic scrolling on iOS */
+  overscroll-behavior: none;
 }
 
 body {
@@ -33,7 +35,13 @@ body {
   min-height: 100vh;
   color: white;
   overflow-x: hidden;
-  /* Keep original scroll behavior */
+  /* CRITICAL: Disable horizontal scroll and elastic effects */
+  overflow-y: overlay;
+  /* Better scrollbar handling */
+  overscroll-behavior: none;
+  /* Force GPU acceleration for the entire page */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ===== LAYOUT STRUCTURE ===== */
@@ -45,6 +53,8 @@ body {
   margin: 0;
   background: transparent;
   position: relative;
+  /* Prevent layout thrashing */
+  contain: layout style;
 }
 
 .main-content {
@@ -56,13 +66,23 @@ body {
   background: transparent !important;
   width: calc(100% - 320px);
   position: relative;
-  /* Performance optimizations for scrolling */
+
+  /* CRITICAL PERFORMANCE FIXES */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Light GPU acceleration */
-  transform: translateZ(0);
-  /* Prevent layout thrashing */
-  contain: layout style;
+
+  /* Remove heavy effects that cause crashes */
+  /* transform: translateZ(0); */
+  /* REMOVED - can cause layer explosion */
+  /* contain: layout style; */
+  /* REMOVED - can be too aggressive */
+
+  /* Light containment only */
+  contain: paint;
+  will-change: scroll-position;
+
+  /* Force hardware acceleration for scrolling only */
+  transform: translate3d(0, 0, 0);
 }
 
 /* ===== BUTTON STYLES ===== */
@@ -79,8 +99,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  /* Performance optimization */
+  /* Light GPU acceleration only for interactive elements */
   transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .btn:hover {
@@ -102,6 +123,7 @@ body {
   align-items: center;
   gap: 8px;
   transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .btn-secondary:hover {
@@ -124,6 +146,7 @@ body {
   min-width: 160px;
   justify-content: center;
   transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .login-btn:hover {
@@ -145,12 +168,13 @@ body {
   opacity: 0;
   transition: transform 0.4s ease, opacity 0.4s ease;
   z-index: 1000;
-  /* REDUCED BLUR: from 10px to 4px */
-  backdrop-filter: blur(4px);
+  /* MINIMAL BLUR: from 4px to 2px or remove entirely */
+  backdrop-filter: blur(2px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 400px;
-  /* Performance optimization */
+  /* Light GPU acceleration */
   transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .toast.show {
@@ -179,6 +203,8 @@ body {
   align-items: center;
   color: white;
   z-index: 9999;
+  /* Prevent interactions during load */
+  pointer-events: none;
 }
 
 .loading-content {
@@ -188,6 +214,102 @@ body {
 .loading-content h3 {
   margin-bottom: 20px;
   font-size: 1.5rem;
+}
+
+/* ===== CRITICAL PERFORMANCE FIXES ===== */
+
+/* Reduce composite layers for better scrolling */
+* {
+  /* Minimize repaints but don't force new layers */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimize image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Fix for white space at bottom */
+html,
+body,
+#__next {
+  min-height: 100vh;
+  /* Prevent layout shifts */
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  /* Light optimization */
+  contain: paint;
+}
+
+/* Allow content to expand naturally but constrain to viewport */
+.content-wrapper>* {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* ===== SCROLLBAR OPTIMIZATIONS ===== */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+  /* Reduced from 8px */
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  /* More transparent */
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  /* More transparent */
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+  /* More transparent */
+}
+
+/* ===== PERFORMANCE UTILITY CLASSES ===== */
+
+/* Use for heavy sections that should be optimized */
+.performance-optimized {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: paint;
+  will-change: transform;
+}
+
+/* For fixed position elements */
+.fixed-optimized {
+  position: fixed;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: paint;
+}
+
+/* For elements with background blur - use sparingly */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(2px);
+  /* Minimal blur */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ===== CONTENT VISIBILITY FOR LARGE SECTIONS ===== */
+/* This will dramatically improve performance for off-screen content */
+.section-container {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+  /* Estimated height */
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -211,6 +333,8 @@ body {
     width: 100%;
     padding: 15px;
     min-height: calc(100vh - 120px);
+    /* More aggressive containment on mobile */
+    contain: paint style;
   }
 
   .card-grid {
@@ -224,6 +348,12 @@ body {
     margin-top: 90px;
     min-height: calc(100vh - 110px);
   }
+
+  /* Reduce animations on mobile */
+  .btn,
+  .login-btn {
+    transition: transform 0.2s ease;
+  }
 }
 
 /* Ensure content fills the page */
@@ -231,41 +361,27 @@ body {
   margin-bottom: 50px;
 }
 
-/* Fix for white space at bottom */
-html,
-body,
-#__next {
-  min-height: 100vh;
+/* ===== ANIMATION PERFORMANCE FIXES ===== */
+/* Only animate transform and opacity for best performance */
+@media (prefers-reduced-motion: no-preference) {
+  .performance-animation {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
 }
 
-.content-wrapper {
-  width: 100%;
+/* ===== MEMORY LEAK PREVENTION ===== */
+/* Ensure large images don't cause memory issues */
+img {
   max-width: 100%;
-  min-width: 0;
-  position: relative;
+  height: auto;
 }
 
-/* Allow content to expand naturally but constrain to viewport */
-.content-wrapper>* {
-  max-width: 100%;
-  width: 100%;
+/* ===== WILL-CHANGE OPTIMIZATIONS ===== */
+/* Only apply will-change when absolutely necessary */
+.scrolling-optimized {
+  will-change: scroll-position;
 }
 
-/* ===== SCROLLBAR OPTIMIZATIONS ===== */
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+.animating-optimized {
+  will-change: transform, opacity;
 }
