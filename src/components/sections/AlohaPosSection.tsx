@@ -94,82 +94,53 @@ const TRAINING_VIDEOS = [
   }
 ];
 
-// Animated Card Component with Colored Glow Effects
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Different glow colors for different cards - green theme for POS
-  const glowColors = [
-    'linear-gradient(45deg, #38A169, #48BB78, transparent)', // Green
-    'linear-gradient(45deg, #2F855A, #38A169, transparent)', // Dark Green
-    'linear-gradient(45deg, #276749, #2F855A, transparent)', // Deeper Green
-    'linear-gradient(45deg, #22543D, #276749, transparent)'  // Deep Green
-  ];
-
-  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #48BB78, transparent)`;
-
+// SIMPLE Card Component - NO HOVER EFFECTS
+function SimpleCard({ title, description, items, footer, index, children }: any) {
   return (
     <div 
       style={{
-        borderRadius: '16px',
+        borderRadius: '12px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(56, 161, 105, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
+      {/* Static Glow Effect - No Animation */}
+      <div style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        right: '0',
+        height: '3px',
+        background: `linear-gradient(90deg, ${SECTION_COLOR}, #48BB78)`,
+        zIndex: 1
+      }} />
       
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ position: 'relative', zIndex: 1, marginTop: '3px' }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-          backdropFilter: 'blur(8px)'
+          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          padding: '16px 20px',
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
           <h4 style={{
             color: '#ffffff',
             margin: 0,
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
             fontWeight: 600
           }}>
             {title}
           </h4>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '16px 20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
+              <ul style={{paddingLeft: '18px', marginBottom: '0', marginTop: '12px'}}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -177,8 +148,8 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
         </div>
         {footer && (
           <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
+            padding: '12px 20px',
+            background: 'rgba(237, 242, 247, 0.1)',
             fontSize: '0.85rem',
             color: 'rgba(255, 255, 255, 0.9)',
             display: 'flex',
@@ -195,36 +166,23 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
   );
 }
 
-// Checklist Item Component
+// Simple Checklist Item - NO HOVER
 function ChecklistItem({ children, index }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <label style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: '12px',
-      padding: '12px',
-      background: 'rgba(255, 255, 255, 0.08)',
-      borderRadius: '8px',
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: 'rgba(255, 255, 255, 0.15)',
-      transition: 'all 0.3s ease',
+      gap: '10px',
+      padding: '10px',
+      background: 'rgba(255, 255, 255, 0.06)',
+      borderRadius: '6px',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
       cursor: 'pointer',
-      marginBottom: '8px',
-      ...(isHovered && {
-        background: `rgba(${SECTION_COLOR_RGB}, 0.15)`,
-        borderColor: `rgba(${SECTION_COLOR_RGB}, 0.3)`,
-        transform: 'translateX(5px)'
-      })
-    }}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
-    >
+      marginBottom: '6px',
+    }}>
       <input type="checkbox" style={{
-        width: '18px',
-        height: '18px',
+        width: '16px',
+        height: '16px',
         marginTop: '2px',
         cursor: 'pointer',
         accentColor: SECTION_COLOR
@@ -241,7 +199,7 @@ function ChecklistItem({ children, index }: any) {
   );
 }
 
-// YouTube Video Player with Single Click
+// YouTube Video Player - SIMPLIFIED
 function YouTubeVideo({ videoId, title, description, duration }: { 
   videoId: string; 
   title: string; 
@@ -250,7 +208,6 @@ function YouTubeVideo({ videoId, title, description, duration }: {
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [showOverlay, setShowOverlay] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
 
   const baseVideoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`;
   const autoplayUrl = `${baseVideoUrl}&autoplay=1`;
@@ -279,15 +236,15 @@ function YouTubeVideo({ videoId, title, description, duration }: {
   };
 
   return (
-    <AnimatedCard title={title} index={0}>
-      <p style={{ marginBottom: '15px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
+    <SimpleCard title={title} index={0}>
+      <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
       
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
         height: 0,
         overflow: 'hidden',
-        borderRadius: '8px',
+        borderRadius: '6px',
         backgroundColor: '#000'
       }}>
         <iframe
@@ -320,21 +277,14 @@ function YouTubeVideo({ videoId, title, description, duration }: {
               justifyContent: 'center',
               alignItems: 'center',
               color: 'white',
-              borderRadius: '8px',
+              borderRadius: '6px',
               cursor: 'pointer',
-              transition: 'all 0.3s ease'
             }}
             onClick={handlePlay}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = `rgba(${SECTION_COLOR_RGB}, 0.3)`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
-            }}
           >
-            <div style={{ fontSize: '64px', marginBottom: '10px' }}>▶️</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: '600' }}>Click to Play</div>
-            <div style={{ marginTop: '8px', fontSize: '0.9rem', opacity: 0.8 }}>
+            <div style={{ fontSize: '48px', marginBottom: '8px' }}>▶️</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Click to Play</div>
+            <div style={{ marginTop: '6px', fontSize: '0.85rem', opacity: 0.8 }}>
               Duration: {duration}
             </div>
           </div>
@@ -342,8 +292,8 @@ function YouTubeVideo({ videoId, title, description, duration }: {
       </div>
 
       <div style={{ 
-        marginTop: '10px', 
-        fontSize: '0.9rem', 
+        marginTop: '8px', 
+        fontSize: '0.85rem', 
         color: 'rgba(255, 255, 255, 0.7)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -358,23 +308,15 @@ function YouTubeVideo({ videoId, title, description, duration }: {
             textDecoration: 'none',
             fontWeight: '500'
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.textDecoration = 'underline';
-            e.currentTarget.style.color = '#48BB78';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.textDecoration = 'none';
-            e.currentTarget.style.color = SECTION_COLOR;
-          }}
         >
           Open in YouTube
         </a></span>
       </div>
-    </AnimatedCard>
+    </SimpleCard>
   );
 }
 
-// Category filter component
+// Simple Category Filter - NO HOVER
 function CategoryFilter({ activeCategory, onCategoryChange }: {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
@@ -384,45 +326,33 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
   return (
     <div style={{ 
       display: 'flex', 
-      gap: '10px', 
-      margin: '20px',
+      gap: '8px', 
+      margin: '16px',
       flexWrap: 'wrap'
     }}>
-      {categories.map(category => {
-        const [isHovered, setIsHovered] = useState(false);
-        
-        return (
-          <button
-            key={category}
-            onClick={() => onCategoryChange(category)}
-            style={{
-              padding: '12px 18px',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              background: activeCategory === category 
-                ? `rgba(${SECTION_COLOR_RGB}, 0.2)` 
-                : 'rgba(255, 255, 255, 0.1)',
-              color: 'rgba(255, 255, 255, 0.9)',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(10px)',
-              borderColor: activeCategory === category 
-                ? `rgba(${SECTION_COLOR_RGB}, 0.4)` 
-                : 'rgba(255, 255, 255, 0.2)',
-              transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-              boxShadow: isHovered && activeCategory !== category 
-                ? '0 4px 12px rgba(56, 161, 105, 0.2)' 
-                : 'none'
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {category}
-          </button>
-        );
-      })}
+      {categories.map(category => (
+        <button
+          key={category}
+          onClick={() => onCategoryChange(category)}
+          style={{
+            padding: '10px 16px',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            background: activeCategory === category 
+              ? `rgba(${SECTION_COLOR_RGB}, 0.2)` 
+              : 'rgba(255, 255, 255, 0.08)',
+            color: 'rgba(255, 255, 255, 0.9)',
+            cursor: 'pointer',
+            fontSize: '0.85rem',
+            fontWeight: '500',
+            borderColor: activeCategory === category 
+              ? `rgba(${SECTION_COLOR_RGB}, 0.4)` 
+              : 'rgba(255, 255, 255, 0.2)',
+          }}
+        >
+          {category}
+        </button>
+      ))}
     </div>
   );
 }
@@ -456,25 +386,21 @@ export default function AlohaPosSection() {
     <div 
       id="aloha-pos"
       style={{
-        marginBottom: '30px',
-        borderRadius: '20px',
+        marginBottom: '25px',
+        borderRadius: '16px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
       }}
       className="active"
     >
       
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
-        padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
-        backdropFilter: 'blur(10px)',
+        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
+        padding: '16px 20px',
+        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -482,10 +408,9 @@ export default function AlohaPosSection() {
         <div>
           <h3 style={{
             color: '#ffffff',
-            fontSize: '1.4rem',
+            fontSize: '1.3rem',
             fontWeight: 700,
             margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
           }}>
             Aloha POS System Guide
           </h3>
@@ -493,42 +418,41 @@ export default function AlohaPosSection() {
             margin: 0,
             opacity: 0.9,
             color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.95rem',
+            fontSize: '0.9rem',
             marginTop: '4px'
           }}>
             Complete video training library for POS operations
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          fontSize: '0.9rem',
+          background: 'rgba(255, 255, 255, 0.15)',
+          padding: '6px 12px',
+          borderRadius: '16px',
+          fontSize: '0.85rem',
           color: 'white',
           fontWeight: '600',
-          backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
           {TRAINING_VIDEOS.length} Videos
         </span>
       </div>
 
-      <div style={{ padding: '25px' }}>
+      <div style={{ padding: '20px' }}>
         {/* Welcome Card */}
-        <AnimatedCard
+        <SimpleCard
           title="🎯 Welcome to Aloha POS Training"
           index={1}
         >
           <p style={{ 
             margin: 0, 
             color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: 1.6,
-            fontSize: '1rem'
+            lineHeight: 1.5,
+            fontSize: '0.95rem'
           }}>
             Welcome to the Aloha POS Video Library. Here you'll find all the training videos 
             covering procedures and systems you'll use during your shift. Click on any video to start learning.
           </p>
-        </AnimatedCard>
+        </SimpleCard>
 
         {/* Category Filter */}
         <CategoryFilter 
@@ -539,7 +463,7 @@ export default function AlohaPosSection() {
         {/* Videos Grid */}
         <div>
           {filteredVideos.length === 0 ? (
-            <AnimatedCard
+            <SimpleCard
               title="No Videos Found"
               index={2}
             >
@@ -551,7 +475,7 @@ export default function AlohaPosSection() {
               }}>
                 No videos found in this category.
               </p>
-            </AnimatedCard>
+            </SimpleCard>
           ) : (
             filteredVideos.map((video, index) => (
               <YouTubeVideo
@@ -566,11 +490,11 @@ export default function AlohaPosSection() {
         </div>
 
         {/* POS Procedures Checklist */}
-        <AnimatedCard
+        <SimpleCard
           title="✅ Essential POS Procedures Checklist"
           index={3}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <ChecklistItem>Clock in using the POS system at start of shift</ChecklistItem>
             <ChecklistItem>Check daily specials and event board for updates</ChecklistItem>
             <ChecklistItem>Review reservation list and any special requests</ChecklistItem>
@@ -580,14 +504,14 @@ export default function AlohaPosSection() {
             <ChecklistItem>Understand how to handle comps and voids</ChecklistItem>
             <ChecklistItem>Complete end-of-shift reporting accurately</ChecklistItem>
           </div>
-        </AnimatedCard>
+        </SimpleCard>
 
         {/* Troubleshooting Checklist */}
-        <AnimatedCard
+        <SimpleCard
           title="🔧 POS Troubleshooting Checklist"
           index={4}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <ChecklistItem>Reboot POS system if unresponsive</ChecklistItem>
             <ChecklistItem>Check network connectivity for card processing</ChecklistItem>
             <ChecklistItem>Verify card reader cables are securely connected</ChecklistItem>
@@ -596,18 +520,18 @@ export default function AlohaPosSection() {
             <ChecklistItem>Contact manager for system override needs</ChecklistItem>
             <ChecklistItem>Document any persistent issues for IT</ChecklistItem>
           </div>
-        </AnimatedCard>
+        </SimpleCard>
 
         {/* Video Tips */}
-        <AnimatedCard
+        <SimpleCard
           title="💡 Video Learning Tips"
           index={5}
         >
           <ul style={{ 
             margin: 0, 
-            paddingLeft: '20px',
+            paddingLeft: '18px',
             color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: 1.6
+            lineHeight: 1.5
           }}>
             <li>Click the fullscreen button for better viewing experience</li>
             <li>Use playback speed controls to watch at your preferred pace</li>
@@ -616,7 +540,7 @@ export default function AlohaPosSection() {
             <li>Contact a manager if you have questions after watching</li>
             <li>Bookmark frequently used procedures for quick reference</li>
           </ul>
-        </AnimatedCard>
+        </SimpleCard>
 
         {/* Reset Button */}
         <button 
@@ -625,35 +549,24 @@ export default function AlohaPosSection() {
             background: `linear-gradient(135deg, ${SECTION_COLOR}, #2F855A)`,
             color: 'white',
             border: 'none',
-            padding: '12px 24px',
-            borderRadius: '8px',
+            padding: '10px 20px',
+            borderRadius: '6px',
             cursor: 'pointer',
             fontWeight: '600',
-            transition: 'all 0.3s ease',
-            marginTop: '15px',
-            boxShadow: '0 4px 15px rgba(56, 161, 105, 0.3)',
-            backdropFilter: 'blur(10px)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 161, 105, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 161, 105, 0.3)';
+            marginTop: '12px',
           }}
         >
           Reset All Checklists
         </button>
 
         {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
-          <AnimatedCard
+        <div style={{ marginTop: '20px' }}>
+          <SimpleCard
             title="📊 Training Progress"
             index={6}
           >
             <ProgressSection />
-          </AnimatedCard>
+          </SimpleCard>
         </div>
       </div>
     </div>

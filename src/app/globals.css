@@ -2,7 +2,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Decades Bar Training Portal Styles - ULTRA PERFORMANCE */
+/* Decades Bar Training Portal Styles - OPTIMIZED PERFORMANCE */
 :root {
   --primary: #1a365d;
   --secondary: #2d3748;
@@ -23,7 +23,6 @@
 
 html {
   background: transparent !important;
-  /* Prevent elastic scrolling on iOS */
   overscroll-behavior: none;
 }
 
@@ -35,11 +34,9 @@ body {
   min-height: 100vh;
   color: white;
   overflow-x: hidden;
-  /* CRITICAL: Disable horizontal scroll and elastic effects */
-  overflow-y: overlay;
-  /* Better scrollbar handling */
+  /* REMOVED: overlay scrollbar which can cause issues */
+  overflow-y: auto;
   overscroll-behavior: none;
-  /* Force GPU acceleration for the entire page */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -53,10 +50,10 @@ body {
   margin: 0;
   background: transparent;
   position: relative;
-  /* Prevent layout thrashing */
-  contain: layout style;
+  /* REMOVED: contain property which can cause crashes */
 }
 
+/* Add this to your globals.css to fix scrolling */
 .main-content {
   flex: 1;
   margin-left: 300px;
@@ -67,22 +64,28 @@ body {
   width: calc(100% - 320px);
   position: relative;
 
-  /* CRITICAL PERFORMANCE FIXES */
+  /* RESTORE SMOOTH SCROLLING */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  /* Remove heavy effects that cause crashes */
-  /* transform: translateZ(0); */
-  /* REMOVED - can cause layer explosion */
-  /* contain: layout style; */
-  /* REMOVED - can be too aggressive */
+  /* REMOVE all problematic performance fixes */
+  transform: none !important;
+  contain: none !important;
+  will-change: auto !important;
+}
 
-  /* Light containment only */
-  contain: paint;
-  will-change: scroll-position;
+/* Ensure smooth scrolling on all elements */
+* {
+  box-sizing: border-box;
+}
 
-  /* Force hardware acceleration for scrolling only */
-  transform: translate3d(0, 0, 0);
+/* Remove all aggressive containment */
+.container,
+.content-wrapper,
+.main-content>* {
+  contain: none !important;
+  transform: none !important;
+  will-change: auto !important;
 }
 
 /* ===== BUTTON STYLES ===== */
@@ -99,9 +102,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  /* Light GPU acceleration only for interactive elements */
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  /* REMOVED: forced GPU acceleration */
 }
 
 .btn:hover {
@@ -122,8 +123,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  /* REMOVED: forced GPU acceleration */
 }
 
 .btn-secondary:hover {
@@ -145,8 +145,7 @@ body {
   gap: 8px;
   min-width: 160px;
   justify-content: center;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  /* REMOVED: forced GPU acceleration */
 }
 
 .login-btn:hover {
@@ -168,13 +167,9 @@ body {
   opacity: 0;
   transition: transform 0.4s ease, opacity 0.4s ease;
   z-index: 1000;
-  /* MINIMAL BLUR: from 4px to 2px or remove entirely */
-  backdrop-filter: blur(2px);
+  /* REMOVED: backdrop-filter entirely - major performance hit */
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 400px;
-  /* Light GPU acceleration */
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 .toast.show {
@@ -203,7 +198,6 @@ body {
   align-items: center;
   color: white;
   z-index: 9999;
-  /* Prevent interactions during load */
   pointer-events: none;
 }
 
@@ -218,12 +212,8 @@ body {
 
 /* ===== CRITICAL PERFORMANCE FIXES ===== */
 
-/* Reduce composite layers for better scrolling */
-* {
-  /* Minimize repaints but don't force new layers */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+/* REMOVED: Global backface-visibility - this was causing layer explosion */
+/* Let the browser handle this automatically */
 
 /* Optimize image rendering */
 img {
@@ -236,7 +226,6 @@ html,
 body,
 #__next {
   min-height: 100vh;
-  /* Prevent layout shifts */
   overflow-y: auto;
 }
 
@@ -245,11 +234,9 @@ body,
   max-width: 100%;
   min-width: 0;
   position: relative;
-  /* Light optimization */
-  contain: paint;
+  /* REMOVED: contain property */
 }
 
-/* Allow content to expand naturally but constrain to viewport */
 .content-wrapper>* {
   max-width: 100%;
   width: 100%;
@@ -258,58 +245,43 @@ body,
 /* ===== SCROLLBAR OPTIMIZATIONS ===== */
 .main-content::-webkit-scrollbar {
   width: 6px;
-  /* Reduced from 8px */
 }
 
 .main-content::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
-  /* More transparent */
   border-radius: 4px;
 }
 
 .main-content::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
-  /* More transparent */
   border-radius: 4px;
 }
 
 .main-content::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
-  /* More transparent */
 }
 
 /* ===== PERFORMANCE UTILITY CLASSES ===== */
 
-/* Use for heavy sections that should be optimized */
-.performance-optimized {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  contain: paint;
-  will-change: transform;
-}
+/* REMOVED: performance-optimized class - too aggressive */
 
-/* For fixed position elements */
+/* For fixed position elements - simplified */
 .fixed-optimized {
   position: fixed;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  contain: paint;
 }
 
-/* For elements with background blur - use sparingly */
+/* For elements with background blur - use very sparingly */
 .glass-effect {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(2px);
-  /* Minimal blur */
+  /* REMOVED: backdrop-filter - major performance hit */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* ===== CONTENT VISIBILITY FOR LARGE SECTIONS ===== */
-/* This will dramatically improve performance for off-screen content */
+/* Use this carefully only for truly large, off-screen sections */
 .section-container {
   content-visibility: auto;
   contain-intrinsic-size: 1px 500px;
-  /* Estimated height */
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -333,8 +305,7 @@ body,
     width: 100%;
     padding: 15px;
     min-height: calc(100vh - 120px);
-    /* More aggressive containment on mobile */
-    contain: paint style;
+    /* REMOVED: contain property */
   }
 
   .card-grid {
@@ -349,39 +320,26 @@ body,
     min-height: calc(100vh - 110px);
   }
 
-  /* Reduce animations on mobile */
   .btn,
   .login-btn {
     transition: transform 0.2s ease;
   }
 }
 
-/* Ensure content fills the page */
 .main-content>*:last-child {
   margin-bottom: 50px;
 }
 
 /* ===== ANIMATION PERFORMANCE FIXES ===== */
-/* Only animate transform and opacity for best performance */
 @media (prefers-reduced-motion: no-preference) {
   .performance-animation {
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
 }
 
-/* ===== MEMORY LEAK PREVENTION ===== */
-/* Ensure large images don't cause memory issues */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* ===== WILL-CHANGE OPTIMIZATIONS ===== */
-/* Only apply will-change when absolutely necessary */
-.scrolling-optimized {
-  will-change: scroll-position;
-}
-
-.animating-optimized {
-  will-change: transform, opacity;
-}
+/* REMOVED: will-change classes - let browser handle optimization */

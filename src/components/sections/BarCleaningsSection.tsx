@@ -9,82 +9,43 @@ import { useState, useEffect, useRef } from 'react';
 const SECTION_COLOR = '#38B2AC'; // Teal color for cleaning
 const SECTION_COLOR_RGB = '56, 178, 172';
 
-// Animated Card Component with Colored Glow Effects
+// Simplified Card Component - NO HOVER EFFECTS
 function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Different glow colors for different cards - teal theme for cleaning
-  const glowColors = [
-    'linear-gradient(45deg, #38B2AC, #4FD1C7, transparent)', // Teal
-    'linear-gradient(45deg, #319795, #38B2AC, transparent)', // Dark Teal
-    'linear-gradient(45deg, #2C7A7B, #319795, transparent)', // Deeper Teal
-    'linear-gradient(45deg, #285E61, #2C7A7B, transparent)'  // Deep Teal
-  ];
-
-  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #4FD1C7, transparent)`;
-
   return (
     <div 
       style={{
-        borderRadius: '16px',
-        margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(56, 178, 172, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        borderRadius: '12px',
+        margin: '12px 0',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.08)',
+        // REMOVED: backdrop-filter entirely
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
+      <div style={{ position: 'relative' }}>
         <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-          backdropFilter: 'blur(8px)'
+          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          padding: '16px 20px',
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
           <h4 style={{
             color: '#ffffff',
             margin: 0,
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
             fontWeight: 600
           }}>
             {title}
           </h4>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '16px 20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
+              <ul style={{paddingLeft: '18px', marginBottom: '0', marginTop: '12px'}}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -92,8 +53,8 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
         </div>
         {footer && (
           <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
+            padding: '12px 20px',
+            background: 'rgba(237, 242, 247, 0.1)',
             fontSize: '0.85rem',
             color: 'rgba(255, 255, 255, 0.9)',
             display: 'flex',
@@ -110,36 +71,23 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
   );
 }
 
-// Checklist Item Component
+// Simplified Checklist Item Component - NO HOVER
 function ChecklistItem({ children, index }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <label style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: '12px',
-      padding: '12px',
-      background: 'rgba(255, 255, 255, 0.08)',
-      borderRadius: '8px',
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: 'rgba(255, 255, 255, 0.15)',
-      transition: 'all 0.3s ease',
+      gap: '10px',
+      padding: '10px',
+      background: 'rgba(255, 255, 255, 0.06)',
+      borderRadius: '6px',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      marginBottom: '6px',
       cursor: 'pointer',
-      marginBottom: '8px',
-      ...(isHovered && {
-        background: `rgba(${SECTION_COLOR_RGB}, 0.15)`,
-        borderColor: `rgba(${SECTION_COLOR_RGB}, 0.3)`,
-        transform: 'translateX(5px)'
-      })
-    }}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
-    >
+    }}>
       <input type="checkbox" style={{
-        width: '18px',
-        height: '18px',
+        width: '16px',
+        height: '16px',
         marginTop: '2px',
         cursor: 'pointer'
       }} />
@@ -155,7 +103,7 @@ function ChecklistItem({ children, index }: any) {
   );
 }
 
-// YouTube Video Player with Single Click
+// YouTube Video Player - SIMPLIFIED
 function YouTubeVideo({ videoId, title, description, duration }: { 
   videoId: string; 
   title: string; 
@@ -193,14 +141,14 @@ function YouTubeVideo({ videoId, title, description, duration }: {
 
   return (
     <AnimatedCard title={title} index={0}>
-      <p style={{ marginBottom: '15px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
+      <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
       
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
         height: 0,
         overflow: 'hidden',
-        borderRadius: '8px',
+        borderRadius: '6px',
         backgroundColor: '#000'
       }}>
         <iframe
@@ -233,14 +181,14 @@ function YouTubeVideo({ videoId, title, description, duration }: {
               justifyContent: 'center',
               alignItems: 'center',
               color: 'white',
-              borderRadius: '8px',
+              borderRadius: '6px',
               cursor: 'pointer'
             }}
             onClick={handlePlay}
           >
-            <div style={{ fontSize: '64px', marginBottom: '10px' }}>▶️</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: '600' }}>Click to Play</div>
-            <div style={{ marginTop: '8px', fontSize: '0.9rem', opacity: 0.8 }}>
+            <div style={{ fontSize: '48px', marginBottom: '8px' }}>▶️</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Click to Play</div>
+            <div style={{ marginTop: '6px', fontSize: '0.85rem', opacity: 0.8 }}>
               Duration: {duration}
             </div>
           </div>
@@ -248,8 +196,8 @@ function YouTubeVideo({ videoId, title, description, duration }: {
       </div>
 
       <div style={{ 
-        marginTop: '10px', 
-        fontSize: '0.9rem', 
+        marginTop: '8px', 
+        fontSize: '0.85rem', 
         color: 'rgba(255, 255, 255, 0.7)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -259,7 +207,11 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           href={`https://youtu.be/${videoId}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          style={{ color: SECTION_COLOR }}
+          style={{ 
+            color: SECTION_COLOR,
+            textDecoration: 'none',
+            fontWeight: '500'
+          }}
         >
           Open in YouTube
         </a></span>
@@ -315,11 +267,12 @@ export default function BarCleaningsSection() {
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
       calendar.push(
         <div key={`header-${day}`} style={{
-          padding: '10px',
-          background: 'rgba(255, 255, 255, 0.15)',
+          padding: '8px',
+          background: 'rgba(255, 255, 255, 0.12)',
           color: 'rgba(255, 255, 255, 0.9)',
           fontWeight: '600',
-          textAlign: 'center'
+          textAlign: 'center',
+          fontSize: '0.85rem'
         }}>
           {day}
         </div>
@@ -327,7 +280,7 @@ export default function BarCleaningsSection() {
     });
 
     for (let i = 0; i < firstDay; i++) {
-      calendar.push(<div key={`empty-${i}`} style={{padding: '10px'}}></div>);
+      calendar.push(<div key={`empty-${i}`} style={{padding: '8px'}}></div>);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -336,24 +289,23 @@ export default function BarCleaningsSection() {
       const isCleaningDay = cleaningDays.includes(dateStr);
 
       const dayStyle = {
-  padding: '10px',
-  background: isCleaningDay 
-    ? `rgba(${SECTION_COLOR_RGB}, 0.3)` 
-    : isToday
-    ? 'rgba(212, 175, 55, 0.2)'
-    : 'rgba(255, 255, 255, 0.08)',
-  borderWidth: '1px',
-  borderStyle: 'solid',
-  borderColor: isCleaningDay 
-    ? `rgba(${SECTION_COLOR_RGB}, 0.5)` 
-    : isToday
-    ? 'rgba(212, 175, 55, 0.4)'
-    : 'rgba(255, 255, 255, 0.15)',
-  borderRadius: '8px',
-  textAlign: 'center' as const,
-  cursor: 'pointer',
-  transition: 'all 0.3s ease'
-};
+        padding: '8px',
+        background: isCleaningDay 
+          ? `rgba(${SECTION_COLOR_RGB}, 0.25)` 
+          : isToday
+          ? 'rgba(212, 175, 55, 0.15)'
+          : 'rgba(255, 255, 255, 0.06)',
+        border: '1px solid',
+        borderColor: isCleaningDay 
+          ? `rgba(${SECTION_COLOR_RGB}, 0.4)` 
+          : isToday
+          ? 'rgba(212, 175, 55, 0.3)'
+          : 'rgba(255, 255, 255, 0.12)',
+        borderRadius: '6px',
+        textAlign: 'center' as const,
+        cursor: 'pointer',
+        fontSize: '0.9rem'
+      };
 
       calendar.push(
         <div
@@ -369,12 +321,12 @@ export default function BarCleaningsSection() {
           </div>
           {isCleaningDay && (
             <div style={{
-              fontSize: '0.7rem',
+              fontSize: '0.65rem',
               background: SECTION_COLOR,
               color: 'white',
               padding: '2px 4px',
               borderRadius: '3px',
-              marginTop: '5px'
+              marginTop: '4px'
             }}>
               Cleaning
             </div>
@@ -415,25 +367,23 @@ export default function BarCleaningsSection() {
     <div 
       id="bar-cleanings"
       style={{
-        marginBottom: '30px',
-        borderRadius: '20px',
+        marginBottom: '25px',
+        borderRadius: '16px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
+        background: 'rgba(255, 255, 255, 0.08)',
+        // REMOVED: backdrop-filter
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
       }}
       className="active"
     >
       
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
-        padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
-        backdropFilter: 'blur(10px)',
+        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
+        padding: '16px 20px',
+        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+        // REMOVED: backdrop-filter
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -441,10 +391,9 @@ export default function BarCleaningsSection() {
         <div>
           <h3 style={{
             color: '#ffffff',
-            fontSize: '1.4rem',
+            fontSize: '1.3rem',
             fontWeight: 700,
             margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
           }}>
             Bar Cleaning Schedule
           </h3>
@@ -452,27 +401,26 @@ export default function BarCleaningsSection() {
             margin: 0,
             opacity: 0.9,
             color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.95rem',
+            fontSize: '0.9rem',
             marginTop: '4px'
           }}>
             Comprehensive cleaning procedures and schedules
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          fontSize: '0.9rem',
+          background: 'rgba(255, 255, 255, 0.15)',
+          padding: '6px 12px',
+          borderRadius: '16px',
+          fontSize: '0.85rem',
           color: 'white',
           fontWeight: '600',
-          backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
           Maintenance
         </span>
       </div>
 
-      <div style={{ padding: '25px' }}>
+      <div style={{ padding: '20px' }}>
         {/* Training Video */}
         {BAR_CLEANING_VIDEOS.map(video => (
           <YouTubeVideo
@@ -489,7 +437,7 @@ export default function BarCleaningsSection() {
           title="✅ Opening Checklist"
           index={1}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <ChecklistItem>Remove caps from bottles and soak in Soda water</ChecklistItem>
             <ChecklistItem>Organize bottles on back-bar display - Straight facing and filling gaps</ChecklistItem>
             <ChecklistItem>Set up well - Marry bottles and gather the required bottles for the shift</ChecklistItem>
@@ -506,7 +454,7 @@ export default function BarCleaningsSection() {
           title="🧹 Closing Procedures Checklist"
           index={2}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <ChecklistItem>Soak guns for 10-15 mins in hot water (if available) then wipe and return to holder. Soak the guns as soon as the lights go up on your floor and start entering tips, etc while they're soaking.</ChecklistItem>
             <ChecklistItem>Soak bottle caps in hot water/soda water as you remove them from bottles at the start of your shift.</ChecklistItem>
             <ChecklistItem>Soda-gun holders should be cleaned and if they have a spill cup underneath, that should also be cleaned and free of standing water</ChecklistItem>
@@ -531,27 +479,26 @@ export default function BarCleaningsSection() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '15px',
-            padding: '10px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px'
+            marginBottom: '12px',
+            padding: '8px',
+            background: 'rgba(255, 255, 255, 0.06)',
+            borderRadius: '6px'
           }}>
             <button style={{
               background: SECTION_COLOR,
               color: 'white',
               border: 'none',
-              padding: '8px 16px',
-              borderRadius: '5px',
+              padding: '6px 12px',
+              borderRadius: '4px',
               cursor: 'pointer',
               fontWeight: '600',
-              transition: 'all 0.2s ease'
             }} onClick={() => changeMonth(-1)}>
               ← Previous
             </button>
             <h4 style={{ 
               color: 'white', 
               margin: 0,
-              fontSize: '1.1rem'
+              fontSize: '1rem'
             }}>
               {new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h4>
@@ -559,11 +506,10 @@ export default function BarCleaningsSection() {
               background: SECTION_COLOR,
               color: 'white',
               border: 'none',
-              padding: '8px 16px',
-              borderRadius: '5px',
+              padding: '6px 12px',
+              borderRadius: '4px',
               cursor: 'pointer',
               fontWeight: '600',
-              transition: 'all 0.2s ease'
             }} onClick={() => changeMonth(1)}>
               Next →
             </button>
@@ -571,8 +517,8 @@ export default function BarCleaningsSection() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '5px',
-            marginTop: '10px'
+            gap: '4px',
+            marginTop: '8px'
           }}>
             {generateCalendar()}
           </div>
@@ -583,7 +529,7 @@ export default function BarCleaningsSection() {
           title="✅ Monthly / Quarterly Bar Cleans"
           index={4}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <ChecklistItem>Remove caps/ pour spouts from all bottles and soak hot water</ChecklistItem>
             <ChecklistItem>Remove bottles from back-bar displays and clean</ChecklistItem>
             <ChecklistItem>Clean all shelving and restore wiped bottles</ChecklistItem>
@@ -597,22 +543,20 @@ export default function BarCleaningsSection() {
 
         {/* Reset Button */}
         <button style={{
-          background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
+          background: `linear-gradient(135deg, ${SECTION_COLOR}, #319795)`,
           color: 'white',
           border: 'none',
-          padding: '12px 24px',
-          borderRadius: '8px',
+          padding: '10px 20px',
+          borderRadius: '6px',
           cursor: 'pointer',
           fontWeight: '600',
-          transition: 'all 0.3s ease',
-          marginTop: '15px',
-          boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+          marginTop: '12px',
         }} onClick={resetChecklists}>
           Reset All Checklists
         </button>
 
         {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '20px' }}>
           <ProgressSection />
         </div>
       </div>
