@@ -4,6 +4,12 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 import { ChecklistItem } from '@/types';
 
+// Define the new color theme - Soft Coral Purple
+const SECTION_COLOR = '#D4A5A5'; // Soft coral
+const SECTION_COLOR_RGB = '212, 165, 165';
+const ACCENT_COLOR = '#9F86C0'; // Soft purple
+const ACCENT_COLOR_RGB = '159, 134, 192';
+
 // Move static data outside component to prevent recreation on every render
 const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: '1', text: 'Arrive 15 minutes before scheduled shift time', completed: false, category: 'opening' },
@@ -69,8 +75,6 @@ export default function StandardOperatingProceduresSection() {
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const [isQuickRefHovered, setIsQuickRefHovered] = useState(false);
 
   // Track section visit when currentUser is available
   useEffect(() => {
@@ -122,37 +126,27 @@ export default function StandardOperatingProceduresSection() {
   const completedCount = getCompletedCount();
   const progressPercentage = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0;
 
-  // Base glass styles
+  // Base glass styles with coral purple theme
   const glassStyle = {
-    background: 'linear-gradient(135deg, rgba(74, 21, 75, 0.8), rgba(74, 21, 75, 0.95))',
-    backdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255, 255, 255, 0.22)',
-    borderRadius: '20px',
+    background: 'rgba(255, 255, 255, 0.08)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    borderRadius: '16px',
     color: 'white',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    transition: 'all 0.3s ease'
-  };
-
-  // Hover effects with deep purple glow
-  const hoverGlowStyle = {
-    border: '1px solid rgba(255, 127, 80, 0.6)',
-    boxShadow: '0 0 30px rgba(74, 21, 75, 0.8), 0 0 50px rgba(255, 127, 80, 0.3)',
-    transform: 'translateY(-2px)'
   };
 
   // Main container style
   const mainContainerStyle = {
     ...glassStyle,
-    marginBottom: '30px',
-    ...(isHeaderHovered && hoverGlowStyle)
+    marginBottom: '25px',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
   };
 
   const headerStyle = {
-    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
-    padding: '20px',
-    borderBottom: '1px solid rgba(212, 175, 55, 0.4)',
-    backdropFilter: 'blur(10px)',
+    background: `linear-gradient(135deg, rgba(${ACCENT_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+    padding: '16px 20px',
+    borderBottom: `1px solid rgba(${ACCENT_COLOR_RGB}, 0.3)`,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
@@ -162,39 +156,28 @@ export default function StandardOperatingProceduresSection() {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    padding: '12px 18px',
-    borderRadius: '20px',
+    padding: '10px 16px',
+    borderRadius: '16px',
     border: '1px solid rgba(255, 255, 255, 0.2)',
-    background: isActive ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+    background: isActive ? `rgba(${ACCENT_COLOR_RGB}, 0.2)` : 'rgba(255, 255, 255, 0.08)',
     color: 'rgba(255, 255, 255, 0.9)',
     cursor: 'pointer',
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
     fontWeight: '500',
-    transition: 'all 0.3s ease',
-    backdropFilter: 'blur(10px)',
-    borderColor: isActive ? 'rgba(212, 175, 55, 0.4)' : 'rgba(255, 255, 255, 0.2)'
+    borderColor: isActive ? `rgba(${ACCENT_COLOR_RGB}, 0.4)` : 'rgba(255, 255, 255, 0.2)'
   });
 
   const getChecklistItemStyle = (completed: boolean) => ({
     display: 'flex',
     alignItems: 'flex-start',
-    gap: '12px',
-    padding: '14px',
-    background: completed ? 'rgba(56, 161, 105, 0.15)' : 'rgba(255, 255, 255, 0.08)',
-    border: completed ? '1px solid rgba(56, 161, 105, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
+    gap: '10px',
+    padding: '12px',
+    background: completed ? 'rgba(56, 161, 105, 0.15)' : 'rgba(255, 255, 255, 0.06)',
+    border: completed ? '1px solid rgba(56, 161, 105, 0.3)' : '1px solid rgba(255, 255, 255, 0.12)',
+    borderRadius: '8px',
     cursor: 'pointer',
     color: 'rgba(255, 255, 255, 0.9)'
   });
-
-  // Quick reference card style with hover effect
-  const quickRefStyle = {
-    ...glassStyle,
-    margin: '20px',
-    marginTop: '20px',
-    ...(isQuickRefHovered && hoverGlowStyle)
-  };
 
   if (isLoading) {
     return (
@@ -204,10 +187,9 @@ export default function StandardOperatingProceduresSection() {
             <div>
               <h3 style={{
                 color: '#ffffff',
-                fontSize: '1.4rem',
+                fontSize: '1.3rem',
                 fontWeight: 700,
                 margin: 0,
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
               }}>
                 Standard Operating Procedures
               </h3>
@@ -215,7 +197,7 @@ export default function StandardOperatingProceduresSection() {
                 margin: 0, 
                 opacity: 0.9, 
                 color: 'rgba(255, 255, 255, 0.9)', 
-                fontSize: '0.95rem',
+                fontSize: '0.9rem',
                 marginTop: '4px'
               }}>
                 Loading checklist...
@@ -232,8 +214,6 @@ export default function StandardOperatingProceduresSection() {
       className="active" 
       id="procedures"
       style={mainContainerStyle}
-      onMouseEnter={() => setIsHeaderHovered(true)}
-      onMouseLeave={() => setIsHeaderHovered(false)}
     >
       {/* Header Section */}
       <div style={headerStyle}>
@@ -241,10 +221,9 @@ export default function StandardOperatingProceduresSection() {
           <div>
             <h3 style={{
               color: '#ffffff',
-              fontSize: '1.4rem',
+              fontSize: '1.3rem',
               fontWeight: 700,
               margin: 0,
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
             }}>
               Standard Operating Procedures
             </h3>
@@ -252,20 +231,19 @@ export default function StandardOperatingProceduresSection() {
               margin: 0, 
               opacity: 0.9, 
               color: 'rgba(255, 255, 255, 0.9)', 
-              fontSize: '0.95rem',
+              fontSize: '0.9rem',
               marginTop: '4px'
             }}>
               Checklist for all staff - follow carefully
             </p>
           </div>
           <div style={{ 
-            background: 'rgba(255, 255, 255, 0.2)', 
-            padding: '8px 16px', 
-            borderRadius: '20px', 
-            fontSize: '0.9rem', 
+            background: 'rgba(255, 255, 255, 0.15)', 
+            padding: '6px 12px', 
+            borderRadius: '16px', 
+            fontSize: '0.85rem', 
             color: 'white', 
             fontWeight: '600',
-            backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
             {completedCount} / {checklist.length} Completed
@@ -274,49 +252,33 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Progress Bar */}
-      <div style={{ margin: '20px 0', padding: '0 20px' }}>
+      <div style={{ margin: '16px 0', padding: '0 20px' }}>
         <div style={{
-          height: '12px',
+          height: '10px',
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '6px',
+          borderRadius: '5px',
           overflow: 'hidden',
-          marginBottom: '15px',
-          boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)',
+          marginBottom: '12px',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <div 
             style={{
               height: '100%',
-              background: 'linear-gradient(90deg, #38a169, #48bb78)',
+              background: `linear-gradient(90deg, ${ACCENT_COLOR}, #B8A1CC)`,
               width: `${progressPercentage}%`,
-              transition: 'width 0.5s ease',
-              boxShadow: '0 2px 8px rgba(56, 161, 105, 0.4)'
+              transition: 'width 0.3s ease',
             }}
           ></div>
         </div>
       </div>
 
       {/* Category Filters */}
-      <div style={{ display: 'flex', gap: '8px', margin: '20px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '6px', margin: '16px', flexWrap: 'wrap' }}>
         {CATEGORIES.map(category => (
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
             style={getCategoryButtonStyle(activeCategory === category.id)}
-            onMouseEnter={(e) => {
-              if (activeCategory !== category.id) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (activeCategory !== category.id) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-              }
-            }}
           >
             <span>{category.icon}</span>
             <span>{category.label}</span>
@@ -325,30 +287,40 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '12px', margin: '20px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '10px', margin: '16px', flexWrap: 'wrap' }}>
         <button 
-          className="btn" 
           onClick={resetChecklist}
           style={{
+            background: `linear-gradient(135deg, ${SECTION_COLOR}, #C89595)`,
+            color: 'white',
+            border: 'none',
+            padding: '10px 16px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '600',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '12px 20px',
-            fontSize: '0.9rem'
+            gap: '6px',
+            fontSize: '0.85rem'
           }}
         >
           <span>🔄</span>
           Reset Checklist
         </button>
         <button 
-          className="login-btn" 
           onClick={() => showToast('Checklist progress saved!')}
           style={{
+            background: `linear-gradient(135deg, ${ACCENT_COLOR}, #8E7CB0)`,
+            color: 'white',
+            border: 'none',
+            padding: '10px 16px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '600',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '12px 20px',
-            fontSize: '0.9rem'
+            gap: '6px',
+            fontSize: '0.85rem'
           }}
         >
           <span>💾</span>
@@ -358,37 +330,33 @@ export default function StandardOperatingProceduresSection() {
 
       {/* Important Notice */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
-        border: '1px solid rgba(212, 175, 55, 0.4)',
-        borderRadius: '16px',
+        background: `linear-gradient(135deg, rgba(${ACCENT_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+        border: `1px solid rgba(${ACCENT_COLOR_RGB}, 0.3)`,
+        borderRadius: '12px',
         overflow: 'hidden',
-        marginBottom: '25px',
-        backdropFilter: 'blur(15px) saturate(180%)',
-        boxShadow: '0 8px 32px rgba(212, 175, 55, 0.2)',
-        margin: '20px'
+        marginBottom: '20px',
+        margin: '16px'
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
-          padding: '18px 25px',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
-          backdropFilter: 'blur(10px)'
+          background: `linear-gradient(135deg, rgba(${ACCENT_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.15))`,
+          padding: '14px 20px',
+          borderBottom: `1px solid rgba(${ACCENT_COLOR_RGB}, 0.3)`,
         }}>
           <h4 style={{
             margin: 0,
             color: 'white',
-            fontSize: '1.3rem',
+            fontSize: '1.1rem',
             fontWeight: 700,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
           }}>⚠️ Bank & Cash Handling Notice</h4>
         </div>
         <div style={{
-          padding: '25px',
+          padding: '16px 20px',
           color: 'rgba(255, 255, 255, 0.95)',
-          fontSize: '1rem',
-          lineHeight: 1.6
+          fontSize: '0.95rem',
+          lineHeight: 1.5
         }}>
           <p>
-            <strong style={{ color: '#d4af37', fontWeight: 700 }}>Important:</strong> Banks must be counted before each shift. You are financially responsible for counterfeit bills. 
+            <strong style={{ color: ACCENT_COLOR, fontWeight: 700 }}>Important:</strong> Banks must be counted before each shift. You are financially responsible for counterfeit bills. 
             Counterfeit pens must be returned with bank bag - $5 replacement fee applies if missing.
           </p>
         </div>
@@ -398,20 +366,19 @@ export default function StandardOperatingProceduresSection() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '20px',
-        margin: '20px'
+        gap: '16px',
+        margin: '16px'
       }}>
         <div style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(12px) saturate(160%)',
-          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '10px',
           overflow: 'hidden',
-          border: '1px solid rgba(255, 255, 255, 0.18)'
+          border: '1px solid rgba(255, 255, 255, 0.12)'
         }}>
           <div style={{
-            background: 'rgba(255, 255, 255, 0.15)',
-            padding: '20px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.12)',
+            padding: '16px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
@@ -419,49 +386,32 @@ export default function StandardOperatingProceduresSection() {
             <h4 style={{
               color: '#ffffff',
               margin: 0,
-              fontSize: '1.2rem',
+              fontSize: '1.1rem',
               fontWeight: 600
             }}>{getCategoryName(activeCategory)}</h4>
             <span style={{
-              background: 'linear-gradient(135deg, #d4af37, #c19b2a)',
+              background: `linear-gradient(135deg, ${ACCENT_COLOR}, #8E7CB0)`,
               color: 'white',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '0.8rem',
+              padding: '4px 10px',
+              borderRadius: '16px',
+              fontSize: '0.75rem',
               fontWeight: 'bold',
-              boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
             }}>
               {filteredItems.length} items
             </span>
           </div>
-          <div style={{ padding: '20px' }}>
+          <div style={{ padding: '16px' }}>
             {filteredItems.length === 0 ? (
-              <p style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', padding: '20px' }}>
+              <p style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', padding: '16px' }}>
                 No items found for this category.
               </p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {filteredItems.map(item => (
                   <div
                     key={item.id}
                     style={getChecklistItemStyle(item.completed)}
                     onClick={(e) => toggleChecklistItem(item.id, e)}
-                    onMouseEnter={(e) => {
-                      if (!item.completed) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
-                        e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!item.completed) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }
-                    }}
                   >
                     <input
                       type="checkbox"
@@ -470,16 +420,16 @@ export default function StandardOperatingProceduresSection() {
                       onClick={(e) => e.stopPropagation()} // Prevent double trigger
                       style={{
                         marginTop: '2px',
-                        width: '18px',
-                        height: '18px',
+                        width: '16px',
+                        height: '16px',
                         cursor: 'pointer',
-                        accentColor: '#d4af37'
+                        accentColor: ACCENT_COLOR
                       }}
                     />
                     <span style={{ 
                       flex: 1, 
-                      lineHeight: 1.5, 
-                      fontSize: '0.95rem',
+                      lineHeight: 1.4, 
+                      fontSize: '0.9rem',
                       textDecoration: item.completed ? 'line-through' : 'none',
                       color: item.completed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)'
                     }}>
@@ -494,15 +444,11 @@ export default function StandardOperatingProceduresSection() {
       </div>
 
       {/* Quick Reference Card */}
-      <div 
-        style={quickRefStyle}
-        onMouseEnter={() => setIsQuickRefHovered(true)}
-        onMouseLeave={() => setIsQuickRefHovered(false)}
-      >
+      <div style={glassStyle}>
         <div style={{
-          background: 'rgba(255, 255, 255, 0.15)',
-          padding: '20px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+          background: 'rgba(255, 255, 255, 0.12)',
+          padding: '16px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -510,79 +456,79 @@ export default function StandardOperatingProceduresSection() {
           <h4 style={{
             color: '#ffffff',
             margin: 0,
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
             fontWeight: 600
           }}>💰 Bank Quick Reference</h4>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '16px' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '25px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '20px'
           }}>
             <div>
               <h5 style={{
-                color: '#d4af37',
-                marginBottom: '12px',
-                fontSize: '1rem',
+                color: ACCENT_COLOR,
+                marginBottom: '10px',
+                fontSize: '0.95rem',
                 fontWeight: 600
               }}>Standard Bank:</h5>
-              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px' }}>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   2 × $100 in $1 bills ($200)
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   1 × $100 in $5 bills ($100)
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
-                  <strong style={{ color: '#d4af37' }}>Total: $300</strong>
+                  <strong style={{ color: ACCENT_COLOR }}>Total: $300</strong>
                 </li>
               </ul>
             </div>
             <div>
               <h5 style={{
-                color: '#d4af37',
-                marginBottom: '12px',
-                fontSize: '1rem',
+                color: ACCENT_COLOR,
+                marginBottom: '10px',
+                fontSize: '0.95rem',
                 fontWeight: 600
               }}>Bank Contents:</h5>
-              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px' }}>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   Cash (as above)
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   Counterfeit pen
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   Card reader cleaner
                 </li>
@@ -590,41 +536,41 @@ export default function StandardOperatingProceduresSection() {
             </div>
             <div>
               <h5 style={{
-                color: '#d4af37',
-                marginBottom: '12px',
-                fontSize: '1rem',
+                color: ACCENT_COLOR,
+                marginBottom: '10px',
+                fontSize: '0.95rem',
                 fontWeight: 600
               }}>Important:</h5>
-              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px' }}>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   Count bank before shift
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   Report discrepancies immediately
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   You're responsible for counterfeits
                 </li>
                 <li style={{
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   lineHeight: 1.4,
-                  fontSize: '0.9rem'
+                  fontSize: '0.85rem'
                 }}>
                   $5 pen replacement fee
                 </li>
@@ -634,7 +580,9 @@ export default function StandardOperatingProceduresSection() {
         </div>
       </div>
 
-      <ProgressSection />
+      <div style={{ marginTop: '20px' }}>
+        <ProgressSection />
+      </div>
     </div>
   );
 }

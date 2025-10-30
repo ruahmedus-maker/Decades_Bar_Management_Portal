@@ -22,12 +22,17 @@ const ALL_SECTIONS = [
   'bar-cleanings'
 ];
 
+// Define the new color theme - Coral Green Mid-Tone
+const PRIMARY_COLOR = '#7FB685'; // Mid-tone coral green
+const LIGHT_COLOR = '#9DCC9A'; // Lighter coral green
+const DARK_COLOR = '#5A9E6B'; // Darker coral green
+const PRIMARY_COLOR_RGB = '127, 182, 133';
+
 export default function ProgressSection() {
   const { currentUser } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(currentUser?.acknowledged || false);
   const [isChecked, setIsChecked] = useState(currentUser?.acknowledged || false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const progressBreakdown = currentUser ? getProgressBreakdown(currentUser) : null;
   const progress = progressBreakdown?.progress || 0;
@@ -92,22 +97,14 @@ export default function ProgressSection() {
     return null;
   }
 
-  // Glass effect base styles
+  // Glass effect base styles with coral green theme
   const glassStyle = {
-    background: 'linear-gradient(135deg, rgba(74, 21, 75, 0.8), rgba(74, 21, 75, 0.95))',
-    backdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255, 127, 80, 0.4)',
-    borderRadius: '16px',
+    background: 'rgba(255, 255, 255, 0.08)',
+    border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
+    borderRadius: '12px',
     color: 'white',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    transition: 'all 0.3s ease'
-  };
-
-  const hoverGlassStyle = {
-    ...glassStyle,
-    boxShadow: '0 12px 30px rgba(255, 127, 80, 0.25)',
-    transform: 'translateY(-3px)'
   };
 
   // Success message view
@@ -115,37 +112,27 @@ export default function ProgressSection() {
     return (
       <div style={{ 
         ...glassStyle,
-        background: 'linear-gradient(135deg, rgba(255, 127, 80, 0.15), rgba(255, 127, 80, 0.25))',
-        border: '1px solid rgba(255, 127, 80, 0.3)',
-        padding: '25px', 
-        marginTop: '20px',
+        background: `linear-gradient(135deg, rgba(${PRIMARY_COLOR_RGB}, 0.15), rgba(${PRIMARY_COLOR_RGB}, 0.25))`,
+        border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.4)`,
+        padding: '20px', 
+        marginTop: '16px',
         textAlign: 'center' as const
       }}>
-        <div style={{ 
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(135deg, rgba(74, 21, 75, 0.7), rgba(255, 127, 80, 0.4))',
-          zIndex: -1
-        }}/>
-        <div style={{ fontSize: '2.5rem', marginBottom: '15px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🎉</div>
-        <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '1.5rem', fontWeight: 600 }}>
+        <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🎉</div>
+        <h3 style={{ margin: 0, marginBottom: '12px', fontSize: '1.3rem', fontWeight: 600 }}>
           Training Completed!
         </h3>
-        <p style={{ margin: 0, fontSize: '1.1rem', opacity: 0.9, marginBottom: '20px' }}>
+        <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9, marginBottom: '16px' }}>
           Thank you for completing the training and submitting your acknowledgement.
         </p>
         <div style={{ 
-          marginTop: '15px', 
-          padding: '12px 20px', 
-          background: 'rgba(255,255,255,0.15)', 
-          borderRadius: '10px',
-          fontSize: '1rem',
+          marginTop: '12px', 
+          padding: '10px 16px', 
+          background: 'rgba(255,255,255,0.12)', 
+          borderRadius: '8px',
+          fontSize: '0.95rem',
           display: 'inline-block',
-          border: '1px solid rgba(255,255,255,0.2)',
-          backdropFilter: 'blur(5px)'
+          border: '1px solid rgba(255,255,255,0.15)',
         }}>
           <strong>Progress: 100% Complete</strong>
         </div>
@@ -158,55 +145,40 @@ export default function ProgressSection() {
     return (
       <div 
         style={{ 
-          ...(isHovered ? hoverGlassStyle : glassStyle),
-          padding: '16px 20px', 
-          marginTop: '20px',
+          ...glassStyle,
+          padding: '14px 16px', 
+          marginTop: '16px',
           cursor: 'pointer'
         }}
         onClick={() => setIsCollapsed(false)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
-        <div style={{ 
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: isHovered 
-            ? 'linear-gradient(135deg, rgba(255, 127, 80, 0.1), rgba(74, 21, 75, 0.9))' 
-            : 'linear-gradient(135deg, rgba(74, 21, 75, 0.7), rgba(74, 21, 75, 0.9))',
-          zIndex: -1
-        }}/>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ 
-              width: '80px', 
-              height: '10px', 
-              background: 'rgba(255,255,255,0.2)', 
-              borderRadius: '5px',
+              width: '60px', 
+              height: '8px', 
+              background: 'rgba(255,255,255,0.15)', 
+              borderRadius: '4px',
               overflow: 'hidden',
-              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)'
             }}>
               <div style={{ 
                 width: `${progress}%`, 
                 height: '100%', 
-                background: 'linear-gradient(90deg, #FF7F50, #FFA07A)',
-                borderRadius: '5px',
-                boxShadow: '0 0 10px rgba(255, 127, 80, 0.5)',
-                transition: 'width 0.5s ease'
+                background: `linear-gradient(90deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})`,
+                borderRadius: '4px',
+                transition: 'width 0.3s ease'
               }}/>
             </div>
-            <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>
+            <span style={{ fontWeight: 600, fontSize: '1rem' }}>
               Progress: {progress}%
             </span>
             {currentUser?.acknowledged && (
               <span style={{ 
                 color: '#90EE90', 
-                fontSize: '0.85rem',
-                background: 'rgba(144, 238, 144, 0.2)',
-                padding: '4px 8px',
-                borderRadius: '12px',
+                fontSize: '0.8rem',
+                background: 'rgba(144, 238, 144, 0.15)',
+                padding: '3px 6px',
+                borderRadius: '10px',
                 border: '1px solid rgba(144, 238, 144, 0.3)'
               }}>
                 ✓ Acknowledged
@@ -214,8 +186,8 @@ export default function ProgressSection() {
             )}
           </div>
           <span style={{ 
-            color: 'rgba(255,255,255,0.8)', 
-            fontSize: '0.9rem'
+            color: 'rgba(255,255,255,0.7)', 
+            fontSize: '0.85rem'
           }}>
             ▼ Click to expand
           </span>
@@ -228,69 +200,39 @@ export default function ProgressSection() {
   return (
     <div 
       style={{ 
-        ...(isHovered ? hoverGlassStyle : glassStyle),
-        padding: '25px', 
-        marginTop: '20px'
+        ...glassStyle,
+        padding: '20px', 
+        marginTop: '16px'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={{ 
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: isHovered 
-          ? 'linear-gradient(135deg, rgba(255, 127, 80, 0.15), rgba(74, 21, 75, 0.95))' 
-          : 'linear-gradient(135deg, rgba(74, 21, 75, 0.8), rgba(74, 21, 75, 0.95))',
-        zIndex: -1
-      }}/>
-      
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h3 style={{ 
           margin: 0, 
-          fontSize: '1.4rem', 
+          fontSize: '1.3rem', 
           fontWeight: 600,
-          background: 'linear-gradient(90deg, #FF7F50, #FFA07A)',
-          WebkitBackgroundClip: 'text' as const,
-          WebkitTextFillColor: 'transparent' as const,
-          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+          color: PRIMARY_COLOR,
         }}>
           Your Training Progress
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ 
             fontWeight: 'bold', 
-            fontSize: '1.3rem',
-            background: 'linear-gradient(90deg, #FF7F50, #FFA07A)',
-            WebkitBackgroundClip: 'text' as const,
-            WebkitTextFillColor: 'transparent' as const,
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+            fontSize: '1.2rem',
+            color: PRIMARY_COLOR,
           }}>
             {progress}% Complete
           </span>
           <button 
             onClick={() => setIsCollapsed(true)}
             style={{ 
-              background: 'rgba(255, 127, 80, 0.2)', 
-              border: '1px solid rgba(255, 127, 80, 0.4)', 
+              background: `rgba(${PRIMARY_COLOR_RGB}, 0.15)`, 
+              border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
               cursor: 'pointer', 
-              fontSize: '1.2rem',
-              color: '#FF7F50',
-              padding: '8px 12px',
-              borderRadius: '8px',
-              backdropFilter: 'blur(5px)',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 127, 80, 0.4)';
-              e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 127, 80, 0.2)';
-              e.currentTarget.style.color = '#FF7F50';
+              fontSize: '1.1rem',
+              color: PRIMARY_COLOR,
+              padding: '6px 10px',
+              borderRadius: '6px',
             }}
           >
             ▲
@@ -299,12 +241,12 @@ export default function ProgressSection() {
       </div>
       
       {/* Progress Bar */}
-      <div style={{ marginBottom: '25px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
-          marginBottom: '8px',
-          fontSize: '0.95rem',
+          marginBottom: '6px',
+          fontSize: '0.9rem',
           color: 'rgba(255,255,255,0.8)'
         }}>
           <span>Training Completion</span>
@@ -312,36 +254,33 @@ export default function ProgressSection() {
         </div>
         <div style={{ 
           width: '100%', 
-          height: '12px', 
-          background: 'rgba(255,255,255,0.15)', 
-          borderRadius: '6px',
+          height: '10px', 
+          background: 'rgba(255,255,255,0.12)', 
+          borderRadius: '5px',
           overflow: 'hidden',
-          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
         }}>
           <div style={{ 
             width: `${progress}%`, 
             height: '100%', 
-            background: 'linear-gradient(90deg, #FF7F50, #FFA07A)',
-            borderRadius: '6px',
-            boxShadow: '0 0 15px rgba(255, 127, 80, 0.5)',
-            transition: 'width 0.8s ease'
+            background: `linear-gradient(90deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})`,
+            borderRadius: '5px',
+            transition: 'width 0.5s ease'
           }}/>
         </div>
       </div>
       
       {/* Progress Details */}
       <div style={{ 
-        background: 'rgba(255,255,255,0.1)',
-        padding: '18px',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.15)',
-        marginBottom: '25px',
-        backdropFilter: 'blur(5px)'
+        background: 'rgba(255,255,255,0.06)',
+        padding: '16px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.12)',
+        marginBottom: '20px',
       }}>
         <h4 style={{ 
-          margin: '0 0 12px 0', 
-          fontSize: '1.1rem',
-          color: '#FFA07A'
+          margin: '0 0 10px 0', 
+          fontSize: '1rem',
+          color: LIGHT_COLOR
         }}>
           Progress Breakdown
         </h4>
@@ -350,28 +289,25 @@ export default function ProgressSection() {
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
-            padding: '8px 0',
-            borderBottom: '1px solid rgba(255,255,255,0.1)'
+            padding: '6px 0',
+            borderBottom: '1px solid rgba(255,255,255,0.08)'
           }}>
-            <span style={{ fontSize: '0.95rem' }}>{detail.label}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '0.9rem' }}>{detail.label}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ 
-                fontSize: '0.9rem', 
+                fontSize: '0.85rem', 
                 color: detail.completed ? '#90EE90' : '#FFB6C1',
                 fontWeight: 500
               }}>
                 {detail.completed ? 'Completed' : 'Incomplete'}
               </span>
               <div style={{
-                width: '12px',
-                height: '12px',
+                width: '10px',
+                height: '10px',
                 borderRadius: '50%',
                 background: detail.completed 
-                  ? 'linear-gradient(135deg, #90EE90, #32CD32)' 
-                  : 'linear-gradient(135deg, #FFB6C1, #FF69B4)',
-                boxShadow: detail.completed 
-                  ? '0 0 8px rgba(144, 238, 144, 0.5)' 
-                  : '0 0 8px rgba(255, 182, 193, 0.5)'
+                  ? `linear-gradient(135deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})` 
+                  : 'rgba(255,255,255,0.3)',
               }}/>
             </div>
           </div>
@@ -381,23 +317,22 @@ export default function ProgressSection() {
       {/* Acknowledgement Section */}
       {canAcknowledge && !currentUser?.acknowledged && (
         <div style={{ 
-          background: 'rgba(255, 127, 80, 0.1)',
-          padding: '20px',
-          borderRadius: '12px',
-          border: '1px solid rgba(255, 127, 80, 0.3)',
-          marginBottom: '20px',
-          backdropFilter: 'blur(5px)'
+          background: `rgba(${PRIMARY_COLOR_RGB}, 0.08)`,
+          padding: '16px',
+          borderRadius: '10px',
+          border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.25)`,
+          marginBottom: '16px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px', marginBottom: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
             <input
               type="checkbox"
               id="acknowledgement"
               checked={isChecked}
               onChange={handleCheckboxChange}
               style={{
-                width: '20px',
-                height: '20px',
-                accentColor: '#FF7F50',
+                width: '18px',
+                height: '18px',
+                accentColor: PRIMARY_COLOR,
                 cursor: 'pointer',
                 marginTop: '2px'
               }}
@@ -406,7 +341,7 @@ export default function ProgressSection() {
               htmlFor="acknowledgement" 
               style={{ 
                 cursor: 'pointer',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 lineHeight: 1.4
               }}
             >
@@ -419,33 +354,18 @@ export default function ProgressSection() {
             disabled={!isChecked}
             style={{
               width: '100%',
-              padding: '14px',
+              padding: '12px',
               background: isChecked 
-                ? 'linear-gradient(135deg, #FF7F50, #FF6347)' 
-                : 'rgba(255,255,255,0.1)',
+                ? `linear-gradient(135deg, ${PRIMARY_COLOR}, ${DARK_COLOR})` 
+                : 'rgba(255,255,255,0.08)',
               color: isChecked ? 'white' : 'rgba(255,255,255,0.5)',
               border: isChecked 
-                ? '1px solid rgba(255, 127, 80, 0.5)' 
-                : '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '10px',
-              fontSize: '1rem',
+                ? `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.4)` 
+                : '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '8px',
+              fontSize: '0.95rem',
               fontWeight: 600,
               cursor: isChecked ? 'pointer' : 'not-allowed',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(5px)',
-              boxShadow: isChecked ? '0 4px 15px rgba(255, 127, 80, 0.3)' : 'none'
-            }}
-            onMouseEnter={(e) => {
-              if (isChecked) {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 127, 80, 0.4)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (isChecked) {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 127, 80, 0.3)';
-              }
             }}
           >
             Submit Acknowledgement
@@ -456,14 +376,13 @@ export default function ProgressSection() {
       {currentUser?.acknowledged && (
         <div style={{ 
           textAlign: 'center' as const,
-          padding: '15px',
-          background: 'rgba(144, 238, 144, 0.1)',
-          borderRadius: '10px',
-          border: '1px solid rgba(144, 238, 144, 0.3)',
-          color: '#90EE90',
-          fontSize: '1rem',
+          padding: '12px',
+          background: `rgba(${PRIMARY_COLOR_RGB}, 0.12)`,
+          borderRadius: '8px',
+          border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
+          color: LIGHT_COLOR,
+          fontSize: '0.95rem',
           fontWeight: 500,
-          backdropFilter: 'blur(5px)'
         }}>
           ✓ Training Acknowledged
         </div>
