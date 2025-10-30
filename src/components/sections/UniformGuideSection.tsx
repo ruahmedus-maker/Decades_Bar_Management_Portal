@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
@@ -190,12 +190,23 @@ function UniformCard({ title, items, index }: any) {
 
 export default function UniformGuideSection() {
   const { currentUser } = useApp();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'uniform-guide');
+useEffect(() => {
+  if (!currentUser) return;
+
+  // Wait 30 seconds then mark as complete
+  timerRef.current = setTimeout(() => {
+    trackSectionVisit(currentUser.email, 'uniform-guide', 30);
+    console.log('Section auto-completed after 30 seconds');
+  }, 30000);
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
-  }, [currentUser]);
+  };
+}, [currentUser]);
 
   const uniformData = [
     {

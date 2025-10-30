@@ -235,17 +235,30 @@ export default function BarCleaningsSection() {
   const [cleaningDays, setCleaningDays] = useState<string[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
 
   useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'bar-cleanings');
-    }
+  if (!currentUser) return;
+
+  // Wait 30 seconds then mark as complete
+  timerRef.current = setTimeout(() => {
+    trackSectionVisit(currentUser.email, 'bar-cleanings', 30);
+    console.log('Section auto-completed after 30 seconds');
+  }, 30000);
 
     const saved = localStorage.getItem('decadesCleaningDays');
     if (saved) {
       setCleaningDays(JSON.parse(saved));
     }
-  }, [currentUser]);
+
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+}, [currentUser]);
 
   const toggleCleaningDay = (year: number, month: number, day: number) => {
     const dateStr = `${year}-${month + 1}-${day}`;

@@ -198,12 +198,6 @@ export default function ScheduleReportSection() {
     format: 'pdf'
   });
 
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'schedule-reports');
-    }
-  }, [currentUser]);
-
   const scheduledReports = [
     {
       icon: '📊',

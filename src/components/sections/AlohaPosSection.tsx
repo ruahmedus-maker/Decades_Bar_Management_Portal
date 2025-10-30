@@ -360,13 +360,23 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
 export default function AlohaPosSection() {
   const { currentUser } = useApp();
   const [activeCategory, setActiveCategory] = useState('All');
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Track section visit
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'aloha-pos');
+useEffect(() => {
+  if (!currentUser) return;
+
+  // Wait 30 seconds then mark as complete
+  timerRef.current = setTimeout(() => {
+    trackSectionVisit(currentUser.email, 'aloha-pos', 30);
+    console.log('Section auto-completed after 30 seconds');
+  }, 30000);
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
-  }, [currentUser]);
+  };
+}, [currentUser]);
 
   // Filter videos by category
   const filteredVideos = TRAINING_VIDEOS.filter(video => 

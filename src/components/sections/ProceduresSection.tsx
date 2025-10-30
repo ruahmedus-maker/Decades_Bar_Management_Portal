@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
@@ -75,14 +75,24 @@ export default function StandardOperatingProceduresSection() {
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Track section visit when currentUser is available
   useEffect(() => {
-    if (currentUser?.email) {
-      trackSectionVisit(currentUser.email, 'procedures');
-    }
-  }, [currentUser]);
+  if (!currentUser) return;
 
+  // Wait 30 seconds then mark as complete
+  timerRef.current = setTimeout(() => {
+    trackSectionVisit(currentUser.email, 'procedures', 30);
+    console.log('Section auto-completed after 30 seconds');
+  }, 30000);
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+}, [currentUser]);
   // Load checklist on component mount with loading state
   useEffect(() => {
     const timer = setTimeout(() => {

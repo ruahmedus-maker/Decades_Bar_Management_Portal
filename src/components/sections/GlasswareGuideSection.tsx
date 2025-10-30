@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
@@ -244,13 +244,23 @@ function GlasswareCard({ title, primaryUse, includes, note, index }: any) {
 
 export default function GlasswareGuideSection() {
   const { currentUser } = useApp();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Track section visit - FIXED: using correct section ID
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'glassware-guide');
+useEffect(() => {
+  if (!currentUser) return;
+
+  // Wait 30 seconds then mark as complete
+  timerRef.current = setTimeout(() => {
+    trackSectionVisit(currentUser.email, 'glassware-guide', 30);
+    console.log('Section auto-completed after 30 seconds');
+  }, 30000);
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
-  }, [currentUser]);
+  };
+}, [currentUser]);
 
   const glasswareData = [
     {

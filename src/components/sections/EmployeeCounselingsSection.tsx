@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
 import { CounselingRecord, EmployeeFolder } from '@/types';
