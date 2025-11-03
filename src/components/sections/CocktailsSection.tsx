@@ -283,8 +283,7 @@ useEffect(() => {
       clearTimeout(timerRef.current);
     }
   };
-}, [currentUser]);
-
+}, [currentUser]); // ✅ FIXED: Properly closed
   // Cocktail data
   const cocktailCategories = [
     {

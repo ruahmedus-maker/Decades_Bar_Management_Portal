@@ -1,91 +1,120 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
+import { submitAcknowledgement, getProgressBreakdown, trackSectionVisit } from '@/lib/progress';
+import { storage } from '@/lib/storage';
 
-// Define the sections for display (matching your progress.ts)
-const ALL_SECTIONS = [
-  'welcome',
-  'training',
-  'uniform-guide',
-  'social-media',
-  'resources',
-  'procedures',
-  'policies',
-  'glassware-guide',
-  'faq',
-  'drinks-specials',
-  'comps-voids',
-  'cocktails',
-  'aloha-pos',
-  'bar-cleanings'
-];
-
-// Define the new color theme - Coral Green Mid-Tone
-const PRIMARY_COLOR = '#7FB685'; // Mid-tone coral green
-const LIGHT_COLOR = '#9DCC9A'; // Lighter coral green
-const DARK_COLOR = '#5A9E6B'; // Darker coral green
+const PRIMARY_COLOR = '#7FB685';
+const LIGHT_COLOR = '#9DCC9A';
+const DARK_COLOR = '#5A9E6B';
 const PRIMARY_COLOR_RGB = '127, 182, 133';
 
 export default function ProgressSection() {
   const { currentUser } = useApp();
-  const [isCollapsed, setIsCollapsed] = useState(currentUser?.acknowledged || false);
-  const [isChecked, setIsChecked] = useState(currentUser?.acknowledged || false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [progressBreakdown, setProgressBreakdown] = useState<any>(null);
+  
+  // Use ref for refresh counter to avoid re-renders
+  const refreshCounterRef = useRef(0);
+  const mountedRef = useRef(false);
 
-  const progressBreakdown = currentUser ? getProgressBreakdown(currentUser) : null;
+  // Force refresh function that definitely works
+  const forceRefresh = useCallback(() => {
+    console.log('🔄 Force refresh triggered, counter:', refreshCounterRef.current + 1);
+    refreshCounterRef.current += 1;
+    
+    if (currentUser) {
+      const users = storage.getUsers();
+      const latestUser = users[currentUser.email];
+      console.log('📊 Latest user from storage:', latestUser);
+      
+      if (latestUser) {
+        const breakdown = getProgressBreakdown(latestUser);
+        console.log('📈 New progress breakdown:', breakdown);
+        setProgressBreakdown(breakdown);
+        
+        // Update UI states
+        setIsCollapsed(latestUser.acknowledged || false);
+        setIsChecked(latestUser.acknowledged || false);
+        setShowSuccess(latestUser.acknowledged || false);
+      }
+    }
+  }, [currentUser]);
+
+  // Initialize and set up periodic refresh
+  useEffect(() => {
+    if (currentUser && !mountedRef.current) {
+      console.log('🚀 ProgressSection initializing');
+      mountedRef.current = true;
+      forceRefresh();
+    }
+  }, [currentUser, forceRefresh]);
+
   const progress = progressBreakdown?.progress || 0;
   const canAcknowledge = progressBreakdown?.canAcknowledge || false;
+  const sectionDetails = progressBreakdown?.sectionDetails || [];
 
-  // Get visited sections from user or empty array
-  const visitedSections = currentUser?.visitedSections || [];
-  
-  // Create details object for display
-  const sectionDetails = ALL_SECTIONS.map(section => {
-    const label = section.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
-    
-    return {
-      id: section,
-      label,
-      completed: visitedSections.includes(section)
-    };
-  });
-
-  // Auto-collapse and show success when acknowledged
-  useEffect(() => {
-    if (currentUser?.acknowledged) {
-      setIsCollapsed(true);
-      setShowSuccess(true);
-    }
-  }, [currentUser?.acknowledged]);
-
-  // Update checkbox when user changes
-  useEffect(() => {
-    setIsChecked(currentUser?.acknowledged || false);
-  }, [currentUser?.acknowledged]);
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setIsChecked(checked);
-    
-    if (checked && currentUser && canAcknowledge && !currentUser.acknowledged) {
-      submitAcknowledgement(currentUser.email);
-      setShowSuccess(true);
-      setIsCollapsed(true);
-      setTimeout(() => window.location.reload(), 1000);
-    }
+  // Simple, direct button handlers
+  const handleRefresh = () => {
+    console.log('🎯 Refresh button clicked directly');
+    forceRefresh();
   };
 
-  const handleSubmit = () => {
-    if (currentUser && canAcknowledge && !currentUser.acknowledged) {
-      submitAcknowledgement(currentUser.email);
-      setIsChecked(true);
-      setShowSuccess(true);
-      setIsCollapsed(true);
-      setTimeout(() => window.location.reload(), 1000);
+  const handleDebug = () => {
+    console.log('=== DEBUG INFO ===');
+    console.log('Current User:', currentUser);
+    console.log('Progress Breakdown:', progressBreakdown);
+    
+    if (currentUser) {
+      const users = storage.getUsers();
+      const user = users[currentUser.email];
+      console.log('User from Storage:', user);
+      
+      // Check the problematic sections
+      console.log('Aloha-pos section:', user?.sectionVisits?.['aloha-pos']);
+      console.log('Drinks-specials section:', user?.sectionVisits?.['drinks-specials']);
+      console.log('Are they completed?', {
+        'aloha-pos': user?.sectionVisits?.['aloha-pos']?.completed,
+        'drinks-specials': user?.sectionVisits?.['drinks-specials']?.completed
+      });
+    }
+    
+    alert('Check console for debug info!');
+  };
+
+  const handleForceComplete = (sectionId: string) => {
+    console.log('⚡ Force completing:', sectionId);
+    if (currentUser) {
+      // Direct storage manipulation to ensure it works
+      const users = storage.getUsers();
+      const user = users[currentUser.email];
+      
+      if (user) {
+        if (!user.sectionVisits) user.sectionVisits = {};
+        
+        user.sectionVisits[sectionId] = {
+          sectionId,
+          firstVisit: new Date().toISOString(),
+          lastVisit: new Date().toISOString(),
+          totalTime: 30,
+          completed: true
+        };
+        
+        // Update visitedSections for backward compatibility
+        if (!user.visitedSections) user.visitedSections = [];
+        if (!user.visitedSections.includes(sectionId)) {
+          user.visitedSections.push(sectionId);
+        }
+        
+        storage.saveUsers(users);
+        console.log(`✅ Manually completed ${sectionId}`);
+        
+        // Refresh to show changes
+        setTimeout(forceRefresh, 100);
+      }
     }
   };
 
@@ -97,7 +126,7 @@ export default function ProgressSection() {
     return null;
   }
 
-  // Glass effect base styles with coral green theme
+  // Glass effect base styles
   const glassStyle = {
     background: 'rgba(255, 255, 255, 0.08)',
     border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
@@ -172,18 +201,6 @@ export default function ProgressSection() {
             <span style={{ fontWeight: 600, fontSize: '1rem' }}>
               Progress: {progress}%
             </span>
-            {currentUser?.acknowledged && (
-              <span style={{ 
-                color: '#90EE90', 
-                fontSize: '0.8rem',
-                background: 'rgba(144, 238, 144, 0.15)',
-                padding: '3px 6px',
-                borderRadius: '10px',
-                border: '1px solid rgba(144, 238, 144, 0.3)'
-              }}>
-                ✓ Acknowledged
-              </span>
-            )}
           </div>
           <span style={{ 
             color: 'rgba(255,255,255,0.7)', 
@@ -215,7 +232,7 @@ export default function ProgressSection() {
         }}>
           Your Training Progress
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ 
             fontWeight: 'bold', 
             fontSize: '1.2rem',
@@ -223,6 +240,41 @@ export default function ProgressSection() {
           }}>
             {progress}% Complete
           </span>
+          
+          {/* Debug Button */}
+          <button 
+            onClick={handleDebug}
+            style={{ 
+              background: `rgba(255, 0, 0, 0.3)`, 
+              border: `2px solid rgba(255, 0, 0, 0.6)`, 
+              cursor: 'pointer', 
+              fontSize: '0.8rem',
+              color: 'white',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontWeight: 'bold'
+            }}
+          >
+            🐛 Debug
+          </button>
+
+          {/* Refresh Button */}
+          <button 
+            onClick={handleRefresh}
+            style={{ 
+              background: `rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
+              border: `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`, 
+              cursor: 'pointer', 
+              fontSize: '0.8rem',
+              color: 'white',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontWeight: 'bold'
+            }}
+          >
+            🔄 Refresh
+          </button>
+
           <button 
             onClick={() => setIsCollapsed(true)}
             style={{ 
@@ -284,34 +336,66 @@ export default function ProgressSection() {
         }}>
           Progress Breakdown
         </h4>
-        {sectionDetails.map((detail) => (
+        {sectionDetails.map((detail: any) => (
           <div key={detail.id} style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
-            padding: '6px 0',
+            padding: '8px 0',
             borderBottom: '1px solid rgba(255,255,255,0.08)'
           }}>
-            <span style={{ fontSize: '0.9rem' }}>{detail.label}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ 
-                fontSize: '0.85rem', 
-                color: detail.completed ? '#90EE90' : '#FFB6C1',
-                fontWeight: 500
-              }}>
-                {detail.completed ? 'Completed' : 'Incomplete'}
-              </span>
-              <div style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: detail.completed 
-                  ? `linear-gradient(135deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})` 
-                  : 'rgba(255,255,255,0.3)',
-              }}/>
+            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{detail.label}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                <span style={{ 
+                  fontSize: '0.85rem', 
+                  color: detail.completed ? '#90EE90' : '#FF6B6B',
+                  fontWeight: 'bold'
+                }}>
+                  {detail.completed ? '✅ Completed' : '❌ Incomplete'}
+                </span>
+                <span style={{ 
+                  fontSize: '0.7rem', 
+                  color: 'rgba(255,255,255,0.6)',
+                }}>
+                  {detail.timeSpent}s / {detail.timeRequired}s
+                </span>
+              </div>
+              
+              {/* Force Complete Button - Always show for debugging */}
+              <button
+                onClick={() => handleForceComplete(detail.id)}
+                style={{
+                  background: detail.completed ? 'rgba(144, 238, 144, 0.3)' : 'rgba(255, 107, 107, 0.3)',
+                  border: `2px solid ${detail.completed ? '#90EE90' : '#FF6B6B'}`,
+                  color: 'white',
+                  fontSize: '0.7rem',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                {detail.completed ? '✓ Done' : 'Force Complete'}
+              </button>
             </div>
           </div>
         ))}
+      </div>
+      
+      {/* Debug Info */}
+      <div style={{ 
+        background: 'rgba(0,0,0,0.3)', 
+        padding: '12px',
+        borderRadius: '8px',
+        marginBottom: '16px',
+        fontSize: '0.8rem',
+        border: '1px solid rgba(255,255,255,0.1)'
+      }}>
+        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Debug Info:</div>
+        <div>User: {currentUser?.email}</div>
+        <div>Refresh Counter: {refreshCounterRef.current}</div>
+        <div>Mounted: {mountedRef.current ? 'Yes' : 'No'}</div>
       </div>
       
       {/* Acknowledgement Section */}
@@ -321,14 +405,13 @@ export default function ProgressSection() {
           padding: '16px',
           borderRadius: '10px',
           border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.25)`,
-          marginBottom: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
             <input
               type="checkbox"
               id="acknowledgement"
               checked={isChecked}
-              onChange={handleCheckboxChange}
+              onChange={(e) => setIsChecked(e.target.checked)}
               style={{
                 width: '18px',
                 height: '18px',
@@ -350,7 +433,14 @@ export default function ProgressSection() {
           </div>
           
           <button
-            onClick={handleSubmit}
+            onClick={() => {
+              if (currentUser && canAcknowledge && !currentUser.acknowledged) {
+                submitAcknowledgement(currentUser.email);
+                setShowSuccess(true);
+                setIsCollapsed(true);
+                setTimeout(forceRefresh, 100);
+              }
+            }}
             disabled={!isChecked}
             style={{
               width: '100%',

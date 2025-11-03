@@ -199,13 +199,7 @@ export default function MaintenanceSection() {
     title: '',
     description: '',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent'
-  });
-
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'maintenance');
-    }
-  }, [currentUser]);
+  })
 
   const recentTickets = [
     {

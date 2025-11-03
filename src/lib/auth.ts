@@ -161,6 +161,8 @@ export const performLogin = async (email: string, password: string): Promise<Use
   user.lastActive = new Date().toISOString();
   storage.saveUsers(users);
 
+  startUserSession(user);
+
   return user;
 };
 
@@ -217,6 +219,8 @@ export const performRegistration = async (userData: RegistrationData): Promise<U
 
   users[email] = newUser;
   storage.saveUsers(users);
+
+  startUserSession(newUser);
 
   return newUser;
 };

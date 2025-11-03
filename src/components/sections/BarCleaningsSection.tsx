@@ -239,6 +239,12 @@ export default function BarCleaningsSection() {
 
 
   useEffect(() => {
+  // Load cleaning days first
+  const saved = localStorage.getItem('decadesCleaningDays');
+  if (saved) {
+    setCleaningDays(JSON.parse(saved));
+  }
+
   if (!currentUser) return;
 
   // Wait 30 seconds then mark as complete
@@ -247,18 +253,12 @@ export default function BarCleaningsSection() {
     console.log('Section auto-completed after 30 seconds');
   }, 30000);
 
-    const saved = localStorage.getItem('decadesCleaningDays');
-    if (saved) {
-      setCleaningDays(JSON.parse(saved));
-    }
-
-
   return () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
   };
-}, [currentUser]);
+}, [currentUser]); // ✅ FIXED: Code reorganized and properly closed
 
   const toggleCleaningDay = (year: number, month: number, day: number) => {
     const dateStr = `${year}-${month + 1}-${day}`;

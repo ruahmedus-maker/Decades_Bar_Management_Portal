@@ -343,7 +343,6 @@ interface SpecialEventsSectionProps {
 
 export default function SpecialEventsSection({ isAdminView = false }: SpecialEventsSectionProps) {
   const { currentUser, showToast } = useApp();
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [events, setEvents] = useState<SpecialEvent[]>([]);
   const [showEventForm, setShowEventForm] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -364,21 +363,6 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
     priority: 'medium' as Task['priority']
   });
 
-  useEffect(() => {
-  if (!currentUser) return;
-
-  // Wait 30 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'special-events', 30);
-    console.log('Section auto-completed after 30 seconds');
-  }, 30000);
-
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
 
   const loadEvents = () => {
     const eventsData = specialEventsStorage.getEvents();
