@@ -51,20 +51,46 @@ const HIDDEN_USERS = [
 ];
 
 // Enhanced progress tracking
+// In AdminPanelSection.tsx, replace the getEnhancedProgressBreakdown function:
+
+// Use the same progress tracking as the actual ProgressSection
+// In AdminPanelSection.tsx, replace the getEnhancedProgressBreakdown function:
+
+// Use the same progress tracking as the actual ProgressSection
 const getEnhancedProgressBreakdown = (email: string) => {
   try {
-    const visitedSections = JSON.parse(localStorage.getItem(`progress-${email}`) || '[]');
-    const totalSections = 10;
+    const users = storage.getUsers();
+    const user = users[email];
     
-    const sectionsCompleted = visitedSections.length;
-    const progressPercentage = Math.round((sectionsCompleted / totalSections) * 100);
+    if (!user) {
+      return {
+        completedSections: 0,
+        totalSections: 14, // Fixed: Actual total sections
+        percentage: 0,
+        sectionsVisited: [],
+        isActive: false,
+        lastActivity: null
+      };
+    }
+
+    // Use the same logic as the actual progress section
+    const sectionVisits = user.sectionVisits || {};
+    const visitedSections = user.visitedSections || [];
     
-    const lastActivity = localStorage.getItem(`last-activity-${email}`);
+    // Count completed sections based on sectionVisits (same as ProgressSection)
+    const completedSections = Object.values(sectionVisits).filter(
+      (visit: any) => visit.completed
+    ).length;
+
+    const totalSections = 14; // Fixed: Actual total sections instead of 10
+    const progressPercentage = Math.min(100, Math.round((completedSections / totalSections) * 100)); // Cap at 100%
+    
+    const lastActivity = user.lastActive;
     const isActiveRecently = lastActivity ? 
       (Date.now() - new Date(lastActivity).getTime()) < (24 * 60 * 60 * 1000) : false;
     
     return {
-      completedSections: sectionsCompleted,
+      completedSections: completedSections,
       totalSections: totalSections,
       percentage: progressPercentage,
       sectionsVisited: visitedSections,
@@ -75,7 +101,7 @@ const getEnhancedProgressBreakdown = (email: string) => {
     console.error('Error getting progress breakdown:', error);
     return {
       completedSections: 0,
-      totalSections: 10,
+      totalSections: 14, // Fixed: Actual total sections
       percentage: 0,
       sectionsVisited: [],
       isActive: false,
@@ -1297,125 +1323,136 @@ export default function AdminPanelSection() {
         )}
 
         {/* Progress Tab - Only shows bartenders/trainees */}
-        {activeTab === 'progress' && (
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '25px',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={{ 
-                color: 'white', 
-                margin: 0,
-                fontSize: '1.2rem'
-              }}>
-                📈 Employee Progress Tracking
-              </h4>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
-                  onClick={loadAllData}
-                  style={{ 
-                    background: SECTION_COLOR,
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  🔄 Refresh
-                </button>
+{activeTab === 'progress' && (
+  <div style={{
+    background: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: '16px',
+    padding: '25px',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    backdropFilter: 'blur(10px)'
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+      <h4 style={{ 
+        color: 'white', 
+        margin: 0,
+        fontSize: '1.2rem'
+      }}>
+        📈 Employee Progress Tracking
+      </h4>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button 
+          onClick={loadAllData}
+          style={{ 
+            background: SECTION_COLOR,
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+
+    {userProgress.length === 0 ? (
+      <div style={{ 
+        textAlign: 'center', 
+        padding: '40px',
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontStyle: 'italic'
+      }}>
+        No bartenders or trainees found.
+      </div>
+    ) : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        {userProgress.map((progress, index) => (
+          <div 
+            key={progress.user.email}
+            style={{
+              padding: '20px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+              <div>
+                <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 600 }}>
+                  {progress.user.name}
+                </h5>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.9rem' }}>
+                  {progress.user.email} • {progress.user.position}
+                </p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ 
+                  padding: '6px 12px', 
+                  borderRadius: '12px', 
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  background: 
+                    progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
+                    progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                    progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
+                    'rgba(113, 128, 150, 0.2)',
+                  color: 
+                    progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                    progress.completionStatus === 'good' ? WARNING_COLOR :
+                    progress.completionStatus === 'poor' ? DANGER_COLOR :
+                    '#718096'
+                }}>
+                  {progress.progressPercentage}% Complete
+                </div>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '8px 0 0 0', fontSize: '0.8rem' }}>
+                  Last active: {progress.timeSinceLastActive}
+                </p>
               </div>
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {userProgress.map((progress, index) => (
-                <div 
-                  key={progress.user.email}
-                  style={{
-                    padding: '20px',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                    <div>
-                      <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 600 }}>
-                        {progress.user.name}
-                      </h5>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.9rem' }}>
-                        {progress.user.email} • {progress.user.position}
-                      </p>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ 
-                        padding: '6px 12px', 
-                        borderRadius: '12px', 
-                        fontSize: '0.9rem',
-                        fontWeight: 'bold',
-                        background: 
-                          progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
-                          progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
-                          progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
-                          'rgba(113, 128, 150, 0.2)',
-                        color: 
-                          progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                          progress.completionStatus === 'good' ? WARNING_COLOR :
-                          progress.completionStatus === 'poor' ? DANGER_COLOR :
-                          '#718096'
-                      }}>
-                        {progress.progressPercentage}% Complete
-                      </div>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '8px 0 0 0', fontSize: '0.8rem' }}>
-                        Last active: {progress.timeSinceLastActive}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div style={{ 
-                    height: '8px', 
-                    background: 'rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    marginBottom: '10px'
-                  }}>
-                    <div 
-                      style={{ 
-                        height: '100%', 
-                        background: 
-                          progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                          progress.completionStatus === 'good' ? WARNING_COLOR :
-                          progress.completionStatus === 'poor' ? DANGER_COLOR :
-                          '#718096',
-                        width: `${progress.progressPercentage}%`,
-                        transition: 'width 0.5s ease'
-                      }} 
-                    />
-                  </div>
-                  
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    fontSize: '0.85rem',
-                    color: 'rgba(255, 255, 255, 0.7)'
-                  }}>
-                    <span>{progress.sectionsCompleted} of {progress.totalSections} sections completed</span>
-                    <span>{Math.round(progress.progressPercentage)}% overall</span>
-                  </div>
-                </div>
-              ))}
+            
+            <div style={{ 
+              height: '8px', 
+              background: 'rgba(255, 255, 255, 0.1)', 
+              borderRadius: '4px',
+              overflow: 'hidden',
+              marginBottom: '10px'
+            }}>
+              <div 
+                style={{ 
+                  height: '100%', 
+                  background: 
+                    progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                    progress.completionStatus === 'good' ? WARNING_COLOR :
+                    progress.completionStatus === 'poor' ? DANGER_COLOR :
+                    '#718096',
+                  width: `${progress.progressPercentage}%`,
+                  transition: 'width 0.5s ease'
+                }} 
+              />
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              fontSize: '0.85rem',
+              color: 'rgba(255, 255, 255, 0.7)'
+            }}>
+              <span>{progress.sectionsCompleted} of {progress.totalSections} sections completed</span>
+              <span>{Math.round(progress.progressPercentage)}% overall</span>
             </div>
           </div>
-        )}
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
         {/* Tests Tab - Only shows bartenders/trainees */}
         {activeTab === 'tests' && (

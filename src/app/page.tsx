@@ -8,12 +8,18 @@ import Header from '@/components/Header';
 import SectionRouter from '@/components/SectionRouter';
 import Toast from '@/components/Toast';
 import ErrorBoundary from '@/components/ErrorBoundary'; 
+import { ENABLE_TESTS } from '@/lib/constants';
+import FullScreenTest from '@/components/FullScreenTest';
 
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
 
   console.log('MainApp - Current User:', currentUser);
   console.log('MainApp - Is Loading:', isLoading);
+
+  // Check if we should show only the test
+  const shouldShowOnlyTest = ENABLE_TESTS && currentUser && 
+    (currentUser.position === 'Bartender' || currentUser.position === 'Trainee');
 
   if (isLoading) {
     return (
@@ -51,26 +57,41 @@ function MainApp() {
     );
   }
 
+  // Show full-screen test for bartenders/trainees when tests are enabled
+  if (shouldShowOnlyTest) {
+    return (
+      <>
+        <FullScreenTest />
+        <Toast 
+          message={toast.message} 
+          show={toast.show} 
+          onHide={hideToast} 
+        />
+      </>
+    );
+  }
+
+  // Normal app layout for admins or when tests are disabled
   return (
-  <>
-    <div className="container">
-      <Header />
-      <Sidebar />
-      <div className="main-content">
-        <div className="content-wrapper"> {/* Add this wrapper */}
-          <ErrorBoundary>
-            <SectionRouter />
-          </ErrorBoundary>
+    <>
+      <div className="container">
+        <Header />
+        <Sidebar />
+        <div className="main-content">
+          <div className="content-wrapper">
+            <ErrorBoundary>
+              <SectionRouter />
+            </ErrorBoundary>
+          </div>
         </div>
       </div>
-    </div>
-    <Toast 
-      message={toast.message} 
-      show={toast.show} 
-      onHide={hideToast} 
-    />
-  </>
-);
+      <Toast 
+        message={toast.message} 
+        show={toast.show} 
+        onHide={hideToast} 
+      />
+    </>
+  );
 }
 
 export default function HomePage() {

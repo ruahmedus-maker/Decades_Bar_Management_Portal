@@ -7,7 +7,7 @@ import { NAV_ITEMS, ENABLE_TESTS } from '@/lib/constants';
 type SectionId = typeof NAV_ITEMS[number]['id'];
 
 // Admin-only sections that should be hidden from regular users
-const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'schedule-report'];
+const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'performance-report'];
 
 // Tropical Teal/Blue color scheme
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
