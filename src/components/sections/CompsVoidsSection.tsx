@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
@@ -7,62 +7,35 @@ import { trackSectionVisit } from '@/lib/progress';
 const SECTION_COLOR = '#FF6B6B'; // Bright coral
 const SECTION_COLOR_RGB = '255, 107, 107';
 
-// Animated Card Component with Colored Glow Effects
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Different glow colors for different cards
-  const glowColors = [
-    'linear-gradient(45deg, #FF6B6B, #FF8E8E, transparent)',
-    'linear-gradient(45deg, #FF8E8E, #FFB1B1, transparent)',
-    'linear-gradient(45deg, #FF5252, #FF6B6B, transparent)',
-    'linear-gradient(45deg, #FF3838, #FF6B6B, transparent)'
+// Static Card Component without Hover Effects
+function StaticCard({ title, description, items, footer, index, children }: any) {
+  // Different background colors for different cards
+  const backgroundColors = [
+    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.08))`,
+    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.12))`,
+    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.22), rgba(${SECTION_COLOR_RGB}, 0.09))`
   ];
 
-  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #FF8E8E, transparent)`;
+  const backgroundColor = backgroundColors[index] || `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`;
 
   return (
     <div 
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(255, 107, 107, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        backdropFilter: 'blur(12px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          background: backgroundColor,
           padding: '20px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
@@ -110,24 +83,23 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
 
 export default function CompsVoidsSection() {
   const { currentUser } = useApp();
-  const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (!currentUser) return;
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'comps-voids', 30);
-    console.log('Section auto-completed after 30 seconds');
-  }, 30000);
+    // Wait 30 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'comps-voids', 30);
+      console.log('Section auto-completed after 30 seconds');
+    }, 30000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
 
   return (
     <div 
@@ -136,22 +108,14 @@ useEffect(() => {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(15px) saturate(170%)',
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: isHovered 
-          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 107, 107, 0.15)'
-          : '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
         animation: 'fadeIn 0.5s ease'
       }}
       className="active"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       
       {/* Section Header */}
@@ -200,7 +164,7 @@ useEffect(() => {
 
       <div style={{ padding: '25px' }}>
         {/* Introduction Card */}
-        <AnimatedCard
+        <StaticCard
           title="💰 Comps & Voids Overview"
           description="Proper procedures for handling complimentary items and voided transactions to maintain financial accuracy and accountability."
           items={[
@@ -213,10 +177,106 @@ useEffect(() => {
           index={0}
         />
 
-        {/* Comps Procedures */}
-        <AnimatedCard
-          title="🎁 Complimentary Items Procedures"
+        {/* Standardized Naming Convention Card */}
+        <StaticCard
+          title="🏷️ Standard Comp Naming Convention"
+          description="Use the 'xxx' + code + 'xxx' pattern for all comps and voids to ensure clear communication and proper tracking."
           index={1}
+        >
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '15px',
+            marginTop: '10px'
+          }}>
+            <div style={{
+              padding: '18px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+            }}>
+              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
+                Customer Situations
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+                <li><strong>xxxdecxxx</strong> - Customer declined/refused</li>
+                <li><strong>xxxdissxxx</strong> - Customer dissatisfied</li>
+                <li><strong>xxxwaitxxx</strong> - Long wait time compensation</li>
+                <li><strong>xxxvipxxx</strong> - VIP guest treatment</li>
+                <li><strong>xxxregxxx</strong> - Regular customer appreciation</li>
+              </ul>
+            </div>
+
+            <div style={{
+              padding: '18px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+            }}>
+              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
+                Product Issues
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+                <li><strong>xxxqualxxx</strong> - Product quality issue</li>
+                <li><strong>xxxspilxxx</strong> - Drink spilled/accident</li>
+                <li><strong>xxxwrongxxx</strong> - Wrong item made/ordered</li>
+                <li><strong>xxxremakexxx</strong> - Item remake requested</li>
+                <li><strong>xxxexpiredxxx</strong> - Product expired/out of date</li>
+              </ul>
+            </div>
+
+            <div style={{
+              padding: '18px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+            }}>
+              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
+                System & Operational
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+                <li><strong>xxxvoidxxx</strong> - General void transaction</li>
+                <li><strong>xxxdupxxx</strong> - Duplicate charge</li>
+                <li><strong>xxxerrxxx</strong> - Bartender/System error</li>
+                <li><strong>xxxpromoxxx</strong> - Promotion/discount</li>
+                <li><strong>xxxempxxx</strong> - Employee comp</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: '20px',
+            padding: '16px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <h5 style={{ 
+              color: SECTION_COLOR, 
+              marginBottom: '10px', 
+              fontSize: '1rem', 
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              📝 Usage Example
+            </h5>
+            <p style={{ 
+              margin: 0, 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontStyle: 'italic'
+            }}>
+              When a customer is dissatisfied with their drink and you need to comp it, use: <strong>"xxxdissxxx"</strong> in the comp reason field.
+            </p>
+          </div>
+        </StaticCard>
+
+        {/* Comps Procedures */}
+        <StaticCard
+          title="🎁 Complimentary Items Procedures"
+          index={2}
         >
           <div style={{
             display: 'grid',
@@ -229,7 +289,6 @@ useEffect(() => {
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
             }}>
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Manager Approval
@@ -247,7 +306,6 @@ useEffect(() => {
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
             }}>
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Valid Reasons
@@ -260,12 +318,12 @@ useEffect(() => {
               </ul>
             </div>
           </div>
-        </AnimatedCard>
+        </StaticCard>
 
         {/* Voids Procedures */}
-        <AnimatedCard
+        <StaticCard
           title="📝 Void Transaction Procedures"
-          index={2}
+          index={3}
         >
           <div style={{
             display: 'grid',
@@ -278,7 +336,6 @@ useEffect(() => {
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
             }}>
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Void Requirements
@@ -296,7 +353,6 @@ useEffect(() => {
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
             }}>
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Common Void Scenarios
@@ -309,7 +365,7 @@ useEffect(() => {
               </ul>
             </div>
           </div>
-        </AnimatedCard>
+        </StaticCard>
 
         {/* Progress Section */}
         <div style={{ marginTop: '25px' }}>
