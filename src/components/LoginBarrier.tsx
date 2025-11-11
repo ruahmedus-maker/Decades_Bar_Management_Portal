@@ -299,7 +299,7 @@ export default function LoginBarrier() {
     <div id="login-barrier" style={loginBarrierStyle}>
       <div style={loginContainerStyle}>
         <div style={loginHeaderStyle}>
-          <h2 style={titleStyle}>🔐 Decades Bar Training</h2>
+          <h2 style={titleStyle}>🔐 Decades Bar Management Portal</h2>
           <p style={subtitleStyle}>Please log in to access the training materials</p>
         </div>
 
