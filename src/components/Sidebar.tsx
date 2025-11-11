@@ -12,8 +12,7 @@ const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'per
 // Tropical Teal/Blue color scheme
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
 const SIDEBAR_COLOR_RGB = '45, 212, 191';
-const SIDEBAR_COLOR_DARK = '#0D9488'; // Darker teal
-const SIDEBAR_COLOR_LIGHT = '#5EEAD4'; // Lighter teal
+
 
 export default function Sidebar() {
   const { activeSection, setActiveSection, trackVisit, isAdmin } = useApp();

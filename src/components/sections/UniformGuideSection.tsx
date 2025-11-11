@@ -1,5 +1,6 @@
 
-import { useEffect, useState, useRef } from 'react';
+
+import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
@@ -8,10 +9,8 @@ import { trackSectionVisit } from '@/lib/progress';
 const SECTION_COLOR = '#9F7AEA'; // Purple color for uniforms
 const SECTION_COLOR_RGB = '159, 122, 234';
 
-// Animated Card Component with Colored Glow Effects
+// Animated Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   // Different glow colors for different cards - purple theme for uniforms
   const glowColors = [
     'linear-gradient(45deg, #9F7AEA, #B794F4, transparent)', // Purple
@@ -27,40 +26,17 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(159, 122, 234, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
+        backdropFilter: 'blur(12px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
@@ -109,10 +85,8 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
   );
 }
 
-// Uniform Card Component with Enhanced Glow Effects
+// Uniform Card Component without Hover Effects
 function UniformCard({ title, items, index }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   const uniformColors = [
     'linear-gradient(45deg, #9F7AEA, transparent)', // Purple
     'linear-gradient(45deg, #805AD5, transparent)', // Dark Purple
@@ -130,41 +104,22 @@ function UniformCard({ title, items, index }: any) {
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
         transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        backdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        WebkitBackdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        cursor: 'pointer',
+        transform: 'translateY(0)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         position: 'relative',
         overflow: 'hidden'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Individual Uniform Color Glow */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '14px',
-          background: uniformColor,
-          zIndex: 0,
-          opacity: 0.6
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h5 style={{
-          color: isHovered ? SECTION_COLOR : 'white',
+          color: 'white',
           marginBottom: '15px',
           fontSize: '1.1rem',
           fontWeight: 600,
-          borderBottom: `1px solid ${isHovered ? `rgba(${SECTION_COLOR_RGB}, 0.6)` : `rgba(${SECTION_COLOR_RGB}, 0.3)`}`,
+          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           paddingBottom: '8px',
-          transition: 'all 0.3s ease',
-          textShadow: isHovered ? `0 0 10px rgba(${SECTION_COLOR_RGB}, 0.3)` : 'none'
+          transition: 'all 0.3s ease'
         }}>
           {title}
         </h5>

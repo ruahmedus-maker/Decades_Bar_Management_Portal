@@ -21,7 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ 
+      <body 
+      className={inter.className}
+      style={{ 
         margin: 0, 
         padding: 0,
         minHeight: '100vh',

@@ -14,6 +14,7 @@ export interface User {
   visitedSections?: string[];
   testResults?: Record<string, TestResult>;
   sectionVisits?: { [sectionId: string]: SectionVisit };
+
   
 }
 
@@ -125,3 +126,69 @@ export interface SectionVisit {
   completed: boolean;
   quizPassed?: boolean;
 }
+
+export interface CardProps {
+  title: string;
+  description?: string;
+  items?: string[];
+  footer?: {
+    left: string;
+    right: string;
+  };
+  index?: number;
+  children?: React.ReactNode;
+  glowColor?: string;
+}
+
+export interface GlasswareCardProps {
+  title: string;
+  primaryUse: string;
+  includes: string[];
+  note?: string | null;
+  index: number;
+}
+
+export interface UniformCardProps {
+  title: string;
+  items: string[];
+  index: number;
+}
+
+export interface SpecialCardProps {
+  title: string;
+  description?: string;
+  specials: string[];
+  hours: string;
+  notes?: string;
+  index: number;
+}
+
+export interface WeekDayProps {
+  title: string;
+  children: React.ReactNode;
+  index: number;
+  highlight?: string;
+}
+
+export interface ProgressItem {
+  sectionId: string;
+  sectionName: string;
+  completed: boolean;
+  progress: number;
+  lastVisited?: string;
+}
+
+export interface SectionDetail {
+  id: string;
+  label: string;
+  completed: boolean;
+  timeSpent: number;
+  timeRequired: number;
+}
+
+export interface ProgressBreakdown {
+  progress: number;
+  canAcknowledge: boolean;
+  sectionDetails: SectionDetail[];
+}
+

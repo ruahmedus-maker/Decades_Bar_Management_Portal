@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 
+
 function DecadesIntroduction() {
   const [isHovered, setIsHovered] = useState(false);
 

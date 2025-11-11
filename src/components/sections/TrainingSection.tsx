@@ -1,53 +1,28 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
+import { CardProps } from '@/types';
 
-// Card Component with Hover Effects
-function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
+// Card Component without Hover Effects
+function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: CardProps) {
   return (
-    
     <div 
-    
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
+        backdropFilter: 'blur(12px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
@@ -72,10 +47,8 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
   );
 }
 
-// Week Day Component with Hover Effects
+// Week Day Component without Hover Effects
 function WeekDay({ title, children, index, highlight }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   const dayColors = [
     'linear-gradient(45deg, #48bb78, transparent)', // Green
     'linear-gradient(45deg, #ed8936, transparent)', // Orange
@@ -94,31 +67,13 @@ function WeekDay({ title, children, index, highlight }: any) {
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
         transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        backdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        WebkitBackdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        cursor: 'pointer',
+        transform: 'translateY(0)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         position: 'relative',
         overflow: 'hidden'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Individual Day Color Glow */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '14px',
-          background: dayColor,
-          zIndex: 0,
-          opacity: 0.6
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h5 style={{
           color: 'white',

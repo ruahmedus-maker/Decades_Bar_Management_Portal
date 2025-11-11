@@ -3,6 +3,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 
+
 // Define the cocktail section color
 const SECTION_COLOR = '#FF6B6B'; // Coral color for cocktails section
 const SECTION_COLOR_RGB = '255, 107, 107';

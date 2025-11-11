@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const bannerImages = [
   '/images/decades/banner-main.jpg',
@@ -34,9 +35,12 @@ export default function DecadesBanner() {
       zIndex: -1,
       overflow: 'hidden',
     }}>
-      <img
+      <Image
         src={bannerImages[currentBanner]}
         alt="Decades Bar & Lounge"
+        width={150} 
+        height={50}
+        priority
         onLoad={() => setImageLoaded(true)}
         onError={(e) => {
           console.error('Failed to load image:', bannerImages[currentBanner]);

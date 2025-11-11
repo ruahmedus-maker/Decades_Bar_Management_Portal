@@ -1,9 +1,25 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { submitAcknowledgement, getProgressBreakdown, trackSectionVisit } from '@/lib/progress';
+import { submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
 import { storage } from '@/lib/storage';
+
+// Define proper TypeScript interfaces
+interface SectionDetail {
+  id: string;
+  label: string;
+  completed: boolean;
+  timeSpent: number;
+  timeRequired: number;
+}
+
+interface ProgressBreakdown {
+  progress: number;
+  canAcknowledge: boolean;
+  sectionDetails: SectionDetail[];
+}
 
 const PRIMARY_COLOR = '#7FB685';
 const LIGHT_COLOR = '#9DCC9A';
@@ -15,7 +31,7 @@ export default function ProgressSection() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [progressBreakdown, setProgressBreakdown] = useState<any>(null);
+  const [progressBreakdown, setProgressBreakdown] = useState<ProgressBreakdown | null>(null);
   
   // Use ref for refresh counter to avoid re-renders
   const refreshCounterRef = useRef(0);
@@ -336,7 +352,7 @@ export default function ProgressSection() {
         }}>
           Progress Breakdown
         </h4>
-        {sectionDetails.map((detail: any) => (
+        {sectionDetails.map((detail: SectionDetail) => (
           <div key={detail.id} style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 

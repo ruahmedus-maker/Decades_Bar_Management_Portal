@@ -4,13 +4,14 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 import { useState, useEffect, useRef } from 'react';
+import { CardProps } from '@/types';
 
 // Define the section color for bar cleanings
 const SECTION_COLOR = '#38B2AC'; // Teal color for cleaning
 const SECTION_COLOR_RGB = '56, 178, 172';
 
 // Simplified Card Component - NO HOVER EFFECTS
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
+function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   return (
     <div 
       style={{

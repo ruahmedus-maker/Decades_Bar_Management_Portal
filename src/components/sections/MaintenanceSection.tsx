@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { storage } from '@/lib/storage';
-import { trackSectionVisit } from '@/lib/progress';
+
+import { CardProps } from '@/types';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
 const SECTION_COLOR_RGB = '30, 64, 175';
 
 // Simplified Card Component without hover effects
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
+function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   // Different colors for different cards - deep blue theme for maintenance
   const colors = [
     'rgba(30, 64, 175, 0.3)',
@@ -19,7 +20,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
     'rgba(30, 58, 138, 0.3)'
   ];
 
-  const cardColor = colors[index] || `rgba(30, 64, 175, 0.3)`;
+  //const cardColor = colors[index] || `rgba(30, 64, 175, 0.3)`;
 
   return (
     <div 
