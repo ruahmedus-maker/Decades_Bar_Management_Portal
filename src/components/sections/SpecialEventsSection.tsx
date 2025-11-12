@@ -3,9 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { supabase } from '@/lib/supabase';
+
 import { SpecialEvent, Task } from '@/types';
 import { CardProps } from '@/types';
+import { supabaseSpecialEvents } from '@/lib/supabase-special-events';
+
+
 
 // Define the section color for special events
 const SECTION_COLOR = '#ED8936'; // Orange color for special events
@@ -303,31 +306,6 @@ interface SpecialEventsSectionProps {
   isAdminView?: boolean;
 }
 
-// Define database row types
-interface SpecialEventRow {
-  id: string;
-  name: string;
-  date: string;
-  theme: string | null;
-  drink_specials: string | null;
-  notes: string | null;
-  created_by: string;
-  created_at: string;
-  status: string;
-}
-
-interface TaskRow {
-  id: string;
-  title: string;
-  description: string | null;
-  assigned_to: string;
-  due_date: string | null;
-  completed: boolean;
-  completed_at: string | null;
-  created_at: string;
-  event_id: string;
-  priority: string;
-}
 
 export default function SpecialEventsSection({ isAdminView = false }: SpecialEventsSectionProps) {
   const { currentUser, showToast } = useApp();
@@ -363,194 +341,95 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
     setTaskForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Load events from Supabase
 const loadEvents = async () => {
   try {
     setLoading(true);
-    console.log('📅 Loading events from Supabase...');
-    
-    const { data: eventsData, error } = await supabase
-      .from('special_events')
-      .select('*')
-      .order('date', { ascending: false });
+    const eventsData = await supabaseSpecialEvents.getEvents();
+    const eventsArray = Object.values(eventsData).sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    setEvents(eventsArray);
+  } catch (error) {
+    console.error('Error loading events:', error);
+    showToast('Error loading events');
+  } finally {
+    setLoading(false);
+  }
+};
 
-    if (error) {
-      console.error('Error loading events:', error);
-      showToast('Error loading events');
-      return;
-    }
+ const handleCreateEvent = async () => {
+  if (!currentUser) return;
 
-    console.log('📊 Events loaded:', eventsData);
+  try {
+    const eventData = {
+      name: eventForm.name,
+      date: eventForm.date,
+      theme: eventForm.theme,
+      drinkSpecials: eventForm.drinkSpecials,
+      notes: eventForm.notes,
+      tasks: [], // Add empty tasks array
+      createdBy: currentUser.email,
+      status: eventForm.status
+    };
 
-    if (eventsData && eventsData.length > 0) {
-      // Load tasks for each event
-      const eventIds = eventsData.map((event: SpecialEventRow) => event.id);
-      const { data: tasksData, error: tasksError } = await supabase
-        .from('tasks')
-        .select('*')
-        .in('event_id', eventIds);
+    await supabaseSpecialEvents.createEvent(eventData);
+    showToast('Special event created successfully!');
+    setShowEventForm(false);
+    resetEventForm();
+  } catch (error) {
+    console.error('Error creating event:', error);
+    showToast('Error creating event');
+  }
+};
 
-      if (tasksError) {
-        console.error('Error loading tasks:', tasksError);
-      }
-      // ... rest of the function
-        // Convert to app format
-        const formattedEvents: SpecialEvent[] = eventsData.map((event: SpecialEventRow) => {
-          const eventTasks = tasksData?.filter((task: TaskRow) => task.event_id === event.id) || [];
-          
-          return {
-            id: event.id,
-            name: event.name,
-            date: event.date,
-            theme: event.theme || '',
-            drinkSpecials: event.drink_specials || '',
-            notes: event.notes || '',
-            tasks: eventTasks.map((task: TaskRow): Task => ({
-              id: task.id,
-              title: task.title,
-              description: task.description || '',
-              assignedTo: task.assigned_to,
-              dueDate: task.due_date || '',
-              completed: task.completed,
-              completedAt: task.completed_at || '',
-              createdAt: task.created_at,
-              eventId: task.event_id,
-              priority: task.priority as 'low' | 'medium' | 'high'
-            })),
-            createdAt: event.created_at,
-            createdBy: event.created_by,
-            status: event.status as 'planned' | 'in-progress' | 'completed' | 'cancelled'
-          };
-        });
-
-        setEvents(formattedEvents);
-      } else {
-        setEvents([]);
-      }
-    } catch (error) {
-      console.error('Error in loadEvents:', error);
-      showToast('Error loading events');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Create new event in Supabase
-  const handleCreateEvent = async () => {
-    if (!currentUser) {
-      showToast('You must be logged in to create events');
-      return;
-    }
-
-    try {
-      const id = `event-${Date.now()}`;
-      
-      const { error } = await supabase
-        .from('special_events')
-        .insert({
-          id,
-          name: eventForm.name,
-          date: eventForm.date,
-          theme: eventForm.theme,
-          drink_specials: eventForm.drinkSpecials,
-          notes: eventForm.notes,
-          created_by: currentUser.email,
-          status: eventForm.status
-        });
-
-      if (error) throw error;
-
-      console.log('✅ Event created in Supabase:', id);
-      showToast('Special event created successfully!');
-      setShowEventForm(false);
-      resetEventForm();
-      // Don't call loadEvents here - real-time subscription will update
-      
-    } catch (error) {
-      console.error('Error creating event:', error);
-      showToast('Error creating event');
-    }
-  };
-
-  // Add task to event in Supabase
   const handleAddTask = async () => {
-    if (!selectedEvent) return;
+  if (!selectedEvent) return;
 
-    try {
-      const taskId = `task-${Date.now()}`;
-      
-      const { error } = await supabase
-        .from('tasks')
-        .insert({
-          id: taskId,
-          title: taskForm.title,
-          description: taskForm.description,
-          assigned_to: taskForm.assignedTo,
-          due_date: taskForm.dueDate || null,
-          completed: false,
-          completed_at: null,
-          event_id: selectedEvent.id,
-          priority: taskForm.priority
-        });
+  try {
+    const taskData = {
+      title: taskForm.title,
+      description: taskForm.description,
+      assignedTo: taskForm.assignedTo,
+      dueDate: taskForm.dueDate,
+      completed: false,
+      priority: taskForm.priority
+    };
 
-      if (error) throw error;
+    await supabaseSpecialEvents.addTaskToEvent(selectedEvent.id, taskData);
+    showToast('Task added successfully!');
+    setShowTaskForm(false);
+    resetTaskForm();
+    // Don't call loadEvents here - real-time subscription will handle it
+  } catch (error) {
+    console.error('Error adding task:', error);
+    showToast('Error adding task');
+  }
+};
 
-      showToast('Task added successfully!');
-      setShowTaskForm(false);
-      resetTaskForm();
-      // Don't call loadEvents here - real-time subscription will update
-      
-    } catch (error) {
-      console.error('Error adding task:', error);
-      showToast('Error adding task');
-    }
-  };
-
-  // Update task status in Supabase
   const handleUpdateTaskStatus = async (eventId: string, taskId: string, completed: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ 
-          completed,
-          completed_at: completed ? new Date().toISOString() : null
-        })
-        .eq('id', taskId);
+  try {
+    await supabaseSpecialEvents.updateTask(taskId, { 
+      completed,
+      completedAt: completed ? new Date().toISOString() : undefined
+    });
+    // Don't call loadEvents here - real-time subscription will handle it
+  } catch (error) {
+    console.error('Error updating task:', error);
+    showToast('Error updating task');
+  }
+};
 
-      if (error) throw error;
-      // Real-time subscription will handle the update
-    } catch (error) {
-      console.error('Error updating task:', error);
-      showToast('Error updating task');
-    }
-  };
 
-  // Delete event from Supabase
   const handleDeleteEvent = async (eventId: string) => {
-    try {
-      // First delete associated tasks
-      const { error: tasksError } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('event_id', eventId);
-
-      if (tasksError) throw tasksError;
-
-      // Then delete the event
-      const { error: eventError } = await supabase
-        .from('special_events')
-        .delete()
-        .eq('id', eventId);
-
-      if (eventError) throw eventError;
-
-      showToast('Event deleted successfully!');
-      // Real-time subscription will handle the update
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      showToast('Error deleting event');
-    }
-  };
+  try {
+    await supabaseSpecialEvents.deleteEvent(eventId);
+    showToast('Event deleted successfully!');
+    // Don't call loadEvents here - real-time subscription will handle it
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    showToast('Error deleting event');
+  }
+};
 
   const resetEventForm = () => {
     setEventForm({
@@ -593,46 +472,27 @@ const loadEvents = async () => {
   };
 
   // Set up real-time subscription
-  useEffect(() => {
-    if (!currentUser) return;
+useEffect(() => {
+  if (!currentUser) return;
 
-    console.log('🔄 Setting up real-time subscription for events...');
-    loadEvents();
+  console.log('🔄 Setting up real-time subscription for events...');
+  loadEvents();
 
-    // Subscribe to changes in special_events table
-    const subscription = supabase
-      .channel('special-events-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // INSERT, UPDATE, DELETE
-          schema: 'public',
-          table: 'special_events'
-        },
-        (payload: PostgresChangePayload) => {
-          console.log('🔔 Real-time event update:', payload);
-          loadEvents(); // Reload events when anything changes
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks'
-        },
-        (payload: PostgresChangePayload) => {
-          console.log('🔔 Real-time task update:', payload);
-          loadEvents(); // Reload events when tasks change
-        }
-      )
-      .subscribe();
+  // Subscribe to changes using supabaseSpecialEvents
+  const subscription = supabaseSpecialEvents.subscribeToEvents((events) => {
+    console.log('🔔 Real-time update received');
+    const eventsArray = Object.values(events).sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    setEvents(eventsArray);
+  });
 
-    return () => {
-      console.log('🧹 Cleaning up real-time subscription');
-      subscription.unsubscribe();
-    };
-  }, [currentUser]);
+  return () => {
+    console.log('🧹 Cleaning up real-time subscription');
+    subscription.unsubscribe();
+  };
+}, [currentUser]);
+
 
   // Mock users for task assignment (you'll need to replace this with actual user loading)
   const users = [

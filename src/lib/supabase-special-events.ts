@@ -27,6 +27,26 @@ interface TaskRow {
   priority: string;
 }
 
+// Create proper input types that match your database schema
+interface SpecialEventInput {
+  name: string;
+  date: string;
+  theme: string;
+  drinkSpecials: string;
+  notes: string;
+  createdBy: string;
+  status: 'planned' | 'in-progress' | 'completed' | 'cancelled';
+}
+
+interface TaskInput {
+  title: string;
+  description: string;
+  assignedTo: string;
+  dueDate: string;
+  completed: boolean;
+  priority: 'low' | 'medium' | 'high';
+}
+
 export const supabaseSpecialEvents = {
   // Special Events methods
   getEvents: async (): Promise<Record<string, SpecialEvent>> => {
@@ -38,7 +58,6 @@ export const supabaseSpecialEvents = {
 
       if (error) throw error;
 
-      // Convert to the format your app expects
       const eventsMap: Record<string, SpecialEvent> = {};
       const eventsData = events as SpecialEventRow[] | null;
       
@@ -100,7 +119,7 @@ export const supabaseSpecialEvents = {
     }
   },
 
-  createEvent: async (event: Omit<SpecialEvent, 'id' | 'createdAt'>): Promise<string> => {
+  createEvent: async (event: SpecialEventInput): Promise<string> => {
     try {
       const id = `event-${Date.now()}`;
       
@@ -125,7 +144,7 @@ export const supabaseSpecialEvents = {
     }
   },
 
-  updateEvent: async (id: string, updates: Partial<SpecialEvent>): Promise<void> => {
+  updateEvent: async (id: string, updates: Partial<SpecialEventInput>): Promise<void> => {
     try {
       const { error } = await supabase
         .from('special_events')
@@ -162,7 +181,7 @@ export const supabaseSpecialEvents = {
   },
 
   // Task methods
-  addTaskToEvent: async (eventId: string, task: Omit<Task, 'id' | 'createdAt' | 'eventId'>): Promise<string> => {
+  addTaskToEvent: async (eventId: string, task: TaskInput): Promise<string> => {
     try {
       const taskId = `task-${Date.now()}`;
       
@@ -175,7 +194,7 @@ export const supabaseSpecialEvents = {
           assigned_to: task.assignedTo,
           due_date: task.dueDate,
           completed: task.completed,
-          completed_at: task.completedAt,
+          completed_at: null,
           event_id: eventId,
           priority: task.priority
         });
@@ -242,14 +261,6 @@ export const supabaseSpecialEvents = {
           callback(events);
         }
       )
-      .subscribe();
-
-    return subscription;
-  },
-
-  subscribeToTasks: (callback: (tasks: Task[]) => void) => {
-    const subscription = supabase
-      .channel('tasks-changes')
       .on(
         'postgres_changes',
         {
@@ -258,26 +269,9 @@ export const supabaseSpecialEvents = {
           table: 'tasks'
         },
         async () => {
-          // Refresh tasks when anything changes
-          const { data: tasks, error } = await supabase
-            .from('tasks')
-            .select('*');
-
-          if (!error && tasks) {
-            const appTasks: Task[] = (tasks as TaskRow[]).map((task: TaskRow) => ({
-              id: task.id,
-              title: task.title,
-              description: task.description || '',
-              assignedTo: task.assigned_to,
-              dueDate: task.due_date || '',
-              completed: task.completed,
-              completedAt: task.completed_at || '',
-              createdAt: task.created_at,
-              eventId: task.event_id,
-              priority: task.priority as 'low' | 'medium' | 'high'
-            }));
-            callback(appTasks);
-          }
+          // Refresh events when tasks change too
+          const events = await supabaseSpecialEvents.getEvents();
+          callback(events);
         }
       )
       .subscribe();
