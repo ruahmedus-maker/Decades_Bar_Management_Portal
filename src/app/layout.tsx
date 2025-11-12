@@ -6,7 +6,6 @@ import PWAInstaller from '@/components/PWAInstaller';
 import InstallPrompt from '@/components/InstallPrompt';
 import MigrationHandler from '@/components/MigrationHandler';
 
-
 const inter = Inter({ 
   subsets: ["latin"],
 });
@@ -15,21 +14,25 @@ export const metadata: Metadata = {
   title: "Decades Bar Training Portal",
   description: "Training & Procedures Portal for Decades Bar Staff",
   manifest: "/manifest.json",
-  themeColor: "#2DD4BF",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent", // Changed for Safari
     title: "Decades Bar",
+  },
+  // Added for Safari compatibility
+  formatDetection: {
+    telephone: false,
   },
 };
 
-// FIXED: Move themeColor to viewport instead of metadata
 export const viewport: Viewport = {
   themeColor: "#2DD4BF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // Safari-specific viewport settings
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -42,14 +45,25 @@ export default function RootLayout({
       <head>
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2DD4BF" />
+        
+        {/* Enhanced Safari PWA Support */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Decades Bar" />
+        
+        {/* Safari Icons */}
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icon-180x180.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icon-167x167.png" />
+        
+        {/* Safari Splash Screens */}
+        <link rel="apple-touch-startup-image" href="/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
+        <link rel="apple-touch-startup-image" href="/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
+        <link rel="apple-touch-startup-image" href="/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
         
         {/* Enhanced Mobile Viewport */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="mobile-web-app-capable" content="yes" />
         
         {/* Additional PWA Tags */}
@@ -57,6 +71,11 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-TileColor" content="#2DD4BF" />
         <meta name="msapplication-tap-highlight" content="no" />
+        
+        {/* Prevent Safari from caching aggressively */}
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
       </head>
       <body 
         className={inter.className}
@@ -67,6 +86,13 @@ export default function RootLayout({
           fontFamily: 'system-ui, sans-serif',
           background: 'transparent',
           overflowX: 'hidden',
+          // Safari-specific body styles
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          KhtmlUserSelect: 'none',
+          MozUserSelect: 'none',
+          msUserSelect: 'none',
+          userSelect: 'none',
         }}
       >
         <DecadesBanner />

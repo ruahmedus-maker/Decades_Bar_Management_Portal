@@ -10,6 +10,7 @@ import Toast from '@/components/Toast';
 import ErrorBoundary from '@/components/ErrorBoundary'; 
 import { ENABLE_TESTS } from '@/lib/constants';
 import FullScreenTest from '@/components/FullScreenTest';
+import SafariLoader from '@/components/SafariLoader'; // Add this
 
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
@@ -23,30 +24,34 @@ function MainApp() {
 
   if (isLoading) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background: 'transparent',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-        color: 'white'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <h3>Loading Decades Bar Training Portal...</h3>
-          <div style={{ marginTop: '20px' }}>Please wait</div>
+      <>
+        <SafariLoader />
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'transparent',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          color: 'white'
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <h3>Loading Decades Bar Training Portal...</h3>
+            <div style={{ marginTop: '20px' }}>Please wait</div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!currentUser) {
     return (
       <>
+        <SafariLoader />
         <LoginBarrier />
         <Toast 
           message={toast.message} 
@@ -61,6 +66,7 @@ function MainApp() {
   if (shouldShowOnlyTest) {
     return (
       <>
+        <SafariLoader />
         <FullScreenTest />
         <Toast 
           message={toast.message} 
@@ -74,6 +80,7 @@ function MainApp() {
   // Normal app layout for admins or when tests are disabled
   return (
     <>
+      <SafariLoader />
       <div className="container">
         <Header />
         <Sidebar />
