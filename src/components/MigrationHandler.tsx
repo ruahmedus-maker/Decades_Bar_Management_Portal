@@ -99,4 +99,6 @@ export default function MigrationHandler() {
       ✅ Cloud database active
     </div>
   );
+
+  
 }

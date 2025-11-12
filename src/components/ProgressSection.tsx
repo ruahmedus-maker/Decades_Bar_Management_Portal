@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -69,6 +68,7 @@ export default function ProgressSection() {
     }
   }, [currentUser, forceRefresh]);
 
+  // Simple progress fallback if breakdown is null
   const progress = progressBreakdown?.progress || 0;
   const canAcknowledge = progressBreakdown?.canAcknowledge || false;
   const sectionDetails = progressBreakdown?.sectionDetails || [];

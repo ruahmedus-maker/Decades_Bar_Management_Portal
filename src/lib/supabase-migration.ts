@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { storage } from './storage';
+import { SpecialEvent, Task, User } from '@/types';
 
 export class MigrationService {
   // Migrate users from localStorage to Supabase
@@ -14,7 +15,7 @@ export class MigrationService {
 
       const { data, error } = await supabase
         .from('users')
-        .upsert(users.map(user => ({
+        .upsert(users.map((user: User) => ({
           email: user.email,
           name: user.name,
           position: user.position,
@@ -103,6 +104,112 @@ export class MigrationService {
       };
     } catch (error) {
       return { usersMigrated: false, ticketsMigrated: false };
+    }
+  }
+
+  // Add special events migration
+  static async migrateSpecialEvents(): Promise<{ success: boolean; count: number }> {
+    try {
+      // Import the localStorage version dynamically to avoid circular dependencies
+      const { specialEventsStorage } = await import('./specialEvents');
+      const localEvents = specialEventsStorage.getEvents();
+      
+      if (Object.keys(localEvents).length === 0) {
+        return { success: true, count: 0 };
+      }
+
+      let migratedCount = 0;
+
+      // Migrate events
+      for (const [eventId, event] of Object.entries(localEvents)) {
+        const { error: eventError } = await supabase
+          .from('special_events')
+          .upsert({
+            id: eventId,
+            name: event.name,
+            date: event.date,
+            theme: event.theme,
+            drink_specials: event.drinkSpecials,
+            notes: event.notes,
+            created_by: event.createdBy,
+            status: event.status,
+            created_at: event.createdAt
+          });
+
+        if (eventError) {
+          console.error(`Error migrating event ${eventId}:`, eventError);
+          continue;
+        }
+
+        // Migrate tasks for this event
+        if (event.tasks && event.tasks.length > 0) {
+          for (const task of event.tasks) {
+            const { error: taskError } = await supabase
+              .from('tasks')
+              .upsert({
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                assigned_to: task.assignedTo,
+                due_date: task.dueDate,
+                completed: task.completed,
+                completed_at: task.completedAt,
+                event_id: eventId,
+                priority: task.priority,
+                created_at: task.createdAt
+              });
+
+            if (taskError) {
+              console.error(`Error migrating task ${task.id}:`, taskError);
+            }
+          }
+        }
+
+        migratedCount++;
+      }
+
+      console.log(`Successfully migrated ${migratedCount} special events to Supabase`);
+      return { success: true, count: migratedCount };
+    } catch (error) {
+      console.error('Error migrating special events:', error);
+      return { success: false, count: 0 };
+    }
+  }
+
+  // Add progress data migration
+  static async migrateProgressData(): Promise<{ success: boolean; count: number }> {
+    try {
+      const users = storage.getUsers();
+      let migratedCount = 0;
+
+      for (const [email, user] of Object.entries(users)) {
+        if (user.sectionVisits && Object.keys(user.sectionVisits).length > 0) {
+          for (const [sectionId, visit] of Object.entries(user.sectionVisits)) {
+            const { error } = await supabase
+              .from('section_visits')
+              .upsert({
+                user_email: email,
+                section_id: sectionId,
+                first_visit: visit.firstVisit,
+                last_visit: visit.lastVisit,
+                total_time: visit.totalTime,
+                completed: visit.completed,
+                quiz_passed: visit.quizPassed || false
+              });
+
+            if (error) {
+              console.error(`Error migrating section visit for ${email}:`, error);
+            }
+          }
+          migratedCount++;
+        }
+      }
+
+      console.log(`Successfully migrated progress data for ${migratedCount} users to Supabase`);
+      return { success: true, count: migratedCount };
+    } catch (error) {
+      console.error('Error migrating progress data:', error);
+      return { success: false, count: 0 };
     }
   }
 }
