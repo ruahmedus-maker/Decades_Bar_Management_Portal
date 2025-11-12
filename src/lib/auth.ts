@@ -31,7 +31,8 @@ export const initializeTestUsers = async (): Promise<void> => {
       .select('email')
       .in('email', ['bartender@decadesbar.com', 'trainee@decadesbar.com', 'admin@decadesbar.com']);
 
-    const existingEmails = existingUsers?.map(u => u.email) || [];
+    // FIXED: Added type annotation for the parameter
+    const existingEmails = existingUsers?.map((u: { email: string }) => u.email) || [];
 
     const testUsers = [
       {
@@ -208,6 +209,11 @@ export const performLogin = async (email: string, password: string): Promise<Use
     throw new Error('Please enter both email and password');
   }
 
+  // Safety check for server-side rendering
+  if (typeof window === 'undefined') {
+    return performLoginLocal(email, password);
+  }
+
   try {
     // First try Supabase
     const { data: user, error } = await supabase
@@ -320,6 +326,11 @@ export const performRegistration = async (userData: RegistrationData): Promise<U
     if (!ADMIN_CODES.includes(code)) {
       throw new Error('Administrative positions require manager authorization codes.');
     }
+  }
+
+  // Safety check for server-side rendering
+  if (typeof window === 'undefined') {
+    return performRegistrationLocal(userData);
   }
 
   try {

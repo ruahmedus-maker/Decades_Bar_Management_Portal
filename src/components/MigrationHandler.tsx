@@ -1,14 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MigrationService } from '@/lib/supabase-migration';
 
 export default function MigrationHandler() {
-  const [migrationStatus, setMigrationStatus] = useState<'checking' | 'needed' | 'completed' | 'error'>('checking');
+  const [migrationStatus, setMigrationStatus] = useState<'checking' | 'needed' | 'completed' | 'error' | 'skipped'>('checking');
 
   useEffect(() => {
     const runMigration = async () => {
+      // Only run in browser environment, not during build
+      if (typeof window === 'undefined') {
+        setMigrationStatus('skipped');
+        return;
+      }
+
       try {
+        // Dynamically import the migration service to avoid build issues
+        const { MigrationService } = await import('@/lib/supabase-migration');
+        
         const status = await MigrationService.checkMigrationStatus();
         
         if (!status.usersMigrated || !status.ticketsMigrated) {
@@ -36,22 +44,8 @@ export default function MigrationHandler() {
     runMigration();
   }, []);
 
-  if (migrationStatus === 'checking') {
-    return (
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        background: 'rgba(45, 212, 191, 0.9)',
-        color: 'white',
-        padding: '10px 15px',
-        borderRadius: '8px',
-        fontSize: '14px',
-        zIndex: 10000
-      }}>
-        🔄 Checking data migration...
-      </div>
-    );
+  if (migrationStatus === 'checking' || migrationStatus === 'skipped') {
+    return null; // Don't show anything during build
   }
 
   if (migrationStatus === 'needed') {

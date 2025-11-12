@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
@@ -21,6 +21,15 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Decades Bar",
   },
+};
+
+// FIXED: Move themeColor to viewport instead of metadata
+export const viewport: Viewport = {
+  themeColor: "#2DD4BF",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
