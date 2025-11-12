@@ -4,6 +4,8 @@ import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
 import PWAInstaller from '@/components/PWAInstaller';
 import InstallPrompt from '@/components/InstallPrompt';
+import MigrationHandler from '@/components/MigrationHandler';
+
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -71,6 +73,7 @@ export default function RootLayout({
         {/* PWA Components */}
         <PWAInstaller />
         <InstallPrompt />
+        <MigrationHandler />
       </body>
     </html>
   );

@@ -32,10 +32,10 @@ export default function LoginBarrier() {
 
   // Initialize test users on component mount
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      initializeTestUsers();
-    }
-  }, []);
+  if (process.env.NODE_ENV === 'development') {
+    initializeTestUsers().catch(console.error);
+  }
+}, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
