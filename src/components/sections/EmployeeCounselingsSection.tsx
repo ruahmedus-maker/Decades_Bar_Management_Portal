@@ -1,29 +1,41 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { storage } from '@/lib/storage';
-import { CounselingRecord, EmployeeFolder } from '@/types';
 import { trackSectionVisit } from '@/lib/progress';
 import { CardProps } from '@/types';
+import { supabase } from '@/lib/supabase';
+import { getAllUsers } from '@/lib/auth';
 
 // Define the section color for employee counseling - teal blue theme
 const SECTION_COLOR = '#0D9488'; // Teal color for counseling
 const SECTION_COLOR_RGB = '13, 148, 136';
 
+// Types for counseling records
+interface CounselingRecord {
+  id: string;
+  employee_email: string;
+  employee_name: string;
+  type: 'observation' | 'verbal' | 'written' | 'suspension' | 'termination';
+  date: string;
+  description: string;
+  action_plan?: string;
+  recorded_by: string;
+  recorded_date: string;
+  acknowledged: boolean;
+  employee_signature?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface Employee {
+  email: string;
+  name: string;
+  position: string;
+}
+
 // Animated Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
-  // Different glow colors for different cards - teal theme for counseling
-  const glowColors = [
-    'linear-gradient(45deg, #0D9488, #14B8A6, transparent)',
-    'linear-gradient(45deg, #14B8A6, #2DD4BF, transparent)',
-    'linear-gradient(45deg, #0F766E, #0D9488, transparent)',
-    'linear-gradient(45deg, #115E59, #0D9488, transparent)'
-  ];
-
-  //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #14B8A6, transparent)`;
-
   return (
     <div 
       style={{
@@ -132,7 +144,7 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
           fontWeight: 600,
           transition: 'color 0.3s ease'
         }}>
-          {record.employeeName}
+          {record.employee_name}
         </h5>
         
         <p style={{ 
@@ -199,12 +211,14 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
 }
 
 export default function EmployeeCounselingSection() {
-  const { currentUser } = useApp();
+  const { currentUser, showToast } = useApp();
   const [activeTab, setActiveTab] = useState<'violation' | 'writeup'>('violation');
-  const [employees, setEmployees] = useState<EmployeeFolder[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [counselingRecords, setCounselingRecords] = useState<CounselingRecord[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    type: 'observation',
+    type: 'observation' as CounselingRecord['type'],
     date: new Date().toISOString().split('T')[0],
     description: '',
     actionPlan: '',
@@ -217,12 +231,34 @@ export default function EmployeeCounselingSection() {
     if (currentUser) {
       trackSectionVisit(currentUser.email, 'counseling');
     }
-    loadEmployeeFolders();
+    loadData();
   }, [currentUser]);
 
-  const loadEmployeeFolders = () => {
-    const folders = storage.getEmployeeFolders();
-    setEmployees(folders);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load employees (bartenders and trainees only)
+      const allUsers = await getAllUsers();
+      const bartendersAndTrainees = allUsers.filter(user => 
+        user.position === 'Bartender' || user.position === 'Trainee'
+      );
+      setEmployees(bartendersAndTrainees);
+
+      // Load counseling records
+      const { data: records, error } = await supabase
+        .from('counseling_records')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCounselingRecords(records || []);
+    } catch (error) {
+      console.error('Error loading counseling data:', error);
+      showToast('Error loading counseling records');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -232,48 +268,57 @@ export default function EmployeeCounselingSection() {
     }));
   };
 
-  const submitCounselingRecord = () => {
+  const submitCounselingRecord = async () => {
     if (!selectedEmployee || !formData.description || !formData.managerName) {
-      alert('Please select an employee, provide a description, and enter manager name.');
+      showToast('Please select an employee, provide a description, and enter manager name.');
       return;
     }
 
-    const users = storage.getUsers();
-    const employee = users[selectedEmployee];
-    if (!employee) {
-      alert('Employee not found.');
+    const selectedEmployeeData = employees.find(emp => emp.email === selectedEmployee);
+    if (!selectedEmployeeData) {
+      showToast('Employee not found.');
       return;
     }
 
-    const record: CounselingRecord = {
-      id: Date.now().toString(),
-      employeeEmail: selectedEmployee,
-      employeeName: employee.name,
-      type: formData.type as CounselingRecord['type'],
-      date: formData.date,
-      description: formData.description,
-      actionPlan: formData.actionPlan,
-      recordedBy: formData.managerName,
-      recordedDate: new Date().toISOString(),
-      acknowledged: false,
-      employeeSignature: formData.employeeSignature
-    };
+    try {
+      const recordId = `counseling-${Date.now()}`;
+      const record: CounselingRecord = {
+        id: recordId,
+        employee_email: selectedEmployee,
+        employee_name: selectedEmployeeData.name,
+        type: formData.type,
+        date: formData.date,
+        description: formData.description,
+        action_plan: formData.actionPlan,
+        recorded_by: formData.managerName,
+        recorded_date: new Date().toISOString(),
+        acknowledged: false,
+        employee_signature: formData.employeeSignature || undefined
+      };
 
-    storage.saveCounselingRecord(record);
-    
-    // Reset form but keep manager name
-    setFormData({
-      type: 'observation',
-      date: new Date().toISOString().split('T')[0],
-      description: '',
-      actionPlan: '',
-      consequences: '',
-      managerName: formData.managerName,
-      employeeSignature: ''
-    });
+      const { error } = await supabase
+        .from('counseling_records')
+        .insert([record]);
 
-    loadEmployeeFolders();
-    alert('Record saved successfully.');
+      if (error) throw error;
+
+      // Reset form but keep manager name
+      setFormData({
+        type: 'observation',
+        date: new Date().toISOString().split('T')[0],
+        description: '',
+        actionPlan: '',
+        consequences: '',
+        managerName: formData.managerName,
+        employeeSignature: ''
+      });
+
+      showToast('Counseling record saved successfully!');
+      loadData(); // Reload records
+    } catch (error: any) {
+      console.error('Error saving counseling record:', error);
+      showToast(error.message || 'Error saving counseling record');
+    }
   };
 
   const exportViolation = (record: CounselingRecord) => {
@@ -284,7 +329,7 @@ export default function EmployeeCounselingSection() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Employee Violation & Counseling - ${record.employeeName}</title>
+        <title>Employee Violation & Counseling - ${record.employee_name}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
           .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
@@ -308,7 +353,7 @@ export default function EmployeeCounselingSection() {
         <div class="section">
           <div class="section-title">EMPLOYEE INFORMATION</div>
           <div class="content">
-            <p><strong>Name:</strong> ${record.employeeName}</p>
+            <p><strong>Name:</strong> ${record.employee_name}</p>
             <p><strong>Position:</strong> ${record.type === 'observation' ? 'Observation Note' : 
               record.type === 'verbal' ? 'Verbal Warning' :
               record.type === 'written' ? 'Written Warning' :
@@ -326,7 +371,7 @@ export default function EmployeeCounselingSection() {
         <div class="section">
           <div class="section-title">COUNSELING & ACTION PLAN</div>
           <div class="content">
-            <p>${record.actionPlan}</p>
+            <p>${record.action_plan || 'No action plan specified.'}</p>
           </div>
         </div>
 
@@ -334,14 +379,14 @@ export default function EmployeeCounselingSection() {
           <div style="float: left; width: 45%;">
             <p>_________________________</p>
             <p><strong>Manager Signature</strong></p>
-            <p>${record.recordedBy}</p>
-            <p>Date: ${new Date(record.recordedDate).toLocaleDateString()}</p>
+            <p>${record.recorded_by}</p>
+            <p>Date: ${new Date(record.recorded_date).toLocaleDateString()}</p>
           </div>
           <div style="float: right; width: 45%;">
-            <p>${record.employeeSignature ? '_________________________' : ''}</p>
+            <p>${record.employee_signature ? '_________________________' : ''}</p>
             <p><strong>Employee Signature</strong></p>
-            <p>${record.employeeSignature || ''}</p>
-            <p>Date: ${record.employeeSignature ? new Date().toLocaleDateString() : '___________________'}</p>
+            <p>${record.employee_signature || ''}</p>
+            <p>Date: ${record.employee_signature ? new Date().toLocaleDateString() : '___________________'}</p>
           </div>
           <div style="clear: both;"></div>
         </div>
@@ -366,7 +411,7 @@ export default function EmployeeCounselingSection() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Employee Write-Up - ${record.employeeName}</title>
+        <title>Employee Write-Up - ${record.employee_name}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
           .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
@@ -390,7 +435,7 @@ export default function EmployeeCounselingSection() {
         <div class="section">
           <div class="section-title">EMPLOYEE INFORMATION</div>
           <div class="content">
-            <p><strong>Name:</strong> ${record.employeeName}</p>
+            <p><strong>Name:</strong> ${record.employee_name}</p>
             <p><strong>Position:</strong> Bartender</p>
             <p><strong>Write-Up Type:</strong> ${record.type.toUpperCase()}</p>
           </div>
@@ -406,7 +451,7 @@ export default function EmployeeCounselingSection() {
         <div class="section">
           <div class="section-title">CORRECTIVE ACTION PLAN</div>
           <div class="content">
-            <p>${record.actionPlan}</p>
+            <p>${record.action_plan || 'No corrective action plan specified.'}</p>
           </div>
         </div>
 
@@ -421,14 +466,14 @@ export default function EmployeeCounselingSection() {
           <div style="float: left; width: 45%;">
             <p>_________________________</p>
             <p><strong>Manager Signature</strong></p>
-            <p>${record.recordedBy}</p>
-            <p>Date: ${new Date(record.recordedDate).toLocaleDateString()}</p>
+            <p>${record.recorded_by}</p>
+            <p>Date: ${new Date(record.recorded_date).toLocaleDateString()}</p>
           </div>
           <div style="float: right; width: 45%;">
-            <p>${record.employeeSignature ? '_________________________' : ''}</p>
+            <p>${record.employee_signature ? '_________________________' : ''}</p>
             <p><strong>Employee Signature</strong></p>
-            <p>${record.employeeSignature || ''}</p>
-            <p>Date: ${record.employeeSignature ? new Date().toLocaleDateString() : '___________________'}</p>
+            <p>${record.employee_signature || ''}</p>
+            <p>Date: ${record.employee_signature ? new Date().toLocaleDateString() : '___________________'}</p>
           </div>
           <div style="clear: both;"></div>
         </div>
@@ -445,10 +490,34 @@ export default function EmployeeCounselingSection() {
     printWindow.print();
   };
 
-  const acknowledgeRecord = (recordId: string) => {
-    storage.acknowledgeCounselingRecord(recordId);
-    loadEmployeeFolders();
+  const acknowledgeRecord = async (recordId: string) => {
+    try {
+      const { error } = await supabase
+        .from('counseling_records')
+        .update({ 
+          acknowledged: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', recordId);
+
+      if (error) throw error;
+
+      showToast('Record acknowledged successfully!');
+      loadData(); // Reload records
+    } catch (error: any) {
+      console.error('Error acknowledging record:', error);
+      showToast(error.message || 'Error acknowledging record');
+    }
   };
+
+  // Group counseling records by employee
+  const employeeRecordsMap = counselingRecords.reduce((acc, record) => {
+    if (!acc[record.employee_email]) {
+      acc[record.employee_email] = [];
+    }
+    acc[record.employee_email].push(record);
+    return acc;
+  }, {} as Record<string, CounselingRecord[]>);
 
   if (!currentUser || currentUser.position !== 'Admin') {
     return (
@@ -499,6 +568,31 @@ export default function EmployeeCounselingSection() {
         <div style={{ padding: '25px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.8)' }}>
           <p>Access to this section is restricted to management only.</p>
         </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div 
+        id="employee-counseling-section"
+        style={{
+          marginBottom: '30px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+          padding: '40px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
+        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
+        <h3>Loading Counseling Records...</h3>
+        <p>Connecting to cloud database</p>
       </div>
     );
   }
@@ -836,7 +930,7 @@ export default function EmployeeCounselingSection() {
         >
           {employees.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
-              No employee records found.
+              No employees found.
             </div>
           ) : (
             <div style={{
@@ -845,56 +939,58 @@ export default function EmployeeCounselingSection() {
               gap: '15px',
               marginTop: '15px'
             }}>
-              {employees.map((employee, index) => (
-                <div key={employee.email} style={{
-                  padding: '15px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(10px)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <h5 style={{ color: 'white', margin: 0, fontSize: '1rem', fontWeight: '600' }}>
-                      {employee.name}
-                    </h5>
-                    <span style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      color: 'white',
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.7rem',
-                      fontWeight: '500'
-                    }}>
-                      {employee.position}
-                    </span>
-                  </div>
-                  
-                  <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem', marginBottom: '10px' }}>
-                    <div>Email: {employee.email}</div>
-                    <div>Hire Date: {new Date(employee.hireDate).toLocaleDateString()}</div>
-                    <div>Total Records: {employee.counselingRecords.length}</div>
-                  </div>
-
-                  {employee.counselingRecords.length > 0 && (
-                    <div style={{ marginTop: '10px' }}>
-                      <h6 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                        Recent Records:
-                      </h6>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {employee.counselingRecords.slice(0, 2).map((record, recordIndex) => (
-                          <CounselingRecordItem
-                            key={record.id}
-                            record={record}
-                            onExport={activeTab === 'violation' ? exportViolation : exportWriteUp}
-                            onAcknowledge={acknowledgeRecord}
-                            index={recordIndex}
-                          />
-                        ))}
-                      </div>
+              {employees.map((employee, index) => {
+                const employeeRecords = employeeRecordsMap[employee.email] || [];
+                return (
+                  <div key={employee.email} style={{
+                    padding: '15px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h5 style={{ color: 'white', margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                        {employee.name}
+                      </h5>
+                      <span style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        padding: '4px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.7rem',
+                        fontWeight: '500'
+                      }}>
+                        {employee.position}
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    
+                    <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem', marginBottom: '10px' }}>
+                      <div>Email: {employee.email}</div>
+                      <div>Total Records: {employeeRecords.length}</div>
+                    </div>
+
+                    {employeeRecords.length > 0 && (
+                      <div style={{ marginTop: '10px' }}>
+                        <h6 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
+                          Recent Records:
+                        </h6>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {employeeRecords.slice(0, 2).map((record, recordIndex) => (
+                            <CounselingRecordItem
+                              key={record.id}
+                              record={record}
+                              onExport={activeTab === 'violation' ? exportViolation : exportWriteUp}
+                              onAcknowledge={acknowledgeRecord}
+                              index={recordIndex}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </AnimatedCard>

@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
-import { storage } from '@/lib/storage';
+import { submitAcknowledgement, getProgressBreakdown, subscribeToProgress, isSectionCompleted } from '@/lib/progress';
 
 // Define proper TypeScript interfaces
 interface SectionDetail {
@@ -26,110 +25,90 @@ const DARK_COLOR = '#5A9E6B';
 const PRIMARY_COLOR_RGB = '127, 182, 133';
 
 export default function ProgressSection() {
-  const { currentUser } = useApp();
+  const { currentUser, userProgress, refreshProgress } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [progressBreakdown, setProgressBreakdown] = useState<ProgressBreakdown | null>(null);
+  const [loading, setLoading] = useState(false);
   
-  // Use ref for refresh counter to avoid re-renders
-  const refreshCounterRef = useRef(0);
   const mountedRef = useRef(false);
 
-  // Force refresh function that definitely works
-  const forceRefresh = useCallback(() => {
-    console.log('🔄 Force refresh triggered, counter:', refreshCounterRef.current + 1);
-    refreshCounterRef.current += 1;
+  // Load progress data
+  const loadProgress = useCallback(async () => {
+    if (!currentUser) return;
     
-    if (currentUser) {
-      const users = storage.getUsers();
-      const latestUser = users[currentUser.email];
-      console.log('📊 Latest user from storage:', latestUser);
-      
-      if (latestUser) {
-        const breakdown = getProgressBreakdown(latestUser);
-        console.log('📈 New progress breakdown:', breakdown);
-        setProgressBreakdown(breakdown);
-        
-        // Update UI states
-        setIsCollapsed(latestUser.acknowledged || false);
-        setIsChecked(latestUser.acknowledged || false);
-        setShowSuccess(latestUser.acknowledged || false);
-      }
+    try {
+      setLoading(true);
+      await refreshProgress();
+    } catch (error) {
+      console.error('Error loading progress:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, refreshProgress]);
 
-  // Initialize and set up periodic refresh
+  // Initialize and set up real-time subscription
   useEffect(() => {
     if (currentUser && !mountedRef.current) {
-      console.log('🚀 ProgressSection initializing');
+      console.log('🚀 ProgressSection initializing for Supabase');
       mountedRef.current = true;
-      forceRefresh();
+      loadProgress();
+
+      // Set up real-time subscription for progress updates
+      const subscription = subscribeToProgress(currentUser.email, (progress) => {
+        console.log('🔔 Real-time progress update received');
+        refreshProgress();
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
-  }, [currentUser, forceRefresh]);
+  }, [currentUser, loadProgress, refreshProgress]);
+
+  // Update UI states when userProgress changes
+  useEffect(() => {
+    if (userProgress && currentUser) {
+      console.log('📊 Progress data updated:', userProgress);
+      setIsCollapsed(currentUser.acknowledged || false);
+      setIsChecked(currentUser.acknowledged || false);
+      setShowSuccess(currentUser.acknowledged || false);
+    }
+  }, [userProgress, currentUser]);
 
   // Simple progress fallback if breakdown is null
-  const progress = progressBreakdown?.progress || 0;
-  const canAcknowledge = progressBreakdown?.canAcknowledge || false;
-  const sectionDetails = progressBreakdown?.sectionDetails || [];
+  const progress = userProgress?.progress || 0;
+  const canAcknowledge = userProgress?.canAcknowledge || false;
+  const sectionDetails = userProgress?.sectionDetails || [];
 
   // Simple, direct button handlers
-  const handleRefresh = () => {
-    console.log('🎯 Refresh button clicked directly');
-    forceRefresh();
+  const handleRefresh = async () => {
+    console.log('🎯 Refresh button clicked');
+    await loadProgress();
   };
 
   const handleDebug = () => {
     console.log('=== DEBUG INFO ===');
     console.log('Current User:', currentUser);
-    console.log('Progress Breakdown:', progressBreakdown);
-    
-    if (currentUser) {
-      const users = storage.getUsers();
-      const user = users[currentUser.email];
-      console.log('User from Storage:', user);
-      
-      // Check the problematic sections
-      console.log('Aloha-pos section:', user?.sectionVisits?.['aloha-pos']);
-      console.log('Drinks-specials section:', user?.sectionVisits?.['drinks-specials']);
-      console.log('Are they completed?', {
-        'aloha-pos': user?.sectionVisits?.['aloha-pos']?.completed,
-        'drinks-specials': user?.sectionVisits?.['drinks-specials']?.completed
-      });
-    }
+    console.log('User Progress from Context:', userProgress);
+    console.log('Progress Breakdown:', userProgress);
     
     alert('Check console for debug info!');
   };
 
-  const handleForceComplete = (sectionId: string) => {
+  const handleForceComplete = async (sectionId: string) => {
     console.log('⚡ Force completing:', sectionId);
     if (currentUser) {
-      // Direct storage manipulation to ensure it works
-      const users = storage.getUsers();
-      const user = users[currentUser.email];
-      
-      if (user) {
-        if (!user.sectionVisits) user.sectionVisits = {};
-        
-        user.sectionVisits[sectionId] = {
-          sectionId,
-          firstVisit: new Date().toISOString(),
-          lastVisit: new Date().toISOString(),
-          totalTime: 30,
-          completed: true
-        };
-        
-        // Update visitedSections for backward compatibility
-        if (!user.visitedSections) user.visitedSections = [];
-        if (!user.visitedSections.includes(sectionId)) {
-          user.visitedSections.push(sectionId);
-        }
-        
-        storage.saveUsers(users);
-        console.log(`✅ Manually completed ${sectionId}`);
+      try {
+        // Use the new progress system to mark section as completed
+        // This would track 30 seconds (minimum time) to force completion
+        const { trackSectionVisit } = await import('@/lib/progress');
+        await trackSectionVisit(currentUser.email, sectionId, 30);
         
         // Refresh to show changes
-        setTimeout(forceRefresh, 100);
+        setTimeout(loadProgress, 100);
+      } catch (error) {
+        console.error('Error forcing section completion:', error);
       }
     }
   };
@@ -277,18 +256,23 @@ export default function ProgressSection() {
           {/* Refresh Button */}
           <button 
             onClick={handleRefresh}
+            disabled={loading}
             style={{ 
-              background: `rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
-              border: `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`, 
-              cursor: 'pointer', 
+              background: loading 
+                ? 'rgba(255,255,255,0.2)' 
+                : `rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
+              border: loading 
+                ? '2px solid rgba(255,255,255,0.4)' 
+                : `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`, 
+              cursor: loading ? 'not-allowed' : 'pointer', 
               fontSize: '0.8rem',
-              color: 'white',
+              color: loading ? 'rgba(255,255,255,0.5)' : 'white',
               padding: '8px 12px',
               borderRadius: '6px',
               fontWeight: 'bold'
             }}
           >
-            🔄 Refresh
+            {loading ? '⏳' : '🔄'} Refresh
           </button>
 
           <button 
@@ -399,19 +383,23 @@ export default function ProgressSection() {
         ))}
       </div>
       
-      {/* Debug Info */}
+      {/* Cloud Status */}
       <div style={{ 
-        background: 'rgba(0,0,0,0.3)', 
+        background: 'rgba(45, 212, 191, 0.1)', 
         padding: '12px',
         borderRadius: '8px',
         marginBottom: '16px',
         fontSize: '0.8rem',
-        border: '1px solid rgba(255,255,255,0.1)'
+        border: '1px solid rgba(45, 212, 191, 0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
       }}>
-        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Debug Info:</div>
-        <div>User: {currentUser?.email}</div>
-        <div>Refresh Counter: {refreshCounterRef.current}</div>
-        <div>Mounted: {mountedRef.current ? 'Yes' : 'No'}</div>
+        <span style={{ color: '#2DD4BF', fontWeight: 'bold' }}>🔄</span>
+        <div>
+          <div style={{ fontWeight: 'bold', color: '#2DD4BF' }}>Cloud Sync Active</div>
+          <div style={{ color: 'rgba(255,255,255,0.7)' }}>Progress syncs across all devices in real-time</div>
+        </div>
       </div>
       
       {/* Acknowledgement Section */}
@@ -449,12 +437,17 @@ export default function ProgressSection() {
           </div>
           
           <button
-            onClick={() => {
-              if (currentUser && canAcknowledge && !currentUser.acknowledged) {
-                submitAcknowledgement(currentUser.email);
-                setShowSuccess(true);
-                setIsCollapsed(true);
-                setTimeout(forceRefresh, 100);
+            onClick={async () => {
+              if (currentUser && canAcknowledge && !currentUser.acknowledged && isChecked) {
+                try {
+                  await submitAcknowledgement(currentUser.email);
+                  setShowSuccess(true);
+                  setIsCollapsed(true);
+                  // Refresh to get updated user data with acknowledgement
+                  setTimeout(loadProgress, 100);
+                } catch (error) {
+                  console.error('Error submitting acknowledgement:', error);
+                }
               }
             }}
             disabled={!isChecked}

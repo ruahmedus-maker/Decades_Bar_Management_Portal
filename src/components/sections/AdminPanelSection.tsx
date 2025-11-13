@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { storage } from '@/lib/storage';
 import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
 import TasksSection from './TasksSection';
+import { supabase } from '@/lib/supabase';
+import { getAllUsers, updateUser } from '@/lib/auth';
+import { getProgressBreakdown } from '@/lib/progress';
 
 // Modern color theme for admin panel
 const SECTION_COLOR = '#2563eb';
@@ -49,66 +51,6 @@ const HIDDEN_USERS = [
   'user2@decadesbar.com',
   'user3@decadesbar.com'
 ];
-
-// Enhanced progress tracking
-// In AdminPanelSection.tsx, replace the getEnhancedProgressBreakdown function:
-
-// Use the same progress tracking as the actual ProgressSection
-// In AdminPanelSection.tsx, replace the getEnhancedProgressBreakdown function:
-
-// Use the same progress tracking as the actual ProgressSection
-const getEnhancedProgressBreakdown = (email: string) => {
-  try {
-    const users = storage.getUsers();
-    const user = users[email];
-    
-    if (!user) {
-      return {
-        completedSections: 0,
-        totalSections: 14, // Fixed: Actual total sections
-        percentage: 0,
-        sectionsVisited: [],
-        isActive: false,
-        lastActivity: null
-      };
-    }
-
-    // Use the same logic as the actual progress section
-    const sectionVisits = user.sectionVisits || {};
-    const visitedSections = user.visitedSections || [];
-    
-    // Count completed sections based on sectionVisits (same as ProgressSection)
-    const completedSections = Object.values(sectionVisits).filter(
-      (visit: any) => visit.completed
-    ).length;
-
-    const totalSections = 14; // Fixed: Actual total sections instead of 10
-    const progressPercentage = Math.min(100, Math.round((completedSections / totalSections) * 100)); // Cap at 100%
-    
-    const lastActivity = user.lastActive;
-    const isActiveRecently = lastActivity ? 
-      (Date.now() - new Date(lastActivity).getTime()) < (24 * 60 * 60 * 1000) : false;
-    
-    return {
-      completedSections: completedSections,
-      totalSections: totalSections,
-      percentage: progressPercentage,
-      sectionsVisited: visitedSections,
-      isActive: isActiveRecently,
-      lastActivity: lastActivity
-    };
-  } catch (error) {
-    console.error('Error getting progress breakdown:', error);
-    return {
-      completedSections: 0,
-      totalSections: 14, // Fixed: Actual total sections
-      percentage: 0,
-      sectionsVisited: [],
-      isActive: false,
-      lastActivity: null
-    };
-  }
-};
 
 // Enhanced Card Component
 function AdminCard({ title, value, change, icon, color, onClick }: any) {
@@ -187,48 +129,72 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
     assignedTo: '',
     dueDate: '',
     priority: 'medium' as 'low' | 'medium' | 'high',
-    eventId: ''
   });
+  const [users, setUsers] = useState<User[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get only bartenders and trainees for task assignment
-  const users = Object.values(storage.getUsers()).filter(user => 
-    (user.position === 'Bartender' || user.position === 'Trainee') &&
-    (!HIDDEN_USERS.includes(user.email) || user.email === currentUser?.email)
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!currentUser) return;
-
-    const taskData = {
-      id: `task-${Date.now()}`,
-      title: taskForm.title,
-      description: taskForm.description,
-      assignedTo: taskForm.assignedTo,
-      dueDate: taskForm.dueDate,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      priority: taskForm.priority,
-      eventId: taskForm.eventId || undefined
+  // Load users for assignment
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const allUsers = await getAllUsers();
+        const filteredUsers = allUsers.filter(user => 
+          (user.position === 'Bartender' || user.position === 'Trainee') &&
+          (!HIDDEN_USERS.includes(user.email) || user.email === currentUser?.email)
+        );
+        setUsers(filteredUsers);
+      } catch (error) {
+        console.error('Error loading users:', error);
+      }
     };
 
-    const existingTasks = JSON.parse(localStorage.getItem('decadesTasks') || '[]');
-    const updatedTasks = [...existingTasks, taskData];
-    localStorage.setItem('decadesTasks', JSON.stringify(updatedTasks));
+    if (isOpen) {
+      loadUsers();
+    }
+  }, [isOpen, currentUser]);
 
-    showToast('Task created successfully!');
-    onTaskCreated();
-    onClose();
-    
-    setTaskForm({
-      title: '',
-      description: '',
-      assignedTo: '',
-      dueDate: '',
-      priority: 'medium',
-      eventId: ''
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const taskId = `task-${Date.now()}`;
+      const taskData = {
+        id: taskId,
+        title: taskForm.title,
+        description: taskForm.description,
+        assigned_to: taskForm.assignedTo,
+        due_date: taskForm.dueDate || null,
+        completed: false,
+        priority: taskForm.priority,
+        created_by: currentUser.email,
+      };
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert([taskData]);
+
+      if (error) throw error;
+
+      showToast('Task created successfully!');
+      onTaskCreated();
+      onClose();
+      
+      setTaskForm({
+        title: '',
+        description: '',
+        assignedTo: '',
+        dueDate: '',
+        priority: 'medium',
+      });
+    } catch (error: any) {
+      console.error('Error creating task:', error);
+      showToast(error.message || 'Error creating task. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -443,18 +409,19 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
             </button>
             <button 
               type="submit"
+              disabled={isSubmitting}
               style={{
-                background: SECTION_COLOR,
+                background: isSubmitting ? 'rgba(37, 99, 235, 0.5)' : SECTION_COLOR,
                 color: 'white',
                 border: 'none',
                 padding: '12px 24px',
                 borderRadius: '8px',
-                cursor: 'pointer',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 fontWeight: '600',
                 transition: 'all 0.3s ease'
               }}
             >
-              Create Task
+              {isSubmitting ? 'Creating...' : 'Create Task'}
             </button>
           </div>
         </form>
@@ -467,28 +434,130 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
 function MaintenanceTicketsContent() {
   const { showToast, currentUser } = useApp();
   const [tickets, setTickets] = useState<MaintenanceTicket[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'open' | 'in-progress' | 'assigned' | 'completed'>('all');
 
+  // Load tickets from Supabase
+  const loadTickets = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('maintenance_tickets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading tickets:', error);
+        showToast('Error loading maintenance tickets');
+        return;
+      }
+
+      // Convert Supabase data to our MaintenanceTicket type
+      const convertedTickets: MaintenanceTicket[] = (data || []).map((ticket: any) => ({
+        id: ticket.id,
+        floor: ticket.floor,
+        location: ticket.location,
+        title: ticket.title,
+        description: ticket.description,
+        reportedBy: ticket.reported_by,
+        reportedByEmail: ticket.reported_by_email,
+        status: ticket.status,
+        priority: ticket.priority,
+        assignedTo: ticket.assigned_to,
+        notes: ticket.notes,
+        createdAt: ticket.created_at,
+        updatedAt: ticket.updated_at
+      }));
+
+      setTickets(convertedTickets);
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+      showToast('Error loading maintenance tickets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Set up real-time subscription
   useEffect(() => {
     loadTickets();
+
+    const subscription = supabase
+      .channel('maintenance-tickets-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'maintenance_tickets'
+        },
+        () => {
+          loadTickets();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const loadTickets = () => {
-    const allTickets = storage.getMaintenanceTickets();
-    setTickets(allTickets);
+  const handleUpdateStatus = async (ticketId: string, newStatus: MaintenanceTicket['status']) => {
+    try {
+      const { error } = await supabase
+        .from('maintenance_tickets')
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      showToast(`Ticket status updated to ${newStatus.replace('-', ' ')}`);
+    } catch (error) {
+      console.error('Error updating ticket status:', error);
+      showToast('Error updating ticket status');
+    }
   };
 
-  const handleUpdateStatus = (ticketId: string, newStatus: MaintenanceTicket['status']) => {
-    storage.updateMaintenanceTicket(ticketId, { status: newStatus });
-    showToast(`Ticket status updated to ${newStatus.replace('-', ' ')}`);
-    loadTickets();
-  };
-
-  const handleDeleteTicket = (ticketId: string) => {
+  const handleDeleteTicket = async (ticketId: string) => {
     if (window.confirm('Are you sure you want to delete this maintenance ticket?')) {
-      storage.deleteMaintenanceTicket(ticketId);
-      showToast('Maintenance ticket deleted successfully!');
-      loadTickets();
+      try {
+        const { error } = await supabase
+          .from('maintenance_tickets')
+          .delete()
+          .eq('id', ticketId);
+
+        if (error) throw error;
+
+        showToast('Maintenance ticket deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting ticket:', error);
+        showToast('Error deleting maintenance ticket');
+      }
+    }
+  };
+
+  const handleAssignToMe = async (ticketId: string) => {
+    if (!currentUser) return;
+
+    try {
+      const { error } = await supabase
+        .from('maintenance_tickets')
+        .update({ 
+          assigned_to: currentUser.email,
+          status: 'assigned',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      showToast('Ticket assigned to you!');
+    } catch (error) {
+      console.error('Error assigning ticket:', error);
+      showToast('Error assigning ticket');
     }
   };
 
@@ -524,6 +593,26 @@ function MaintenanceTicketsContent() {
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '12px',
+          padding: '40px',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          backdropFilter: 'blur(10px)',
+          textAlign: 'center',
+          color: 'white'
+        }}>
+          <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
+          <h3>Loading Maintenance Tickets...</h3>
+          <p>Connecting to cloud database</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Quick Stats */}
@@ -558,7 +647,7 @@ function MaintenanceTicketsContent() {
         />
       </div>
 
-      {/* Filters */}
+      {/* Filters and Actions */}
       <div style={{
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
@@ -590,25 +679,43 @@ function MaintenanceTicketsContent() {
               <option value="completed">Completed</option>
             </select>
           </div>
-          <button 
-            onClick={loadTickets}
-            style={{ 
-              marginLeft: 'auto', 
-              background: SECTION_COLOR,
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            🔄 Refresh
-          </button>
+          <div style={{ 
+            display: 'flex', 
+            gap: '10px', 
+            marginLeft: 'auto',
+            alignItems: 'center'
+          }}>
+            <span style={{
+              background: 'linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.1))',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.8rem',
+              color: '#2DD4BF',
+              fontWeight: 'bold',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(45, 212, 191, 0.3)'
+            }}>
+              🔄 Cloud Sync Active
+            </span>
+            <button 
+              onClick={loadTickets}
+              style={{ 
+                background: SECTION_COLOR,
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              🔄 Refresh
+            </button>
+          </div>
         </div>
       </div>
 
@@ -722,17 +829,17 @@ function MaintenanceTicketsContent() {
                   borderTop: '1px solid rgba(255, 255, 255, 0.1)'
                 }}>
                   <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                    <div><strong>Reported by:</strong> {ticket.reportedBy}</div>
-                    <div><strong>Date:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</div>
-                    {ticket.assignedTo && (
-                      <div><strong>Assigned to:</strong> {ticket.assignedTo}</div>
-                    )}
-                  </div>
+  <div><strong>Reported by:</strong> {ticket.reported_by || 'Unknown'}</div>
+  <div><strong>Date:</strong> {new Date(ticket.created_at).toLocaleDateString()}</div>
+  {ticket.assigned_to && (
+    <div><strong>Assigned to:</strong> {ticket.assigned_to}</div>
+  )}
+</div>
                   
                   <div style={{ display: 'flex', gap: '10px' }}>
                     {ticket.status === 'open' && (
                       <button 
-                        onClick={() => handleUpdateStatus(ticket.id, 'assigned')}
+                        onClick={() => handleAssignToMe(ticket.id)}
                         style={{ 
                           background: WARNING_COLOR,
                           color: 'white',
@@ -812,7 +919,7 @@ function MaintenanceTicketsContent() {
 }
 
 export default function AdminPanelSection() {
-  const { isAdmin, showToast, currentUser } = useApp();
+  const { isAdmin: userIsAdmin, showToast, currentUser } = useApp();
   const [users, setUsers] = useState<User[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
@@ -828,73 +935,102 @@ export default function AdminPanelSection() {
     excellentProgress: 0
   });
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Check if user is admin
+  const isAdmin = userIsAdmin && currentUser;
 
   useEffect(() => {
-    if (isAdmin && currentUser) {
+    if (isAdmin) {
       loadAllData();
     }
-  }, [isAdmin, currentUser]);
+  }, [isAdmin]);
 
-  const loadAllData = () => {
-    // Load users with corrected hidden user logic
-    const usersRecord = storage.getUsers();
-    const allUsers: User[] = Object.values(usersRecord);
-    
-    // Fixed hidden user logic: only show hidden users to other hidden users
-    const filteredUsers = allUsers.filter(user => {
-      // Always show the current user
-      if (user.email === currentUser?.email) return true;
+  const loadAllData = async () => {
+    if (!isAdmin) return;
+
+    try {
+      setLoading(true);
       
-      // If current user is hidden, show all users (including other hidden users)
-      if (currentUser && HIDDEN_USERS.includes(currentUser.email)) {
-        return true;
-      }
+      // Load users
+      const allUsers = await getAllUsers();
       
-      // If current user is not hidden, filter out hidden users
-      return !HIDDEN_USERS.includes(user.email);
-    });
-    
-    // Filter to only show bartenders and trainees (not admins) in progress/management
-    const bartendersAndTrainees = filteredUsers.filter(user => 
-      user.position === 'Bartender' || user.position === 'Trainee'
-    );
-    
-    setUsers(bartendersAndTrainees);
+      // Filter users based on hidden user logic
+      const filteredUsers = allUsers.filter(user => {
+        // Always show the current user
+        if (user.email === currentUser?.email) return true;
+        
+        // If current user is hidden, show all users
+        if (currentUser && HIDDEN_USERS.includes(currentUser.email)) {
+          return true;
+        }
+        
+        // If current user is not hidden, filter out hidden users
+        return !HIDDEN_USERS.includes(user.email);
+      });
+      
+      // Filter to only show bartenders and trainees (not admins) in progress/management
+      const bartendersAndTrainees = filteredUsers.filter(user => 
+        user.position === 'Bartender' || user.position === 'Trainee'
+      );
+      
+      setUsers(bartendersAndTrainees);
 
-    // Load user progress - only for bartenders and trainees
-    const progressData: UserProgress[] = bartendersAndTrainees.map(user => {
-      const progress = getEnhancedProgressBreakdown(user.email);
-      return {
-        user,
-        sectionsCompleted: progress.completedSections,
-        totalSections: progress.totalSections,
-        progressPercentage: progress.percentage,
-        lastActive: user.lastActive || 'Never',
-        timeSinceLastActive: getTimeSince(user.lastActive),
-        completionStatus: getCompletionStatus(progress.percentage)
-      };
-    });
-    setUserProgress(progressData);
+      // Load user progress
+      const progressData: UserProgress[] = await Promise.all(
+        bartendersAndTrainees.map(async (user) => {
+          const progress = await getProgressBreakdown(user.email);
+          return {
+            user,
+            sectionsCompleted: progress.sectionsVisited,
+            totalSections: progress.totalSections,
+            progressPercentage: progress.progress,
+            lastActive: user.lastActive || 'Never',
+            timeSinceLastActive: getTimeSince(user.lastActive),
+            completionStatus: getCompletionStatus(progress.progress)
+          };
+        })
+      );
+      setUserProgress(progressData);
 
-    // Load test results - only for bartenders and trainees
-    const testData = bartendersAndTrainees.map(user => {
-      const results = user.testResults || {};
-      return { email: user.email, user, results };
-    });
-    setTestResults(testData);
+      // Load test results
+      const testData = bartendersAndTrainees.map(user => {
+        const results = user.testResults || {};
+        return { email: user.email, user, results };
+      });
+      setTestResults(testData);
 
-    // Load quick stats
-    const maintenanceTickets = storage.getMaintenanceTickets();
-    const tasks = JSON.parse(localStorage.getItem('decadesTasks') || '[]');
-    
-    setQuickStats({
-      totalUsers: bartendersAndTrainees.length,
-      activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
-      pendingTickets: maintenanceTickets.filter(t => t.status === 'open' || t.status === 'assigned').length,
-      completedTasks: tasks.filter((t: Task) => t.completed).length,
-      totalTasks: tasks.length,
-      excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
-    });
+      // Load quick stats
+      const { data: maintenanceTickets } = await supabase
+        .from('maintenance_tickets')
+        .select('status');
+
+      const { data: tasks } = await supabase
+        .from('tasks')
+        .select('completed');
+
+      // Fix for pendingTickets
+const pendingTickets = (maintenanceTickets || []).filter((t: any) => 
+  t.status === 'open' || t.status === 'assigned'
+).length;
+
+// Fix for completedTasks  
+const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
+
+      setQuickStats({
+        totalUsers: bartendersAndTrainees.length,
+        activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
+        pendingTickets,
+        completedTasks,
+        totalTasks: tasks?.length || 0,
+        excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
+      });
+    } catch (error) {
+      console.error('Error loading admin data:', error);
+      showToast('Error loading admin data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getTimeSince = (dateString: string) => {
@@ -923,38 +1059,69 @@ export default function AdminPanelSection() {
     return 'inactive';
   };
 
-  const handleBlockUser = () => {
+  const handleBlockUser = async () => {
     if (blockEmail && blockEmail !== currentUser?.email) {
-      const usersRecord = storage.getUsers();
-      if (usersRecord[blockEmail]) {
-        usersRecord[blockEmail] = { 
-          ...usersRecord[blockEmail], 
-          status: 'blocked' as const 
-        };
-        storage.saveUsers(usersRecord);
+      try {
+        await updateUser(blockEmail, { status: 'blocked' });
         showToast(`User ${blockEmail} has been blocked`);
         setBlockEmail('');
         loadAllData();
-      } else {
-        showToast('User not found');
+      } catch (error) {
+        showToast('Error blocking user');
       }
     }
   };
 
-  const handleUnblockUser = (email: string) => {
-    const usersRecord = storage.getUsers();
-    if (usersRecord[email]) {
-      usersRecord[email] = { 
-        ...usersRecord[email], 
-        status: 'active' as const 
-      };
-      storage.saveUsers(usersRecord);
+  const handleUnblockUser = async (email: string) => {
+    try {
+      await updateUser(email, { status: 'active' });
       showToast(`User ${email} has been unblocked`);
       loadAllData();
+    } catch (error) {
+      showToast('Error unblocking user');
     }
   };
 
   const blockedUsers = users.filter(user => user.status === 'blocked');
+
+  if (!isAdmin) {
+    return (
+      <div style={{
+        marginBottom: '30px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(15px)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <h3>🔒 Admin Access Required</h3>
+        <p>You need administrator privileges to access this section.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div style={{
+        marginBottom: '30px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(15px)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
+        <h3>Loading Admin Panel...</h3>
+        <p>Connecting to cloud database</p>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -1038,7 +1205,7 @@ export default function AdminPanelSection() {
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Tab Navigation - Fixed double icons */}
+        {/* Tab Navigation */}
         <div style={{
           display: 'flex',
           gap: '0',
@@ -1108,7 +1275,6 @@ export default function AdminPanelSection() {
               <AdminCard 
                 title="Total Employees"
                 value={quickStats.totalUsers}
-                change={5}
                 icon="👥"
                 color={SECTION_COLOR_RGB}
                 onClick={() => setActiveTab('management')}
@@ -1116,7 +1282,6 @@ export default function AdminPanelSection() {
               <AdminCard 
                 title="Active Users"
                 value={quickStats.activeUsers}
-                change={3}
                 icon="🟢"
                 color="16, 185, 129"
                 onClick={() => setActiveTab('progress')}
@@ -1124,7 +1289,6 @@ export default function AdminPanelSection() {
               <AdminCard 
                 title="Pending Tickets"
                 value={quickStats.pendingTickets}
-                change={-2}
                 icon="🔧"
                 color="239, 68, 68"
                 onClick={() => setActiveTab('maintenance')}
@@ -1132,7 +1296,6 @@ export default function AdminPanelSection() {
               <AdminCard 
                 title="Tasks Completed"
                 value={`${quickStats.completedTasks}/${quickStats.totalTasks}`}
-                change={8}
                 icon="✅"
                 color="139, 92, 246"
                 onClick={() => setActiveTab('tasks')}
@@ -1322,139 +1485,139 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Progress Tab - Only shows bartenders/trainees */}
-{activeTab === 'progress' && (
-  <div style={{
-    background: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: '16px',
-    padding: '25px',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    backdropFilter: 'blur(10px)'
-  }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-      <h4 style={{ 
-        color: 'white', 
-        margin: 0,
-        fontSize: '1.2rem'
-      }}>
-        📈 Employee Progress Tracking
-      </h4>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <button 
-          onClick={loadAllData}
-          style={{ 
-            background: SECTION_COLOR,
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: '600',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          🔄 Refresh
-        </button>
-      </div>
-    </div>
+        {/* Progress Tab */}
+        {activeTab === 'progress' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h4 style={{ 
+                color: 'white', 
+                margin: 0,
+                fontSize: '1.2rem'
+              }}>
+                📈 Employee Progress Tracking
+              </h4>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button 
+                  onClick={loadAllData}
+                  style={{ 
+                    background: SECTION_COLOR,
+                    color: 'white',
+                    border: 'none',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
 
-    {userProgress.length === 0 ? (
-      <div style={{ 
-        textAlign: 'center', 
-        padding: '40px',
-        color: 'rgba(255, 255, 255, 0.7)',
-        fontStyle: 'italic'
-      }}>
-        No bartenders or trainees found.
-      </div>
-    ) : (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {userProgress.map((progress, index) => (
-          <div 
-            key={progress.user.email}
-            style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.06)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-              <div>
-                <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 600 }}>
-                  {progress.user.name}
-                </h5>
-                <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.9rem' }}>
-                  {progress.user.email} • {progress.user.position}
-                </p>
+            {userProgress.length === 0 ? (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px',
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontStyle: 'italic'
+              }}>
+                No bartenders or trainees found.
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ 
-                  padding: '6px 12px', 
-                  borderRadius: '12px', 
-                  fontSize: '0.9rem',
-                  fontWeight: 'bold',
-                  background: 
-                    progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
-                    progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
-                    progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
-                    'rgba(113, 128, 150, 0.2)',
-                  color: 
-                    progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                    progress.completionStatus === 'good' ? WARNING_COLOR :
-                    progress.completionStatus === 'poor' ? DANGER_COLOR :
-                    '#718096'
-                }}>
-                  {progress.progressPercentage}% Complete
-                </div>
-                <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '8px 0 0 0', fontSize: '0.8rem' }}>
-                  Last active: {progress.timeSinceLastActive}
-                </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {userProgress.map((progress, index) => (
+                  <div 
+                    key={progress.user.email}
+                    style={{
+                      padding: '20px',
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                      <div>
+                        <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 600 }}>
+                          {progress.user.name}
+                        </h5>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.9rem' }}>
+                          {progress.user.email} • {progress.user.position}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ 
+                          padding: '6px 12px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.9rem',
+                          fontWeight: 'bold',
+                          background: 
+                            progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
+                            progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                            progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
+                            'rgba(113, 128, 150, 0.2)',
+                          color: 
+                            progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                            progress.completionStatus === 'good' ? WARNING_COLOR :
+                            progress.completionStatus === 'poor' ? DANGER_COLOR :
+                            '#718096'
+                        }}>
+                          {progress.progressPercentage}% Complete
+                        </div>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '8px 0 0 0', fontSize: '0.8rem' }}>
+                          Last active: {progress.timeSinceLastActive}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div style={{ 
+                      height: '8px', 
+                      background: 'rgba(255, 255, 255, 0.1)', 
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                      marginBottom: '10px'
+                    }}>
+                      <div 
+                        style={{ 
+                          height: '100%', 
+                          background: 
+                            progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
+                            progress.completionStatus === 'good' ? WARNING_COLOR :
+                            progress.completionStatus === 'poor' ? DANGER_COLOR :
+                            '#718096',
+                          width: `${progress.progressPercentage}%`,
+                          transition: 'width 0.5s ease'
+                        }} 
+                      />
+                    </div>
+                    
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      fontSize: '0.85rem',
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }}>
+                      <span>{progress.sectionsCompleted} of {progress.totalSections} sections completed</span>
+                      <span>{Math.round(progress.progressPercentage)}% overall</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            
-            <div style={{ 
-              height: '8px', 
-              background: 'rgba(255, 255, 255, 0.1)', 
-              borderRadius: '4px',
-              overflow: 'hidden',
-              marginBottom: '10px'
-            }}>
-              <div 
-                style={{ 
-                  height: '100%', 
-                  background: 
-                    progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                    progress.completionStatus === 'good' ? WARNING_COLOR :
-                    progress.completionStatus === 'poor' ? DANGER_COLOR :
-                    '#718096',
-                  width: `${progress.progressPercentage}%`,
-                  transition: 'width 0.5s ease'
-                }} 
-              />
-            </div>
-            
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              fontSize: '0.85rem',
-              color: 'rgba(255, 255, 255, 0.7)'
-            }}>
-              <span>{progress.sectionsCompleted} of {progress.totalSections} sections completed</span>
-              <span>{Math.round(progress.progressPercentage)}% overall</span>
-            </div>
+            )}
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
+        )}
 
-        {/* Tests Tab - Only shows bartenders/trainees */}
+        {/* Tests Tab */}
         {activeTab === 'tests' && (
           <div style={{
             background: 'rgba(255, 255, 255, 0.08)',
@@ -1549,7 +1712,7 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Management Tab - Only shows bartenders/trainees */}
+        {/* Management Tab */}
         {activeTab === 'management' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{
@@ -1674,7 +1837,7 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Maintenance Tab - Now shows actual maintenance tickets */}
+        {/* Maintenance Tab */}
         {activeTab === 'maintenance' && (
           <MaintenanceTicketsContent />
         )}

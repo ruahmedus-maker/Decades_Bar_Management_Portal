@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { storage } from '@/lib/storage';
+import { supabase } from '@/lib/supabase';
 
-import { CardProps } from '@/types';
+import { MaintenanceTicket, RealtimePayload, CardProps } from '@/types';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
@@ -12,16 +12,6 @@ const SECTION_COLOR_RGB = '30, 64, 175';
 
 // Simplified Card Component without hover effects
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
-  // Different colors for different cards - deep blue theme for maintenance
-  const colors = [
-    'rgba(30, 64, 175, 0.3)',
-    'rgba(59, 130, 246, 0.3)',
-    'rgba(30, 58, 138, 0.3)',
-    'rgba(30, 58, 138, 0.3)'
-  ];
-
-  //const cardColor = colors[index] || `rgba(30, 64, 175, 0.3)`;
-
   return (
     <div 
       style={{
@@ -141,85 +131,157 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
 export default function MaintenanceSection() {
   const { currentUser, showToast } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recentTickets, setRecentTickets] = useState<Array<{
+    icon: string;
+    title: string;
+    description: string;
+    status: string;
+  }>>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [ticketForm, setTicketForm] = useState({
     floor: '2000s' as '2000s' | '2010s' | 'Hip Hop' | 'Rooftop',
     location: '',
     title: '',
     description: '',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent'
-  })
+  });
 
-  const recentTickets = [
-    {
-      icon: '🔧',
-      title: 'Ice Machine Repair',
-      description: 'Ice machine not producing ice, temperature seems high',
-      status: 'in-progress'
-    },
-    {
-      icon: '💡',
-      title: 'Lighting Issue - Rooftop',
-      description: 'Several LED lights flickering in the seating area',
-      status: 'open'
-    },
-    {
-      icon: '🚰',
-      title: 'Restroom Leak',
-      description: 'Water leak under sink in main restroom',
-      status: 'completed'
-    },
-    {
-      icon: '🔌',
-      title: 'POS System Offline',
-      description: 'POS terminal at main bar frequently disconnecting',
-      status: 'closed'
-    }
-  ];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentUser) return;
-
-    setIsSubmitting(true);
-
+  // Fetch recent maintenance tickets
+  const fetchRecentTickets = async () => {
     try {
-      const ticketData = {
-        floor: ticketForm.floor,
-        location: ticketForm.location,
-        title: ticketForm.title,
-        description: ticketForm.description,
-        reportedBy: currentUser.name,
-        reportedByEmail: currentUser.email,
-        status: 'open' as const,
-        priority: ticketForm.priority,
-        assignedTo: undefined
-      };
+      const { data, error } = await supabase
+        .from('maintenance_tickets')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(4);
 
-      storage.createMaintenanceTicket(ticketData);
-      
-      showToast('Maintenance ticket submitted successfully!');
-      
-      // Reset form
-      setTicketForm({
-        floor: '2000s',
-        location: '',
-        title: '',
-        description: '',
-        priority: 'medium'
-      });
+      if (error) throw error;
+
+      if (data) {
+        // Convert database data to the format expected by the component
+        const formattedTickets = data.map((ticket: MaintenanceTicket) => ({
+          icon: getTicketIcon(ticket.title),
+          title: ticket.title,
+          description: ticket.description,
+          status: ticket.status
+        }));
+        setRecentTickets(formattedTickets);
+      }
     } catch (error) {
-      console.error('Error submitting maintenance ticket:', error);
-      showToast('Error submitting ticket. Please try again.');
+      console.error('Error fetching maintenance tickets:', error);
+      showToast('Error loading recent tickets');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
+
+  // Set up real-time subscription for maintenance tickets
+  useEffect(() => {
+    fetchRecentTickets();
+
+    // Subscribe to real-time changes
+    const subscription = supabase
+      .channel('maintenance_tickets_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'maintenance_tickets'
+        },
+        (payload: RealtimePayload) => {
+          console.log('Maintenance ticket change received!', payload);
+          fetchRecentTickets(); // Refresh the list
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Helper function to get appropriate icon based on ticket title
+  const getTicketIcon = (title: string) => {
+    if (title.toLowerCase().includes('ice') || title.toLowerCase().includes('machine')) return '🔧';
+    if (title.toLowerCase().includes('light')) return '💡';
+    if (title.toLowerCase().includes('leak') || title.toLowerCase().includes('water')) return '🚰';
+    if (title.toLowerCase().includes('pos') || title.toLowerCase().includes('system')) return '🔌';
+    return '🛠️';
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!currentUser) {
+    showToast('You must be logged in to submit a maintenance ticket');
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // Generate a UUID for the ticket ID
+    const ticketId = crypto.randomUUID();
+    
+    // Simplified - only include fields that are required or have values
+    const ticketData = {
+      id: ticketId,
+      floor: ticketForm.floor,
+      location: ticketForm.location,
+      title: ticketForm.title,
+      description: ticketForm.description,
+      reported_by: currentUser.name,
+      reported_by_email: currentUser.email,
+      status: 'open' as const,
+      priority: ticketForm.priority
+      // Omit assigned_to and notes - they'll use database NULL defaults
+    };
+
+    const { data, error } = await supabase
+      .from('maintenance_tickets')
+      .insert([ticketData])
+      .select();
+
+    if (error) throw error;
+    
+    showToast('Maintenance ticket submitted successfully!');
+    
+    // Reset form
+    setTicketForm({
+      floor: '2000s',
+      location: '',
+      title: '',
+      description: '',
+      priority: 'medium'
+    });
+
+    // Refresh the recent tickets list
+    fetchRecentTickets();
+  } catch (error: any) {
+    console.error('Error submitting maintenance ticket:', error);
+    showToast(error.message || 'Error submitting ticket. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleInputChange = (field: string, value: string) => {
     setTicketForm(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  // Update getStatusColor to handle all statuses from your schema
+  const getStatusColor = (status: string) => {
+    const colors: { [key: string]: string } = {
+      open: '#3B82F6',
+      assigned: '#8B5CF6', // Purple for assigned
+      'in-progress': '#F59E0B',
+      completed: '#10B981',
+      closed: '#6B7280'
+    };
+    return colors[status] || SECTION_COLOR;
   };
 
   return (
@@ -455,23 +517,40 @@ export default function MaintenanceSection() {
           description="Track the status of recent maintenance requests"
           index={1}
         >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '15px',
-            marginTop: '15px'
-          }}>
-            {recentTickets.map((ticket, index) => (
-              <MaintenanceItem
-                key={index}
-                title={ticket.title}
-                description={ticket.description}
-                icon={ticket.icon}
-                status={ticket.status}
-                index={index}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
+              Loading recent tickets...
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '15px',
+              marginTop: '15px'
+            }}>
+              {recentTickets.length > 0 ? (
+                recentTickets.map((ticket, index) => (
+                  <MaintenanceItem
+                    key={index}
+                    title={ticket.title}
+                    description={ticket.description}
+                    icon={ticket.icon}
+                    status={ticket.status}
+                    index={index}
+                  />
+                ))
+              ) : (
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '20px', 
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  gridColumn: '1 / -1'
+                }}>
+                  No maintenance tickets found. Create one above!
+                </div>
+              )}
+            </div>
+          )}
         </AnimatedCard>
 
         {/* Quick Reference */}

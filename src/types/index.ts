@@ -6,7 +6,7 @@ export interface User {
   status: 'active' | 'blocked';
   progress: number;
   acknowledged: boolean;
-  acknowledgementDate?: string;
+  acknowledgementDate: string | null | undefined;
   registeredDate: string;
   lastActive: string;
   loginCount: number;
@@ -101,14 +101,22 @@ export interface MaintenanceTicket {
   location: string;
   title: string;
   description: string;
-  reportedBy: string;
-  reportedByEmail: string;
+  reported_by: string;
+  reported_by_email: string;
   status: 'open' | 'assigned' | 'in-progress' | 'completed' | 'closed';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  assignedTo?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  assigned_to?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RealtimePayload {
+  event: 'INSERT' | 'UPDATE' | 'DELETE';
+  schema: string;
+  table: string;
+  record: MaintenanceTicket;
+  old_record: MaintenanceTicket | null;
 }
 
 export interface ChecklistItem {

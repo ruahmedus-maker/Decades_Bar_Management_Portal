@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { specialEventsStorage } from '@/lib/specialEvents';
 import { Task } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 // Define the section color for tasks management
 const SECTION_COLOR = '#3B82F6'; // Blue color for tasks
@@ -111,30 +111,96 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
 }
 
 export default function TasksSection() {
-  const { showToast } = useApp();
+  const { showToast, currentUser } = useApp();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [priorityFilter, setPriorityFilter] = useState<'all' | Task['priority']>('all');
   const [isHovered, setIsHovered] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
+  // Load tasks from Supabase
+  const loadTasks = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  const loadTasks = () => {
-    const allTasks = specialEventsStorage.getAllTasks();
-    setTasks(allTasks);
+      if (error) {
+        console.error('Error loading tasks:', error);
+        showToast('Error loading tasks');
+        return;
+      }
+
+      // Convert Supabase data to our Task type
+      const convertedTasks: Task[] = (data || []).map((task: any) => ({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        assignedTo: task.assigned_to,
+        dueDate: task.due_date,
+        completed: task.completed,
+        completedAt: task.completed_at,
+        createdAt: task.created_at,
+        eventId: task.event_id,
+        priority: task.priority
+      }));
+
+      setTasks(convertedTasks);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      showToast('Error loading tasks');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleUpdateTaskStatus = (task: Task, completed: boolean) => {
-    if (!task.eventId) return;
-    
-    specialEventsStorage.updateTask(task.eventId, task.id, { 
-      completed,
-      completedAt: completed ? new Date().toISOString() : undefined
-    });
-    showToast(`Task marked as ${completed ? 'completed' : 'pending'}!`);
+  // Set up real-time subscription
+  useEffect(() => {
     loadTasks();
+
+    // Subscribe to real-time changes
+    const subscription = supabase
+      .channel('tasks-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks'
+        },
+        () => {
+          console.log('Real-time update received for tasks');
+          loadTasks();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleUpdateTaskStatus = async (task: Task, completed: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ 
+          completed,
+          completed_at: completed ? new Date().toISOString() : undefined,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', task.id);
+
+      if (error) throw error;
+
+      showToast(`Task marked as ${completed ? 'completed' : 'pending'}!`);
+      // Real-time subscription will handle the update
+    } catch (error) {
+      console.error('Error updating task:', error);
+      showToast('Error updating task');
+    }
   };
 
   const getPriorityColor = (priority: Task['priority']) => {
@@ -158,6 +224,31 @@ export default function TasksSection() {
 
   const pendingTasksCount = tasks.filter(task => !task.completed).length;
   const completedTasksCount = tasks.filter(task => task.completed).length;
+
+  if (loading) {
+    return (
+      <div 
+        id="tasks-section"
+        style={{
+          marginBottom: '30px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+          padding: '40px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
+        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
+        <h3>Loading Tasks...</h3>
+        <p>Connecting to cloud database</p>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -214,18 +305,32 @@ export default function TasksSection() {
             Manage and track all assigned tasks and responsibilities
           </p>
         </div>
-        <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          fontSize: '0.9rem',
-          color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          Admin Only
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{
+            background: 'linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.1))',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            color: '#2DD4BF',
+            fontWeight: 'bold',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(45, 212, 191, 0.3)'
+          }}>
+            🔄 Cloud Sync Active
+          </span>
+          <span style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            fontSize: '0.9rem',
+            color: 'white',
+            fontWeight: '600',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            Admin Only
+          </span>
+        </div>
       </div>
 
       <div style={{ padding: '25px' }}>
@@ -326,33 +431,39 @@ export default function TasksSection() {
                 <option value="low">Low</option>
               </select>
             </div>
-            <button 
-              onClick={loadTasks}
-              style={{ 
-                marginLeft: 'auto', 
-                background: SECTION_COLOR,
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 6px 20px rgba(${SECTION_COLOR_RGB}, 0.4)`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              🔄 Refresh
-            </button>
+            <div style={{ 
+              display: 'flex', 
+              gap: '10px', 
+              marginLeft: 'auto',
+              alignItems: 'center'
+            }}>
+              <button 
+                onClick={loadTasks}
+                style={{ 
+                  background: SECTION_COLOR,
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = `0 6px 20px rgba(${SECTION_COLOR_RGB}, 0.4)`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                🔄 Refresh
+              </button>
+            </div>
           </div>
         </AnimatedCard>
 

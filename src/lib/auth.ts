@@ -1,6 +1,5 @@
 import { User, SessionData } from '@/types';
 import { SECURITY_CONFIG } from './constants';
-import { storage } from './storage';
 import { supabase } from './supabase';
 
 // Define the RegistrationData interface here too
@@ -13,6 +12,26 @@ interface RegistrationData {
   confirmPassword: string;
 }
 
+// Define the Supabase user type for better type safety
+interface SupabaseUser {
+  email: string;
+  name: string;
+  position: string;
+  status: string;
+  progress: number;
+  acknowledged: boolean;
+  acknowledgement_date: string | null;
+  registered_date: string;
+  last_active: string;
+  login_count: number;
+  password_hash: string;
+  visited_sections: string[];
+  test_results: any;
+  section_visits: any;
+  created_at: string;
+  updated_at: string;
+}
+
 // Fix the constants to be strongly typed
 export const APPROVED_CODES: string[] = [
   "BARSTAFF2025", "DECADESADMIN"
@@ -22,7 +41,7 @@ export const ADMIN_CODES: string[] = [
   "DECADESADMIN"
 ];
 
-// UPDATED: New initializeTestUsers that works with Supabase
+// UPDATED: Initialize test users in Supabase only
 export const initializeTestUsers = async (): Promise<void> => {
   try {
     // Check if test users already exist in Supabase
@@ -31,8 +50,8 @@ export const initializeTestUsers = async (): Promise<void> => {
       .select('email')
       .in('email', ['bartender@decadesbar.com', 'trainee@decadesbar.com', 'admin@decadesbar.com']);
 
-    // FIXED: Added type annotation for the parameter
-    const existingEmails = existingUsers?.map((u: { email: string }) => u.email) || [];
+    // FIXED: Added proper type annotation
+    const existingEmails = existingUsers?.map((user: { email: string }) => user.email) || [];
 
     const testUsers = [
       {
@@ -78,68 +97,14 @@ export const initializeTestUsers = async (): Promise<void> => {
 
       if (error) {
         console.error('Error creating test users in Supabase:', error);
-        // Fallback to localStorage
-        initializeTestUsersLocal();
+        throw error;
       } else {
         console.log(`Created ${usersToCreate.length} test users in Supabase`);
       }
     }
   } catch (error) {
     console.error('Error initializing test users:', error);
-    // Fallback to localStorage
-    initializeTestUsersLocal();
-  }
-};
-
-// Keep the local version as fallback
-const initializeTestUsersLocal = (): void => {
-  const users = storage.getUsers();
-  
-  const testUsers = [
-    {
-      email: 'bartender@decadesbar.com',
-      name: 'Test Bartender',
-      position: 'Bartender' as const,
-      password: 'password123'
-    },
-    {
-      email: 'trainee@decadesbar.com', 
-      name: 'Test Trainee',
-      position: 'Trainee' as const,
-      password: 'password123'
-    },
-    {
-      email: 'admin@decadesbar.com',
-      name: 'Test Admin',
-      position: 'Admin' as const,
-      password: 'admin123'
-    }
-  ];
-
-  let createdAny = false;
-  
-  testUsers.forEach(testUser => {
-    if (!users[testUser.email]) {
-      users[testUser.email] = {
-        name: testUser.name,
-        email: testUser.email,
-        position: testUser.position,
-        status: 'active',
-        registeredDate: new Date().toISOString(),
-        progress: 0,
-        acknowledged: false,
-        passwordHash: hashPassword(testUser.password),
-        loginCount: 0,
-        lastActive: new Date().toISOString(),
-        visitedSections: []
-      };
-      createdAny = true;
-    }
-  });
-
-  if (createdAny) {
-    storage.saveUsers(users);
-    console.log('Test users initialized in localStorage');
+    throw error;
   }
 };
 
@@ -170,25 +135,28 @@ export const isAdmin = (user: User | null): boolean => {
   return user?.position === 'Admin';
 };
 
+// UPDATED: Session management using localStorage (client-side only)
 export const validateSession = (): User | null => {
-  const session = storage.getSession();
-  if (!session) return null;
+  if (typeof window === 'undefined') return null;
 
-  // Check if session is expired using loginTime + timeout
-  const sessionAge = Date.now() - new Date(session.loginTime).getTime();
-  if (sessionAge > SECURITY_CONFIG.sessionTimeout) {
-    storage.clearSession();
+  try {
+    const sessionData = localStorage.getItem('decades_session');
+    if (!sessionData) return null;
+
+    const session: SessionData = JSON.parse(sessionData);
+    
+    // Check if session is expired using loginTime + timeout
+    const sessionAge = Date.now() - new Date(session.loginTime).getTime();
+    if (sessionAge > SECURITY_CONFIG.sessionTimeout) {
+      localStorage.removeItem('decades_session');
+      return null;
+    }
+
+    return session.user;
+  } catch (error) {
+    console.error('Error validating session:', error);
     return null;
   }
-
-  // Verify user still exists in database
-  const users = storage.getUsers();
-  if (!users[session.user.email]) {
-    storage.clearSession();
-    return null;
-  }
-
-  return session.user;
 };
 
 export const startUserSession = (user: User): void => {
@@ -196,26 +164,51 @@ export const startUserSession = (user: User): void => {
     user,
     loginTime: new Date().toISOString()
   };
-  storage.saveSession(sessionData);
+  
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('decades_session', JSON.stringify(sessionData));
+  }
 };
 
 export const endUserSession = (): void => {
-  storage.clearSession();
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('decades_session');
+  }
 };
 
-// UPDATED: New performLogin that works with Supabase
+// Helper function to convert Supabase user to app User type
+const convertSupabaseUserToAppUser = (user: SupabaseUser): User => {
+  return {
+    name: user.name,
+    email: user.email,
+    position: user.position as 'Bartender' | 'Admin' | 'Trainee',
+    status: user.status as 'active' | 'blocked',
+    progress: user.progress || 0,
+    acknowledged: user.acknowledged || false,
+    acknowledgementDate: user.acknowledgement_date || null,
+    registeredDate: user.registered_date,
+    lastActive: user.last_active,
+    loginCount: user.login_count || 0,
+    passwordHash: user.password_hash,
+    visitedSections: user.visited_sections || [],
+    testResults: user.test_results || {},
+    sectionVisits: user.section_visits || {}
+  };
+};
+
+// UPDATED: Perform login using Supabase only
 export const performLogin = async (email: string, password: string): Promise<User> => {
   if (!email || !password) {
     throw new Error('Please enter both email and password');
   }
 
-  // Safety check for server-side rendering
+  // Server-side rendering check
   if (typeof window === 'undefined') {
-    return performLoginLocal(email, password);
+    throw new Error('Login is only available in the browser');
   }
 
   try {
-    // First try Supabase
+    // Query user from Supabase
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -223,83 +216,40 @@ export const performLogin = async (email: string, password: string): Promise<Use
       .single();
 
     if (error || !user) {
-      // Fallback to localStorage
-      console.log('User not found in Supabase, falling back to localStorage');
-      return performLoginLocal(email, password);
+      throw new Error('Invalid email or password');
     }
 
-    // User found in Supabase
+    // Check if account is blocked
     if (user.status === 'blocked') {
       throw new Error('Account has been blocked. Please contact management.');
     }
 
+    // Verify password
     const hashedPassword = hashPassword(password);
     if (user.password_hash !== hashedPassword) {
       throw new Error('Invalid email or password');
     }
 
-    // Update user in Supabase
+    // Update user login stats in Supabase
     await supabase
       .from('users')
       .update({
         login_count: (user.login_count || 0) + 1,
-        last_active: new Date().toISOString()
+        last_active: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq('email', email);
 
-    // Convert Supabase user to our User type
-    const appUser: User = {
-      name: user.name,
-      email: user.email,
-      position: user.position as 'Bartender' | 'Admin' | 'Trainee',
-      status: user.status as 'active' | 'blocked',
-      progress: user.progress,
-      acknowledged: user.acknowledged,
-      acknowledgementDate: user.acknowledgement_date,
-      registeredDate: user.registered_date,
-      lastActive: user.last_active,
-      loginCount: user.login_count,
-      passwordHash: user.password_hash,
-      visitedSections: user.visited_sections || [],
-      testResults: user.test_results || {},
-      sectionVisits: user.section_visits || {}
-    };
-
+    const appUser = convertSupabaseUserToAppUser(user as SupabaseUser);
     startUserSession(appUser);
     return appUser;
-  } catch (error) {
-    console.error('Supabase login failed, falling back to local:', error);
-    return performLoginLocal(email, password);
+  } catch (error: any) {
+    console.error('Login error:', error);
+    throw new Error(error.message || 'Login failed. Please try again.');
   }
 };
 
-// Keep local login as fallback
-const performLoginLocal = async (email: string, password: string): Promise<User> => {
-  const users = storage.getUsers();
-  const user = users[email];
-
-  if (!user) {
-    throw new Error('Invalid email or password');
-  }
-
-  if (user.status === 'blocked') {
-    throw new Error('Account has been blocked. Please contact management.');
-  }
-
-  const hashedPassword = hashPassword(password);
-  if (user.passwordHash !== hashedPassword) {
-    throw new Error('Invalid email or password');
-  }
-
-  // Update user login stats
-  user.loginCount = (user.loginCount || 0) + 1;
-  user.lastActive = new Date().toISOString();
-  storage.saveUsers(users);
-
-  startUserSession(user);
-  return user;
-};
-
+// UPDATED: Perform registration using Supabase only
 export const performRegistration = async (userData: RegistrationData): Promise<User> => {
   const { name, email, position, code, password, confirmPassword } = userData;
 
@@ -328,13 +278,13 @@ export const performRegistration = async (userData: RegistrationData): Promise<U
     }
   }
 
-  // Safety check for server-side rendering
+  // Server-side rendering check
   if (typeof window === 'undefined') {
-    return performRegistrationLocal(userData);
+    throw new Error('Registration is only available in the browser');
   }
 
   try {
-    // Try to register in Supabase first
+    // Check if user already exists in Supabase
     const { data: existingUser } = await supabase
       .from('users')
       .select('email')
@@ -370,61 +320,68 @@ export const performRegistration = async (userData: RegistrationData): Promise<U
 
     if (error) throw error;
 
-    // Convert back to app User type
-    const appUser: User = {
-      name: data.name,
-      email: data.email,
-      position: data.position as 'Bartender' | 'Admin' | 'Trainee',
-      status: data.status as 'active' | 'blocked',
-      progress: data.progress,
-      acknowledged: data.acknowledged,
-      acknowledgementDate: data.acknowledgement_date,
-      registeredDate: data.registered_date,
-      lastActive: data.last_active,
-      loginCount: data.login_count,
-      passwordHash: data.password_hash,
-      visitedSections: data.visited_sections || [],
-      testResults: data.test_results || {},
-      sectionVisits: data.section_visits || {}
-    };
-
+    const appUser = convertSupabaseUserToAppUser(data as SupabaseUser);
     startUserSession(appUser);
     return appUser;
-  } catch (error) {
-    console.error('Supabase registration failed, falling back to local:', error);
-    return performRegistrationLocal(userData);
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    throw new Error(error.message || 'Registration failed. Please try again.');
   }
 };
 
-// Keep local registration as fallback
-const performRegistrationLocal = async (userData: RegistrationData): Promise<User> => {
-  const { name, email, position, code, password } = userData;
-  
-  const users = storage.getUsers();
+// NEW: Get all users (for admin panel)
+export const getAllUsers = async (): Promise<User[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('name');
 
-  // Check if user already exists
-  if (users[email]) {
-    throw new Error('This email is already registered.');
+    if (error) throw error;
+
+    // FIXED: Added proper type annotation for the mapping function
+    return (data || []).map((user: SupabaseUser) => convertSupabaseUserToAppUser(user));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return [];
   }
+};
 
-  // Create new user
-  const newUser: User = {
-    name,
-    email,
-    position,
-    status: 'active',
-    registeredDate: new Date().toISOString(),
-    progress: 0,
-    acknowledged: false,
-    passwordHash: hashPassword(password),
-    loginCount: 0,
-    lastActive: new Date().toISOString(),
-    visitedSections: []
-  };
+// NEW: Update user (for admin panel)
+export const updateUser = async (email: string, updates: Partial<User>): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        name: updates.name,
+        position: updates.position,
+        status: updates.status,
+        progress: updates.progress,
+        acknowledged: updates.acknowledged,
+        acknowledgement_date: updates.acknowledgementDate,
+        last_active: updates.lastActive,
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email);
 
-  users[email] = newUser;
-  storage.saveUsers(users);
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
 
-  startUserSession(newUser);
-  return newUser;
+// NEW: Delete user (for admin panel)
+export const deleteUser = async (email: string): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('email', email);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
 };

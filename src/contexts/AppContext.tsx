@@ -1,15 +1,15 @@
+// contexts/AppContext.tsx - UPDATED FOR ASYNC PROGRESS
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
 import { validateSession, endUserSession, performLogin, performRegistration } from '@/lib/auth';
-import { trackSectionVisit, submitAcknowledgement } from '@/lib/progress';
+import { trackSectionVisit, submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
 
-// Use the same position type as auth.ts
 interface RegistrationData {
   name: string;
   email: string;
-  position: 'Bartender' | 'Admin' | 'Trainee'; // Fixed: match the exact type
+  position: 'Bartender' | 'Admin' | 'Trainee';
   code: string;
   password: string;
   confirmPassword: string;
@@ -23,6 +23,7 @@ interface AppContextType {
     message: string;
     show: boolean;
   };
+  userProgress: any;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegistrationData) => Promise<void>;
   logout: () => void;
@@ -32,6 +33,7 @@ interface AppContextType {
   showToast: (message: string) => void;
   hideToast: () => void;
   isAdmin: boolean;
+  refreshProgress: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,6 +43,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('welcome');
   const [toast, setToast] = useState({ message: '', show: false });
+  const [userProgress, setUserProgress] = useState<any>(null);
 
   useEffect(() => {
     // Check for existing session on mount
@@ -49,12 +52,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
+  // Load user progress when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      refreshProgress();
+    }
+  }, [currentUser]);
+
   const showToast = (message: string) => {
     setToast({ message, show: true });
   };
 
   const hideToast = () => {
     setToast(prev => ({ ...prev, show: false }));
+  };
+
+  const refreshProgress = async () => {
+    if (currentUser) {
+      try {
+        const progress = await getProgressBreakdown(currentUser.email);
+        setUserProgress(progress);
+      } catch (error) {
+        console.error('Error refreshing progress:', error);
+      }
+    }
   };
 
   const login = async (email: string, password: string) => {
@@ -73,22 +94,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     endUserSession();
     setCurrentUser(null);
     setActiveSection('welcome');
+    setUserProgress(null);
     showToast('Logged out successfully');
   };
 
-  const trackVisit = (sectionId: string) => {
+  const trackVisit = async (sectionId: string) => {
     if (currentUser) {
-      trackSectionVisit(currentUser.email, sectionId);
-      // Update local state to trigger re-render
-      setCurrentUser(prev => prev ? { ...prev } : null);
+      try {
+        await trackSectionVisit(currentUser.email, sectionId);
+        // Refresh progress after tracking visit
+        await refreshProgress();
+      } catch (error) {
+        console.error('Error tracking visit:', error);
+        showToast('Error tracking progress');
+      }
     }
   };
 
-  const submitAck = () => {
+  const submitAck = async () => {
     if (currentUser) {
-      submitAcknowledgement(currentUser.email);
-      setCurrentUser(prev => prev ? { ...prev, acknowledged: true, progress: 100 } : null);
-      showToast('Acknowledgement submitted successfully!');
+      try {
+        await submitAcknowledgement(currentUser.email);
+        await refreshProgress();
+        showToast('Acknowledgement submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting acknowledgement:', error);
+        showToast('Error submitting acknowledgement');
+      }
     }
   };
 
@@ -97,6 +129,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     activeSection,
     toast,
+    userProgress,
     login,
     register,
     logout,
@@ -105,7 +138,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     submitAck,
     showToast,
     hideToast,
-    isAdmin: currentUser?.position === 'Admin'
+    isAdmin: currentUser?.position === 'Admin',
+    refreshProgress
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
