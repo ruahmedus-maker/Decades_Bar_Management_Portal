@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { validatePasswordStrength, initializeTestUsers } from '@/lib/auth';
+import { validatePasswordStrength } from '@/lib/supabase-auth'; // ← Updated import
+import { APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth'; // ← Updated import
 
 // Tropical Teal/Blue color scheme to match sidebar
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
 const SIDEBAR_COLOR_RGB = '45, 212, 191';
 const SIDEBAR_COLOR_DARK = '#0D9488'; // Darker teal
 
-// Test credentials
+// Test credentials - these now match what's created in initializeAuth
 const TEST_CREDENTIALS = [
   { email: 'bartender@decadesbar.com', password: 'password123', role: 'Bartender' },
   { email: 'trainee@decadesbar.com', password: 'password123', role: 'Trainee' },
@@ -30,12 +31,7 @@ export default function LoginBarrier() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
 
-  // Initialize test users on component mount
-  useEffect(() => {
-  if (process.env.NODE_ENV === 'development') {
-    initializeTestUsers().catch(console.error);
-  }
-}, []);
+  // REMOVED: initializeTestUsers - now handled by initializeAuth in AppContext
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +49,16 @@ export default function LoginBarrier() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // Validate registration code before attempting registration
+      if (!APPROVED_CODES.includes(formData.code)) {
+        throw new Error('Invalid registration code. Please contact your manager.');
+      }
+
+      // Admin registration safeguards
+      if (formData.position === 'Admin' && !ADMIN_CODES.includes(formData.code)) {
+        throw new Error('Administrative positions require manager authorization codes.');
+      }
+
       await register(formData);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Registration failed');
@@ -117,6 +123,8 @@ export default function LoginBarrier() {
     }
   };
 
+  // ... (all your existing styles remain the same - they're perfect!)
+
   // PERFORMANCE OPTIMIZED Style objects
   const loginBarrierStyle = {
     position: 'fixed' as const,
@@ -124,8 +132,7 @@ export default function LoginBarrier() {
     left: 0,
     width: '100%',
     height: '100%',
-    background: 'rgba(26, 54, 93, 0.4)', // Slightly more opaque to compensate for reduced blur
-    // REDUCED BLUR: from 8px to 3px
+    background: 'rgba(26, 54, 93, 0.4)',
     backdropFilter: 'blur(3px) saturate(140%)',
     WebkitBackdropFilter: 'blur(3px) saturate(140%)',
     zIndex: 9999,
@@ -133,14 +140,12 @@ export default function LoginBarrier() {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '20px',
-    // Performance optimization
     transform: 'translateZ(0)',
     WebkitTransform: 'translateZ(0)',
   };
 
   const loginContainerStyle = {
-    background: 'rgba(255, 255, 255, 0.2)', // More opaque to compensate for reduced blur
-    // REDUCED BLUR: from 12px to 6px
+    background: 'rgba(255, 255, 255, 0.2)',
     backdropFilter: 'blur(6px) saturate(160%)',
     WebkitBackdropFilter: 'blur(6px) saturate(160%)',
     border: '1px solid rgba(255, 255, 255, 0.25)',
@@ -153,7 +158,6 @@ export default function LoginBarrier() {
     textAlign: 'center' as const,
     maxWidth: '450px',
     width: '100%',
-    // Performance optimization
     transform: 'translateZ(0)',
     WebkitTransform: 'translateZ(0)',
   };
@@ -194,14 +198,12 @@ export default function LoginBarrier() {
     padding: '14px 16px',
     borderRadius: '12px',
     border: '1px solid rgba(255, 255, 255, 0.2)',
-    background: 'rgba(255, 255, 255, 0.15)', // More opaque background
+    background: 'rgba(255, 255, 255, 0.15)',
     color: '#ffffff',
     fontSize: '1rem',
-    // REDUCED BLUR: from 8px to 2px or remove
     backdropFilter: 'blur(2px)',
     transition: 'all 0.3s ease',
     outline: 'none',
-    // Performance optimization
     transform: 'translateZ(0)',
   };
 
@@ -232,9 +234,7 @@ export default function LoginBarrier() {
     fontSize: '1rem',
     transition: 'all 0.3s ease',
     boxShadow: `0 4px 15px rgba(${SIDEBAR_COLOR_RGB}, 0.3)`,
-    // REDUCED BLUR: from 8px to 2px
     backdropFilter: 'blur(2px)',
-    // Performance optimization
     transform: 'translateZ(0)',
   };
 
@@ -261,7 +261,7 @@ export default function LoginBarrier() {
   };
 
   const testButtonStyle = {
-    background: 'rgba(255, 255, 255, 0.15)', // More opaque
+    background: 'rgba(255, 255, 255, 0.15)',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     color: 'rgba(255, 255, 255, 0.9)',
     padding: '10px 16px',
@@ -270,7 +270,6 @@ export default function LoginBarrier() {
     fontSize: '0.85rem',
     fontWeight: 500,
     transition: 'all 0.3s ease',
-    // REDUCED BLUR: from 8px to 2px
     backdropFilter: 'blur(2px)',
     width: '100%',
     transform: 'translateZ(0)',

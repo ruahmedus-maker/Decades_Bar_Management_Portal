@@ -1,21 +1,21 @@
 // types.ts - Complete updated file with all interfaces
 export interface User {
+  id?: string;
+  auth_id?: string;
   name: string;
   email: string;
   position: 'Bartender' | 'Admin' | 'Trainee';
   status: 'active' | 'blocked';
   progress: number;
   acknowledged: boolean;
-  acknowledgementDate: string | null | undefined;
+  acknowledgementDate: string | null;
   registeredDate: string;
   lastActive: string;
   loginCount: number;
-  passwordHash: string;
-  visitedSections?: string[];
-  testResults?: Record<string, TestResult>;
-  sectionVisits?: { [sectionId: string]: SectionVisit };
-
-  
+  passwordHash?: string;
+  visitedSections: string[];
+  testResults: any;
+  sectionVisits: any;
 }
 
 export interface RegistrationData {

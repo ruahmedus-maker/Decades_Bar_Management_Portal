@@ -1,9 +1,16 @@
-// contexts/AppContext.tsx - UPDATED FOR ASYNC PROGRESS
+// contexts/AppContext.tsx - UPDATED IMPORTS
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
-import { validateSession, endUserSession, performLogin, performRegistration } from '@/lib/auth';
+import { 
+  initializeAuth, 
+  signInWithEmail, 
+  signUpWithEmail, 
+  signOut, 
+  getCurrentSession, 
+  onAuthStateChange 
+} from '@/lib/supabase-auth'; // ← Updated import
 import { trackSectionVisit, submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
 
 interface RegistrationData {
@@ -26,7 +33,7 @@ interface AppContextType {
   userProgress: any;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegistrationData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   setActiveSection: (section: string) => void;
   trackVisit: (sectionId: string) => void;
   submitAck: () => void;
@@ -46,10 +53,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [userProgress, setUserProgress] = useState<any>(null);
 
   useEffect(() => {
-    // Check for existing session on mount
-    const user = validateSession();
-    setCurrentUser(user);
-    setIsLoading(false);
+    // Initialize authentication system
+    const initAuth = async () => {
+      await initializeAuth(); // ← This function exists now
+      
+      // Check for existing session
+      const user = await getCurrentSession();
+      setCurrentUser(user);
+      setIsLoading(false);
+    };
+
+    initAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = onAuthStateChange((user) => {
+      setCurrentUser(user);
+      if (user) {
+        refreshProgress();
+      } else {
+        setUserProgress(null);
+        setActiveSection('welcome');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Load user progress when currentUser changes
@@ -79,19 +106,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const user = await performLogin(email, password);
+    const { user, error } = await signInWithEmail(email, password); // ← Updated function
+    if (error) throw new Error(error);
+    if (!user) throw new Error('Login failed');
+    
     setCurrentUser(user);
     showToast(`Welcome back, ${user.name}!`);
   };
 
   const register = async (userData: RegistrationData) => {
-    const user = await performRegistration(userData);
+    const { user, error } = await signUpWithEmail( // ← Updated function
+      userData.email, 
+      userData.password, 
+      {
+        name: userData.name,
+        position: userData.position,
+        code: userData.code
+      }
+    );
+    
+    if (error) throw new Error(error);
+    if (!user) throw new Error('Registration failed');
+    
     setCurrentUser(user);
     showToast(`Welcome to Decades Bar, ${user.name}!`);
   };
 
-  const logout = () => {
-    endUserSession();
+  const logout = async () => {
+    const { error } = await signOut(); // ← Updated function
+    if (error) {
+      console.error('Logout error:', error);
+    }
     setCurrentUser(null);
     setActiveSection('welcome');
     setUserProgress(null);
@@ -102,7 +147,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (currentUser) {
       try {
         await trackSectionVisit(currentUser.email, sectionId);
-        // Refresh progress after tracking visit
         await refreshProgress();
       } catch (error) {
         console.error('Error tracking visit:', error);
