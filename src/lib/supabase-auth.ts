@@ -474,4 +474,238 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
   });
 };
 
-// ... (keep getAllUsers, updateUser, deleteUser functions the same)
+// ===== CRUD OPERATIONS =====
+
+// Get all users (for admin panel)
+export const getAllUsers = async (): Promise<AuthUser[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('name');
+
+    if (error) throw error;
+
+    return (data || []).map((user: any) => convertToAuthUser(user));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return [];
+  }
+};
+
+// Update user (for admin panel)
+export const updateUser = async (email: string, updates: Partial<AuthUser>): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        name: updates.name,
+        position: updates.position,
+        status: updates.status,
+        progress: updates.progress,
+        acknowledged: updates.acknowledged,
+        acknowledgement_date: updates.acknowledgementDate,
+        last_active: updates.lastActive,
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+// Delete user (for admin panel)
+export const deleteUser = async (email: string): Promise<void> => {
+  try {
+    // First get the user to find their auth_id
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('auth_id')
+      .eq('email', email)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // Delete from our database
+    const { error: deleteError } = await supabase
+      .from('users')
+      .delete()
+      .eq('email', email);
+
+    if (deleteError) throw deleteError;
+
+    // Also delete from Supabase Auth if auth_id exists
+    if (user?.auth_id) {
+      const serviceClient = getServiceRoleClient();
+      await serviceClient.auth.admin.deleteUser(user.auth_id);
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+
+// Update user progress
+export const updateUserProgress = async (email: string, progress: number): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        progress: progress,
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error updating user progress:', error);
+    throw error;
+  }
+};
+
+// Track section visit
+export const trackSectionVisit = async (email: string, sectionId: string): Promise<void> => {
+  try {
+    // First get current user to update their visited sections
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('visited_sections')
+      .eq('email', email)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const visitedSections = user.visited_sections || [];
+    const updatedSections = Array.from(new Set([...visitedSections, sectionId]));
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        visited_sections: updatedSections,
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email);
+
+    if (updateError) throw updateError;
+  } catch (error) {
+    console.error('Error tracking section visit:', error);
+    throw error;
+  }
+};
+
+// Submit acknowledgement
+export const submitAcknowledgement = async (email: string): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        acknowledged: true,
+        acknowledgement_date: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error submitting acknowledgement:', error);
+    throw error;
+  }
+};
+
+// Get user by email
+export const getUserByEmail = async (email: string): Promise<AuthUser | null> => {
+  try {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error) return null;
+
+    return convertToAuthUser(user);
+  } catch (error) {
+    console.error('Error getting user by email:', error);
+    return null;
+  }
+};
+
+// Password reset functions
+export const resetUserPassword = async (email: string): Promise<{ error: string | null }> => {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    return { error: error?.message || null };
+  } catch (error: any) {
+    return { error: error.message || 'Failed to reset password' };
+  }
+};
+
+// Admin: Set temporary password
+export const setTemporaryPassword = async (email: string, temporaryPassword: string): Promise<{ error: string | null }> => {
+  try {
+    const serviceClient = getServiceRoleClient();
+    
+    // Get the user by email first
+    const { data: { users }, error: listError } = await serviceClient.auth.admin.listUsers();
+    if (listError) throw listError;
+    
+    const user = users.find((u: any) => u.email === email);
+    if (!user) {
+      return { error: 'User not found' };
+    }
+    
+    // Update the user's password
+    const { error: updateError } = await serviceClient.auth.admin.updateUserById(
+      user.id,
+      { password: temporaryPassword }
+    );
+
+    if (updateError) throw updateError;
+    
+    return { error: null };
+  } catch (error: any) {
+    return { error: error.message || 'Failed to set temporary password' };
+  }
+};
+
+// Send magic link for passwordless sign-in
+export const sendMagicLink = async (email: string): Promise<{ error: string | null }> => {
+  try {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    return { error: error?.message || null };
+  } catch (error: any) {
+    return { error: error.message || 'Failed to send magic link' };
+  }
+};
+
+// Check if user exists
+export const checkUserExists = async (email: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    return !error && !!data;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Helper function for generating temporary passwords
+const generateTemporaryPassword = (): string => {
+  return `Temp${Math.random().toString(36).slice(-10)}!`;
+};
