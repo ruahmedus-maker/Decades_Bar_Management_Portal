@@ -1,4 +1,4 @@
-// lib/supabase-auth.ts - CORRECTED VERSION
+// lib/supabase-auth.ts - UPDATED TO SYNC AUTH AND DATABASE
 import { supabase, getServiceRoleClient } from './supabase';
 import { User } from '@/types';
 
@@ -58,11 +58,63 @@ const convertToAuthUser = (user: any): AuthUser => {
     registeredDate: user.registered_date,
     lastActive: user.last_active,
     loginCount: user.login_count || 0,
-    // REMOVED: passwordHash since we're using Supabase Auth
     visitedSections: user.visited_sections || [],
     testResults: user.test_results || {},
     sectionVisits: user.section_visits || {}
   };
+};
+
+// NEW: Ensure database user exists for Supabase Auth user
+const ensureDatabaseUser = async (authUser: any): Promise<AuthUser> => {
+  const serviceClient = getServiceRoleClient();
+  
+  try {
+    // Check if user exists in our database
+    const { data: existingUser, error: fetchError } = await serviceClient
+      .from('users')
+      .select('*')
+      .eq('auth_id', authUser.id)
+      .single();
+
+    if (fetchError || !existingUser) {
+      console.log(`🔄 Creating database record for auth user: ${authUser.email}`);
+      
+      // Create user in our database
+      const { data: newUser, error: createError } = await serviceClient
+        .from('users')
+        .insert({
+          auth_id: authUser.id,
+          email: authUser.email,
+          name: authUser.user_metadata?.name || authUser.email.split('@')[0],
+          position: authUser.user_metadata?.position || 'Trainee',
+          status: 'active',
+          progress: 0,
+          acknowledged: false,
+          registered_date: new Date().toISOString(),
+          last_active: new Date().toISOString(),
+          login_count: 0,
+          visited_sections: [],
+          test_results: {},
+          section_visits: {}
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('❌ Failed to create database user:', createError);
+        throw createError;
+      }
+
+      console.log(`✅ Created database record for: ${authUser.email}`);
+      return convertToAuthUser(newUser);
+    }
+
+    // User exists in database, return it
+    return convertToAuthUser(existingUser);
+  } catch (error) {
+    console.error('❌ Error ensuring database user:', error);
+    throw error;
+  }
 };
 
 // Initialize authentication system
@@ -147,7 +199,7 @@ const createTestUsersWithAuth = async (): Promise<void> => {
         continue;
       }
 
-      // 2. Create user in our database (NO PASSWORD HASH NEEDED)
+      // 2. Create user in our database
       const { error: dbError } = await serviceClient
         .from('users')
         .insert({
@@ -161,7 +213,6 @@ const createTestUsersWithAuth = async (): Promise<void> => {
           registered_date: new Date().toISOString(),
           last_active: new Date().toISOString(),
           login_count: 0,
-          // REMOVED: password_hash - Supabase Auth handles passwords
           visited_sections: [],
           test_results: {},
           section_visits: {}
@@ -269,28 +320,17 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 
     console.log(`✅ Auth successful for: ${email}`);
 
-    // Get user profile from our database
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', data.user.id)
-      .single();
-
-    if (profileError) {
-      console.error(`❌ User profile fetch failed for ${email}:`, profileError);
-      throw new Error('User profile not found');
-    }
-
-    const authUser = convertToAuthUser(userProfile);
+    // NEW: Ensure database user exists and get profile
+    const authUser = await ensureDatabaseUser(data.user);
     
     // Update login stats
     await supabase
       .from('users')
       .update({
-        login_count: (userProfile.login_count || 0) + 1,
+        login_count: (authUser.loginCount || 0) + 1,
         last_active: new Date().toISOString()
       })
-      .eq('id', userProfile.id);
+      .eq('auth_id', data.user.id);
 
     console.log(`✅ Sign in complete for: ${email}`);
     return { user: authUser, error: null };
@@ -350,7 +390,7 @@ export const signUpWithEmail = async (
     if (authError) throw authError;
     if (!authData.user) throw new Error('No user created in authentication');
 
-    // 2. Create user in our database (NO PASSWORD HASH NEEDED)
+    // 2. Create user in our database
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .insert({
@@ -364,7 +404,6 @@ export const signUpWithEmail = async (
         registered_date: new Date().toISOString(),
         last_active: new Date().toISOString(),
         login_count: 0,
-        // REMOVED: password_hash - Supabase Auth handles passwords
         visited_sections: [],
         test_results: {},
         section_visits: {}
@@ -407,19 +446,10 @@ export const getCurrentSession = async (): Promise<AuthUser | null> => {
       return null;
     }
 
-    // Get user profile from our database
-    const { data: userProfile, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', session.user.id)
-      .single();
+    // NEW: Use ensureDatabaseUser to handle both new and existing users
+    const authUser = await ensureDatabaseUser(session.user);
+    return authUser;
 
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-
-    return convertToAuthUser(userProfile);
   } catch (error) {
     console.error('Error getting current session:', error);
     return null;
@@ -431,13 +461,23 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
     console.log(`🔄 Auth state changed: ${event}`);
     
     if (event === 'SIGNED_IN' && session?.user) {
-      const user = await getCurrentSession();
-      callback(user);
+      try {
+        const user = await ensureDatabaseUser(session.user);
+        callback(user);
+      } catch (error) {
+        console.error('Error handling auth state change:', error);
+        callback(null);
+      }
     } else if (event === 'SIGNED_OUT') {
       callback(null);
     } else if (event === 'USER_UPDATED') {
-      const user = await getCurrentSession();
-      callback(user);
+      try {
+        const user = await getCurrentSession();
+        callback(user);
+      } catch (error) {
+        console.error('Error handling user update:', error);
+        callback(null);
+      }
     }
   });
 };
@@ -512,7 +552,7 @@ export const deleteUser = async (email: string): Promise<void> => {
   }
 };
 
-// Session validation using Supabase Auth (replaces localStorage validation)
+// Session validation using Supabase Auth
 export const validateSession = async (): Promise<AuthUser | null> => {
   return await getCurrentSession();
 };
