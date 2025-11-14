@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/lib/supabase';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
-import { MaintenanceTicket, RealtimePayload, CardProps } from '@/types';
+import { MaintenanceTicket, CardProps } from '@/types';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
@@ -175,31 +176,40 @@ export default function MaintenanceSection() {
     }
   };
 
-  // Set up real-time subscription for maintenance tickets
-  useEffect(() => {
-    fetchRecentTickets();
+  
 
-    // Subscribe to real-time changes
-    const subscription = supabase
-      .channel('maintenance_tickets_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'maintenance_tickets'
-        },
-        (payload: RealtimePayload) => {
-          console.log('Maintenance ticket change received!', payload);
-          fetchRecentTickets(); // Refresh the list
-        }
-      )
-      .subscribe();
+// In your useEffect, replace the subscription code with this:
+useEffect(() => {
+  fetchRecentTickets();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  // Subscribe to real-time changes with proper typing
+  const subscription = supabase
+    .channel('maintenance_tickets_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+        schema: 'public',
+        table: 'maintenance_tickets'
+      },
+      (payload: RealtimePostgresChangesPayload<any>) => {
+        console.log('Maintenance ticket change received!', payload);
+        fetchRecentTickets(); // Refresh the list
+      }
+    )
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log('✅ Real-time subscription active');
+      }
+      if (status === 'CHANNEL_ERROR') {
+        console.error('❌ Real-time subscription failed');
+      }
+    });
+
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
 
   // Helper function to get appropriate icon based on ticket title
   const getTicketIcon = (title: string) => {
@@ -222,6 +232,20 @@ export default function MaintenanceSection() {
   try {
     // Generate a UUID for the ticket ID
     const ticketId = crypto.randomUUID();
+
+    // Debug: Log what we're about to send
+    console.log('🔄 Attempting to create maintenance ticket with data:', {
+      id: ticketId,
+      floor: ticketForm.floor,
+      location: ticketForm.location,
+      title: ticketForm.title,
+      description: ticketForm.description,
+      reported_by: currentUser.name,
+      reported_by_email: currentUser.email,
+      status: 'open',
+      priority: ticketForm.priority
+    });
+
     
     // Simplified - only include fields that are required or have values
     const ticketData = {
@@ -237,13 +261,26 @@ export default function MaintenanceSection() {
       // Omit assigned_to and notes - they'll use database NULL defaults
     };
 
+    console.log('📤 Sending to Supabase...');
+
     const { data, error } = await supabase
       .from('maintenance_tickets')
       .insert([ticketData])
       .select();
 
-    if (error) throw error;
+       console.log('📥 Supabase response:', { data, error });
+
+    if (error) {
+      console.error('❌ Supabase error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      throw error;
+    }
     
+    console.log('✅ Ticket created successfully:', data);
     showToast('Maintenance ticket submitted successfully!');
     
     // Reset form
