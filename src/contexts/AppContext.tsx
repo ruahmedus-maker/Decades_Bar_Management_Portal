@@ -52,32 +52,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState({ message: '', show: false });
   const [userProgress, setUserProgress] = useState<any>(null);
 
-  useEffect(() => {
-    // Initialize authentication system
-    const initAuth = async () => {
-      await initializeAuth(); // ← This function exists now
-      
-      // Check for existing session
-      const user = await getCurrentSession();
-      setCurrentUser(user);
-      setIsLoading(false);
-    };
+  // In AppContext.tsx - SIMPLIFIED
+useEffect(() => {
+  const initAuth = async () => {
+    await initializeAuth();
+    
+    // Check for existing session
+    const user = await getCurrentSession();
+    setCurrentUser(user);
+    setIsLoading(false);
+  };
 
-    initAuth();
+  initAuth();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = onAuthStateChange((user) => {
-      setCurrentUser(user);
-      if (user) {
-        refreshProgress();
-      } else {
-        setUserProgress(null);
-        setActiveSection('welcome');
-      }
-    });
+  // Listen for auth state changes
+  const { data: { subscription } } = onAuthStateChange((user) => {
+    setCurrentUser(user);
+  });
 
-    return () => subscription.unsubscribe();
-  }, []);
+  return () => subscription.unsubscribe();
+}, []);
 
   // Load user progress when currentUser changes
   useEffect(() => {
