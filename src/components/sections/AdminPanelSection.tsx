@@ -45,15 +45,8 @@ interface QuickStats {
   excellentProgress: number;
 }
 
-// List of users who should be hidden from other users in admin panel
-const HIDDEN_USERS = [
-  'riaz11@hotmail.com',
-  'user2@decadesbar.com',
-  'user3@decadesbar.com'
-];
-
 // Enhanced Card Component
-function AdminCard({ title, value, change, icon, color, onClick }: any) {
+function AdminCard({ title, value, icon, color, onClick }: any) {
   return (
     <div 
       style={{
@@ -61,7 +54,6 @@ function AdminCard({ title, value, change, icon, color, onClick }: any) {
         borderRadius: '12px',
         padding: '20px',
         border: `1px solid rgba(255, 255, 255, 0.15)`,
-        backdropFilter: 'blur(10px)',
         cursor: onClick ? 'pointer' : 'default',
         borderLeft: `4px solid ${color}`
       }}
@@ -85,16 +77,6 @@ function AdminCard({ title, value, change, icon, color, onClick }: any) {
           }}>
             {value}
           </h3>
-          {change && (
-            <p style={{ 
-              margin: '5px 0 0 0', 
-              color: change > 0 ? SUCCESS_COLOR : DANGER_COLOR,
-              fontSize: '0.8rem',
-              fontWeight: '600'
-            }}>
-              {change > 0 ? '↑' : '↓'} {Math.abs(change)}%
-            </p>
-          )}
         </div>
         <div style={{
           width: '48px',
@@ -113,762 +95,6 @@ function AdminCard({ title, value, change, icon, color, onClick }: any) {
   );
 }
 
-// Task Creation Modal
-function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
-  const { currentUser, showToast } = useApp();
-  const [taskForm, setTaskForm] = useState({
-    title: '',
-    description: '',
-    assignedTo: '',
-    dueDate: '',
-    priority: 'medium' as 'low' | 'medium' | 'high',
-  });
-  const [users, setUsers] = useState<User[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Load users for assignment
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const allUsers = await getAllUsers();
-        const filteredUsers = allUsers.filter(user => 
-          (user.position === 'Bartender' || user.position === 'Trainee') &&
-          (!HIDDEN_USERS.includes(user.email) || user.email === currentUser?.email)
-        );
-        setUsers(filteredUsers);
-      } catch (error) {
-        console.error('Error loading users:', error);
-      }
-    };
-
-    if (isOpen) {
-      loadUsers();
-    }
-  }, [isOpen, currentUser]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentUser) return;
-
-    setIsSubmitting(true);
-
-    try {
-      const taskId = `task-${Date.now()}`;
-      const taskData = {
-        id: taskId,
-        title: taskForm.title,
-        description: taskForm.description,
-        assigned_to: taskForm.assignedTo,
-        due_date: taskForm.dueDate || null,
-        completed: false,
-        priority: taskForm.priority,
-        created_by: currentUser.email,
-      };
-
-      const { error } = await supabase
-        .from('tasks')
-        .insert([taskData]);
-
-      if (error) throw error;
-
-      showToast('Task created successfully!');
-      onTaskCreated();
-      onClose();
-      
-      setTaskForm({
-        title: '',
-        description: '',
-        assignedTo: '',
-        dueDate: '',
-        priority: 'medium',
-      });
-    } catch (error: any) {
-      console.error('Error creating task:', error);
-      showToast(error.message || 'Error creating task. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0, 0, 0, 0.7)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: 'rgba(30, 41, 59, 0.95)',
-        borderRadius: '16px',
-        padding: '30px',
-        width: '90%',
-        maxWidth: '500px',
-        border: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '25px',
-          paddingBottom: '15px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`
-        }}>
-          <h3 style={{ margin: 0, color: 'white' }}>Create New Task</h3>
-          <button 
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255, 255, 255, 0.7)',
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              padding: '5px'
-            }}
-          >
-            ×
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'block', 
-              color: 'rgba(255, 255, 255, 0.9)', 
-              marginBottom: '8px',
-              fontWeight: '600'
-            }}>
-              Task Title *
-            </label>
-            <input
-              type="text"
-              value={taskForm.title}
-              onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
-              placeholder="Enter task title"
-              style={{ 
-                width: '100%', 
-                padding: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                color: 'white',
-              }}
-              required
-            />
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'block', 
-              color: 'rgba(255, 255, 255, 0.9)', 
-              marginBottom: '8px',
-              fontWeight: '600'
-            }}>
-              Description
-            </label>
-            <textarea
-              value={taskForm.description}
-              onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-              placeholder="Task description..."
-              rows={3}
-              style={{ 
-                width: '100%', 
-                padding: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                color: 'white',
-                resize: 'vertical'
-              }}
-            />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                marginBottom: '8px',
-                fontWeight: '600'
-              }}>
-                Assign To *
-              </label>
-              <select
-                value={taskForm.assignedTo}
-                onChange={(e) => setTaskForm({ ...taskForm, assignedTo: e.target.value })}
-                style={{ 
-                  width: '100%', 
-                  padding: '12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-                required
-              >
-                <option value="">Select employee</option>
-                {users.map(user => (
-                  <option key={user.email} value={user.email}>
-                    {user.name} ({user.position})
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label style={{ 
-                display: 'block', 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                marginBottom: '8px',
-                fontWeight: '600'
-              }}>
-                Priority *
-              </label>
-              <select
-                value={taskForm.priority}
-                onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value as any })}
-                style={{ 
-                  width: '100%', 
-                  padding: '12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-                required
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-          </div>
-
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              color: 'rgba(255, 255, 255, 0.9)', 
-              marginBottom: '8px',
-              fontWeight: '600'
-            }}>
-              Due Date
-            </label>
-            <input
-              type="date"
-              value={taskForm.dueDate}
-              onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })}
-              style={{ 
-                width: '100%', 
-                padding: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                color: 'white',
-              }}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-            <button 
-              type="button"
-              onClick={onClose}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                padding: '12px 24px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
-              }}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              disabled={isSubmitting}
-              style={{
-                background: isSubmitting ? 'rgba(37, 99, 235, 0.5)' : SECTION_COLOR,
-                color: 'white',
-                border: 'none',
-                padding: '12px 24px',
-                borderRadius: '8px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontWeight: '600',
-              }}
-            >
-              {isSubmitting ? 'Creating...' : 'Create Task'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// Maintenance Tickets Content Component
-function MaintenanceTicketsContent() {
-  const { showToast, currentUser } = useApp();
-  const [tickets, setTickets] = useState<MaintenanceTicket[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'open' | 'in-progress' | 'assigned' | 'completed'>('all');
-
-  // Load tickets from Supabase
-  const loadTickets = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('maintenance_tickets')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading tickets:', error);
-        showToast('Error loading maintenance tickets');
-        return;
-      }
-
-      // ✅ FIXED: Use the correct field names that match your database
-      const convertedTickets: MaintenanceTicket[] = (data || []).map((ticket: any) => ({
-        id: ticket.id,
-        floor: ticket.floor,
-        location: ticket.location,
-        title: ticket.title,
-        description: ticket.description,
-        reported_by: ticket.reported_by,
-        reported_by_email: ticket.reported_by_email,
-        status: ticket.status,
-        priority: ticket.priority,
-        assigned_to: ticket.assigned_to,
-        notes: ticket.notes,
-        created_at: ticket.created_at,
-        updated_at: ticket.updated_at
-      }));
-
-      setTickets(convertedTickets);
-    } catch (error) {
-      console.error('Error loading tickets:', error);
-      showToast('Error loading maintenance tickets');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Set up real-time subscription
-  useEffect(() => {
-    loadTickets();
-
-    const subscription = supabase
-      .channel('maintenance-tickets-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'maintenance_tickets'
-        },
-        () => {
-          loadTickets();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleUpdateStatus = async (ticketId: string, newStatus: MaintenanceTicket['status']) => {
-    try {
-      const { error } = await supabase
-        .from('maintenance_tickets')
-        .update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', ticketId);
-
-      if (error) throw error;
-
-      showToast(`Ticket status updated to ${newStatus.replace('-', ' ')}`);
-    } catch (error) {
-      console.error('Error updating ticket status:', error);
-      showToast('Error updating ticket status');
-    }
-  };
-
-  const handleDeleteTicket = async (ticketId: string) => {
-    if (window.confirm('Are you sure you want to delete this maintenance ticket?')) {
-      try {
-        const { error } = await supabase
-          .from('maintenance_tickets')
-          .delete()
-          .eq('id', ticketId);
-
-        if (error) throw error;
-
-        showToast('Maintenance ticket deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting ticket:', error);
-        showToast('Error deleting maintenance ticket');
-      }
-    }
-  };
-
-  const handleAssignToMe = async (ticketId: string) => {
-    if (!currentUser) return;
-
-    try {
-      const { error } = await supabase
-        .from('maintenance_tickets')
-        .update({ 
-          assigned_to: currentUser.email,
-          status: 'assigned',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', ticketId);
-
-      if (error) throw error;
-
-      showToast('Ticket assigned to you!');
-    } catch (error) {
-      console.error('Error assigning ticket:', error);
-      showToast('Error assigning ticket');
-    }
-  };
-
-  const filteredTickets = tickets.filter(ticket => {
-    if (filter === 'all') return true;
-    return ticket.status === filter;
-  });
-
-  const openTickets = tickets.filter(t => t.status === 'open').length;
-  const inProgressTickets = tickets.filter(t => t.status === 'in-progress').length;
-  const assignedTickets = tickets.filter(t => t.status === 'assigned').length;
-  const completedTickets = tickets.filter(t => t.status === 'completed').length;
-  const closedTickets = tickets.filter(t => t.status === 'closed').length;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return DANGER_COLOR;
-      case 'in-progress': return WARNING_COLOR;
-      case 'assigned': return WARNING_COLOR;
-      case 'completed': return SUCCESS_COLOR;
-      case 'closed': return '#718096';
-      default: return '#718096';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return DANGER_COLOR;
-      case 'high': return '#ed8936';
-      case 'medium': return WARNING_COLOR;
-      case 'low': return SUCCESS_COLOR;
-      default: return '#718096';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.08)',
-          borderRadius: '12px',
-          padding: '40px',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          textAlign: 'center',
-          color: 'white'
-        }}>
-          <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
-          <h3>Loading Maintenance Tickets...</h3>
-          <p>Connecting to cloud database</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Quick Stats */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        gap: '15px'
-      }}>
-        <AdminCard
-          title="Open Tickets"
-          value={openTickets}
-          icon="🔧"
-          color="239, 68, 68"
-        />
-        <AdminCard
-          title="In Progress"
-          value={inProgressTickets + assignedTickets}
-          icon="🔄"
-          color="245, 158, 11"
-        />
-        <AdminCard
-          title="Completed"
-          value={completedTickets}
-          icon="✅"
-          color="16, 185, 129"
-        />
-        <AdminCard
-          title="Closed"
-          value={closedTickets}
-          icon="📁"
-          color="113, 128, 150"
-        />
-      </div>
-
-      {/* Filters and Actions */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.08)',
-        borderRadius: '12px',
-        padding: '20px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-      }}>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div>
-            <label style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Status:</label>
-            <select 
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
-              style={{ 
-                marginLeft: '8px', 
-                padding: '8px 12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                color: 'white',
-                minWidth: '150px'
-              }}
-            >
-              <option value="all">All Tickets</option>
-              <option value="open">Open Only</option>
-              <option value="in-progress">In Progress</option>
-              <option value="assigned">Assigned</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-          <div style={{ 
-            display: 'flex', 
-            gap: '10px', 
-            marginLeft: 'auto',
-            alignItems: 'center'
-          }}>
-            <button 
-              onClick={loadTickets}
-              style={{ 
-                background: SECTION_COLOR,
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              🔄 Refresh
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tickets List */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.08)',
-        borderRadius: '12px',
-        padding: '20px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-      }}>
-        <h4 style={{ 
-          color: 'white', 
-          margin: '0 0 15px 0',
-          fontSize: '1.2rem'
-        }}>
-          Maintenance Tickets ({filteredTickets.length})
-        </h4>
-        
-        {filteredTickets.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '40px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            fontStyle: 'italic'
-          }}>
-            No maintenance tickets found matching your filters.
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {filteredTickets.map((ticket, index) => (
-              <div 
-                key={ticket.id}
-                style={{
-                  padding: '20px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                  <div>
-                    <h5 style={{ 
-                      color: SECTION_COLOR, 
-                      margin: '0 0 8px 0',
-                      fontSize: '1.1rem',
-                      fontWeight: 600
-                    }}>
-                      {ticket.title}
-                    </h5>
-                    <p style={{ 
-                      color: 'rgba(255, 255, 255, 0.7)', 
-                      margin: 0,
-                      fontSize: '0.9rem'
-                    }}>
-                      {ticket.location} • {ticket.floor}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <span style={{ 
-                      padding: '4px 12px', 
-                      borderRadius: '12px', 
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      background: `${getStatusColor(ticket.status)}20`,
-                      color: getStatusColor(ticket.status),
-                      textTransform: 'capitalize'
-                    }}>
-                      {ticket.status.replace('-', ' ')}
-                    </span>
-                    <span style={{ 
-                      padding: '4px 12px', 
-                      borderRadius: '12px', 
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      background: `${getPriorityColor(ticket.priority)}20`,
-                      color: getPriorityColor(ticket.priority),
-                      textTransform: 'capitalize'
-                    }}>
-                      {ticket.priority}
-                    </span>
-                  </div>
-                </div>
-
-                <p style={{ 
-                  color: 'rgba(255, 255, 255, 0.9)', 
-                  margin: '0 0 15px 0',
-                  lineHeight: 1.5,
-                  fontSize: '0.9rem'
-                }}>
-                  {ticket.description}
-                </p>
-
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  paddingTop: '15px',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                    <div><strong>Reported by:</strong> {ticket.reported_by || 'Unknown'}</div>
-                    <div><strong>Date:</strong> {new Date(ticket.created_at).toLocaleDateString()}</div>
-                    {ticket.assigned_to && (
-                      <div><strong>Assigned to:</strong> {ticket.assigned_to}</div>
-                    )}
-                  </div>
-                  
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    {ticket.status === 'open' && (
-                      <button 
-                        onClick={() => handleAssignToMe(ticket.id)}
-                        style={{ 
-                          background: WARNING_COLOR,
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          fontWeight: '600',
-                        }}
-                      >
-                        Assign to Me
-                      </button>
-                    )}
-                    {(ticket.status === 'assigned' || ticket.status === 'in-progress') && (
-                      <button 
-                        onClick={() => handleUpdateStatus(ticket.id, 'completed')}
-                        style={{ 
-                          background: SUCCESS_COLOR,
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          fontWeight: '600',
-                        }}
-                      >
-                        Mark Completed
-                      </button>
-                    )}
-                    {ticket.status === 'completed' && (
-                      <button 
-                        onClick={() => handleUpdateStatus(ticket.id, 'closed')}
-                        style={{ 
-                          background: '#718096',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          fontWeight: '600',
-                        }}
-                      >
-                        Close Ticket
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => handleDeleteTicket(ticket.id)}
-                      style={{ 
-                        background: DANGER_COLOR,
-                        color: 'white',
-                        border: 'none',
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '0.8rem',
-                        fontWeight: '600',
-                      }}
-                    >
-                      Delete Ticket
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // Team Management Component
 function TeamManagementContent({ users, currentUser }: { users: User[], currentUser: User | null }) {
   const { showToast } = useApp();
@@ -878,7 +104,10 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
     user.position === 'Bartender' || user.position === 'Trainee'
   );
 
-  const handleUpdateUserRole = async (email: string, newPosition: 'Bartender' | 'Admin' | 'Trainee') => {
+  console.log('Team Management - All users:', users);
+  console.log('Team Management - Filtered team users:', teamUsers);
+
+  const handleUpdateUserRole = async (email: string, newPosition: 'Bartender' | 'Trainee') => {
     try {
       await updateUser(email, { position: newPosition });
       showToast(`Updated ${email} to ${newPosition}`);
@@ -980,14 +209,8 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                         borderRadius: '6px', 
                         fontSize: '0.7rem',
                         fontWeight: 'bold',
-                        background: 
-                          user.position === 'Admin' ? 'rgba(139, 92, 246, 0.2)' :
-                          user.position === 'Bartender' ? 'rgba(37, 99, 235, 0.2)' :
-                          'rgba(245, 158, 11, 0.2)',
-                        color: 
-                          user.position === 'Admin' ? ACCENT_COLOR :
-                          user.position === 'Bartender' ? SECTION_COLOR :
-                          WARNING_COLOR
+                        background: user.position === 'Bartender' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                        color: user.position === 'Bartender' ? SECTION_COLOR : WARNING_COLOR
                       }}>
                         {user.position}
                       </span>
@@ -1018,7 +241,7 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                     {/* Role Dropdown */}
                     <select
                       value={user.position}
-                      onChange={(e) => handleUpdateUserRole(user.email, e.target.value as any)}
+                      onChange={(e) => handleUpdateUserRole(user.email, e.target.value as 'Bartender' | 'Trainee')}
                       disabled={user.email === currentUser?.email}
                       style={{ 
                         padding: '6px 10px',
@@ -1081,7 +304,6 @@ export default function AdminPanelSection() {
   const [users, setUsers] = useState<User[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
-  const [blockEmail, setBlockEmail] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events' | 'tasks'>('overview');
   const [quickStats, setQuickStats] = useState<QuickStats>({
     totalUsers: 0,
@@ -1091,7 +313,6 @@ export default function AdminPanelSection() {
     totalTasks: 0,
     excellentProgress: 0
   });
-  const [showTaskModal, setShowTaskModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Check if user is admin
@@ -1108,44 +329,47 @@ export default function AdminPanelSection() {
 
     try {
       setLoading(true);
+      console.log('Loading admin data...');
       
       // Load users
       const allUsers = await getAllUsers();
+      console.log('All users loaded:', allUsers);
       
-      // Filter users based on hidden user logic
-      const filteredUsers = allUsers.filter(user => {
-        // Always show the current user
-        if (user.email === currentUser?.email) return true;
-        
-        // If current user is hidden, show all users
-        if (currentUser && HIDDEN_USERS.includes(currentUser.email)) {
-          return true;
-        }
-        
-        // If current user is not hidden, filter out hidden users
-        return !HIDDEN_USERS.includes(user.email);
-      });
-      
-      setUsers(filteredUsers);
+      setUsers(allUsers);
 
       // Filter to only show bartenders and trainees (not admins) in progress/management
-      const bartendersAndTrainees = filteredUsers.filter(user => 
+      const bartendersAndTrainees = allUsers.filter(user => 
         user.position === 'Bartender' || user.position === 'Trainee'
       );
+      
+      console.log('Bartenders and trainees:', bartendersAndTrainees);
       
       // Load user progress for bartenders and trainees only
       const progressData: UserProgress[] = await Promise.all(
         bartendersAndTrainees.map(async (user) => {
-          const progress = await getProgressBreakdown(user.email);
-          return {
-            user,
-            sectionsCompleted: progress.sectionsVisited,
-            totalSections: progress.totalSections,
-            progressPercentage: progress.progress,
-            lastActive: user.lastActive || 'Never',
-            timeSinceLastActive: getTimeSince(user.lastActive),
-            completionStatus: getCompletionStatus(progress.progress)
-          };
+          try {
+            const progress = await getProgressBreakdown(user.email);
+            return {
+              user,
+              sectionsCompleted: progress.sectionsVisited,
+              totalSections: progress.totalSections,
+              progressPercentage: progress.progress,
+              lastActive: user.lastActive || 'Never',
+              timeSinceLastActive: getTimeSince(user.lastActive),
+              completionStatus: getCompletionStatus(progress.progress)
+            };
+          } catch (error) {
+            console.error(`Error loading progress for ${user.email}:`, error);
+            return {
+              user,
+              sectionsCompleted: 0,
+              totalSections: 0,
+              progressPercentage: 0,
+              lastActive: user.lastActive || 'Never',
+              timeSinceLastActive: getTimeSince(user.lastActive),
+              completionStatus: 'inactive' as const
+            };
+          }
         })
       );
       setUserProgress(progressData);
@@ -1173,13 +397,15 @@ export default function AdminPanelSection() {
       const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
 
       setQuickStats({
-        totalUsers: bartendersAndTrainees.length, // Only count bartenders/trainees for stats
+        totalUsers: bartendersAndTrainees.length,
         activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
         pendingTickets,
         completedTasks,
         totalTasks: tasks?.length || 0,
         excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
       });
+
+      console.log('Admin data loaded successfully');
     } catch (error) {
       console.error('Error loading admin data:', error);
       showToast('Error loading admin data');
@@ -1213,31 +439,6 @@ export default function AdminPanelSection() {
     if (percentage > 0) return 'poor';
     return 'inactive';
   };
-
-  const handleBlockUser = async () => {
-    if (blockEmail && blockEmail !== currentUser?.email) {
-      try {
-        await updateUser(blockEmail, { status: 'blocked' });
-        showToast(`User ${blockEmail} has been blocked`);
-        setBlockEmail('');
-        loadAllData();
-      } catch (error) {
-        showToast('Error blocking user');
-      }
-    }
-  };
-
-  const handleUnblockUser = async (email: string) => {
-    try {
-      await updateUser(email, { status: 'active' });
-      showToast(`User ${email} has been unblocked`);
-      loadAllData();
-    } catch (error) {
-      showToast('Error unblocking user');
-    }
-  };
-
-  const blockedUsers = users.filter(user => user.status === 'blocked');
 
   if (!isAdmin) {
     return (
@@ -1287,7 +488,6 @@ export default function AdminPanelSection() {
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
-      className="active"
     >
       
       {/* Section Header */}
@@ -1305,7 +505,6 @@ export default function AdminPanelSection() {
             fontSize: '1.6rem',
             fontWeight: 700,
             margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
           }}>
             Manager Command Center
           </h3>
@@ -1321,7 +520,7 @@ export default function AdminPanelSection() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            background: 'rgba(255, 255, 255, 0.2)',
             padding: '8px 16px',
             borderRadius: '20px',
             fontSize: '0.9rem',
@@ -1331,17 +530,6 @@ export default function AdminPanelSection() {
           }}>
             Admin Access
           </span>
-          {currentUser && HIDDEN_USERS.includes(currentUser.email) && (
-            <span style={{ 
-              fontSize: '0.8rem', 
-              color: WARNING_COLOR,
-              background: 'rgba(245, 158, 11, 0.2)',
-              padding: '4px 12px',
-              borderRadius: '12px'
-            }}>
-              🔒 Hidden User Mode
-            </span>
-          )}
         </div>
       </div>
 
@@ -1450,24 +638,6 @@ export default function AdminPanelSection() {
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
                 gap: '15px' 
               }}>
-                <button 
-                  onClick={() => setShowTaskModal(true)}
-                  style={{
-                    background: 'rgba(139, 92, 246, 0.2)',
-                    color: 'white',
-                    border: '1px solid rgba(139, 92, 246, 0.4)',
-                    padding: '15px',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <span>➕</span> Create Task
-                </button>
                 <button 
                   onClick={() => setActiveTab('management')}
                   style={{
@@ -1734,110 +904,23 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Tests Tab */}
-        {activeTab === 'tests' && (
+        {/* Management Tab */}
+        {activeTab === 'management' && (
+          <TeamManagementContent users={users} currentUser={currentUser} />
+        )}
+
+        {/* Other tabs can be added back as needed */}
+        {activeTab === 'maintenance' && (
           <div style={{
             background: 'rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '25px',
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
-            <h4 style={{ 
-              color: 'white', 
-              margin: '0 0 20px 0',
-              fontSize: '1.2rem'
-            }}>
-              🎯 Test Results & Performance
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {testResults.map((userResult, userIndex) => (
-                <div 
-                  key={userResult.email}
-                  style={{
-                    padding: '20px',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <h5 style={{ color: SECTION_COLOR, margin: '0 0 15px 0', fontSize: '1.1rem', fontWeight: 600 }}>
-                    {userResult.user.name} - {userResult.user.position}
-                  </h5>
-                  
-                  {Object.keys(userResult.results).length === 0 ? (
-                    <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic' }}>
-                      No test results available
-                    </p>
-                  ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                      {Object.entries(userResult.results).map(([testName, result], testIndex) => (
-                        <div 
-                          key={testName}
-                          style={{
-                            padding: '15px',
-                            background: 'rgba(255, 255, 255, 0.08)',
-                            borderRadius: '8px',
-                            border: `1px solid ${result.passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
-                          }}
-                        >
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            marginBottom: '8px'
-                          }}>
-                            <span style={{ 
-                              color: 'white', 
-                              fontWeight: '600',
-                              fontSize: '0.9rem'
-                            }}>
-                              {testName}
-                            </span>
-                            <span style={{ 
-                              padding: '2px 8px', 
-                              borderRadius: '10px', 
-                              fontSize: '0.7rem',
-                              fontWeight: 'bold',
-                              background: result.passed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                              color: result.passed ? SUCCESS_COLOR : DANGER_COLOR
-                            }}>
-                              {result.passed ? 'PASS' : 'FAIL'}
-                            </span>
-                          </div>
-                          <div style={{ 
-                            color: 'rgba(255, 255, 255, 0.8)', 
-                            fontSize: '0.8rem',
-                            marginBottom: '5px'
-                          }}>
-                            Score: {result.score}/{result.total} ({result.percentage}%)
-                          </div>
-                          <div style={{ 
-                            color: 'rgba(255, 255, 255, 0.6)', 
-                            fontSize: '0.7rem'
-                          }}>
-                            {new Date(result.date).toLocaleDateString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <p style={{ color: 'white', textAlign: 'center' }}>Maintenance section coming soon...</p>
           </div>
         )}
 
-        {/* Management Tab */}
-        {activeTab === 'management' && (
-          <TeamManagementContent users={users} currentUser={currentUser} />
-        )}
-
-        {/* Maintenance Tab */}
-        {activeTab === 'maintenance' && (
-          <MaintenanceTicketsContent />
-        )}
-
-        {/* Events Tab */}
         {activeTab === 'events' && (
           <div style={{
             background: 'rgba(255, 255, 255, 0.08)',
@@ -1849,7 +932,6 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Tasks Tab */}
         {activeTab === 'tasks' && (
           <div style={{
             background: 'rgba(255, 255, 255, 0.08)',
@@ -1861,13 +943,6 @@ export default function AdminPanelSection() {
           </div>
         )}
       </div>
-
-      {/* Task Creation Modal */}
-      <TaskCreationModal 
-        isOpen={showTaskModal}
-        onClose={() => setShowTaskModal(false)}
-        onTaskCreated={loadAllData}
-      />
     </div>
   );
 }
