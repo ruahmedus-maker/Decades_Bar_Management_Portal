@@ -26,22 +26,23 @@ export const isAdmin = (user: User | null): boolean => {
 };
 
 // Convert Auth user to our User type
-const convertToAuthUser = (authUser: any, userMetadata: any): AuthUser => {
+const convertToAuthUser = (authUser: any, userData: any): AuthUser => {
   return {
-    id: authUser.id,
-    name: userMetadata?.name || authUser.email?.split('@')[0] || 'User',
-    email: authUser.email || '',
-    position: userMetadata?.position || 'Trainee',
-    status: userMetadata?.status || 'active',
-    progress: userMetadata?.progress || 0,
-    acknowledged: userMetadata?.acknowledged || false,
-    acknowledgementDate: userMetadata?.acknowledgementDate || null,
-    registeredDate: authUser.created_at || new Date().toISOString(),
-    lastActive: userMetadata?.lastActive || new Date().toISOString(),
-    loginCount: userMetadata?.loginCount || 0,
-    visitedSections: userMetadata?.visitedSections || [],
-    testResults: userMetadata?.testResults || {},
-    sectionVisits: userMetadata?.sectionVisits || {}
+    id: userData?.id || authUser.id,  // Use users.id as primary ID
+    auth_id: authUser.id,  // Reference to auth user
+    name: userData?.name || 'User',
+    email: userData?.email || authUser.email || '',
+    position: userData?.position || 'Trainee',
+    status: userData?.status || 'active',
+    progress: userData?.progress || 0,
+    acknowledged: userData?.acknowledged || false,
+    acknowledgementDate: userData?.acknowledgement_date || null,
+    registeredDate: userData?.registered_date || new Date().toISOString(),
+    lastActive: userData?.last_active || new Date().toISOString(),
+    loginCount: userData?.login_count || 0,
+    visitedSections: userData?.visited_sections || [],
+    testResults: userData?.test_results || {},
+    sectionVisits: userData?.section_visits || {}
   };
 };
 // SIMPLE: Just initialize with basic check
@@ -74,6 +75,8 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 };
 
 // SIMPLE: Sign up
+// In lib/supabase-auth.ts
+// In lib/supabase-auth.ts - FIXED signUpWithEmail
 export const signUpWithEmail = async (
   email: string, 
   password: string, 
@@ -86,7 +89,7 @@ export const signUpWithEmail = async (
   try {
     console.log(`👤 Registering: ${email}`);
     
-    // Validation
+    // Validation (keep your existing code)
     if (!userData.code) throw new Error('Registration code is required');
     if (!APPROVED_CODES.includes(userData.code)) throw new Error('Invalid registration code');
     if (userData.position === 'Admin' && !ADMIN_CODES.includes(userData.code)) {
@@ -96,7 +99,7 @@ export const signUpWithEmail = async (
     const strengthError = validatePasswordStrength(password);
     if (strengthError) throw new Error(strengthError);
 
-    // Create user in Supabase Auth ONLY
+    // 1. Create user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -111,7 +114,46 @@ export const signUpWithEmail = async (
     if (error) throw error;
     if (!data.user) throw new Error('No user created');
 
-    const authUser = convertToAuthUser(data.user, data.user.user_metadata);
+    // 2. ✅ CRITICAL: Create record in users table for relationships
+    const { error: profileError } = await supabase
+      .from('users')
+      .insert({
+        auth_id: data.user.id,
+        email: data.user.email,
+        name: userData.name,
+        position: userData.position,
+        status: 'active',
+        progress: 0,
+        acknowledged: false,
+        acknowledgement_date: null,
+        registered_date: new Date().toISOString(),
+        last_active: new Date().toISOString(),
+        login_count: 0,
+        visited_sections: [],
+        test_results: {},
+        section_visits: {}
+      });
+
+    if (profileError) {
+      console.error('Error creating user profile:', profileError);
+      // Optional: Delete the auth user if profile creation fails
+      await supabase.auth.admin.deleteUser(data.user.id);
+      throw new Error('Failed to create user profile');
+    }
+
+    // ✅ FIX: Fetch the user data from users table instead of using metadata
+    const { data: userDataFromTable, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', data.user.id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching new user data:', fetchError);
+      throw new Error('User created but failed to fetch user data');
+    }
+
+    const authUser = convertToAuthUser(data.user, userDataFromTable);
     console.log(`✅ Registered: ${authUser.name}`);
     
     return { user: authUser, error: null };
@@ -141,7 +183,19 @@ export const getCurrentSession = async (): Promise<AuthUser | null> => {
       return null;
     }
 
-    return convertToAuthUser(session.user, session.user.user_metadata);
+    // ✅ Get user data from users table instead of metadata
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', session.user.id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user data in getCurrentSession:', error);
+      return null;
+    }
+
+    return convertToAuthUser(session.user, userData);
   } catch (error) {
     console.error('Error getting current session:', error);
     return null;
@@ -154,7 +208,20 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
     console.log(`🔄 Auth state: ${event}`);
     
     if (event === 'SIGNED_IN' && session?.user) {
-      const user = convertToAuthUser(session.user, session.user.user_metadata);
+      // ✅ Get user data from users table
+      const { data: userData, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', session.user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user data in auth state change:', error);
+        callback(null);
+        return;
+      }
+
+      const user = convertToAuthUser(session.user, userData);
       callback(user);
     } else if (event === 'SIGNED_OUT') {
       callback(null);
@@ -280,30 +347,6 @@ export const updateUserProgress = async (progress: number): Promise<void> => {
   }
 };
 
-// Track section visit - USING USER METADATA
-export const trackSectionVisit = async (sectionId: string): Promise<void> => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) throw new Error('No user logged in');
-
-    const currentSections = user.user_metadata?.visitedSections || [];
-    const updatedSections = Array.from(new Set([...currentSections, sectionId]));
-
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        ...user.user_metadata,
-        visitedSections: updatedSections,
-        lastActive: new Date().toISOString()
-      }
-    });
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Error tracking section visit:', error);
-    throw error;
-  }
-};
 
 // Submit acknowledgement - USING USER METADATA
 export const submitAcknowledgement = async (): Promise<void> => {
@@ -346,16 +389,62 @@ export const getUserByEmail = async (email: string): Promise<AuthUser | null> =>
 };
 
 // Get current user - SIMPLIFIED
+// In lib/supabase-auth.ts - Update getCurrentUser
 export const getCurrentUser = async (): Promise<AuthUser | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) return null;
 
-    return convertToAuthUser(user, user.user_metadata);
+    // ✅ Get user data from users table
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user data:', error);
+      return null;
+    }
+
+    return convertToAuthUser(user, userData);
   } catch (error) {
     console.error('Error getting current user:', error);
     return null;
+  }
+};
+
+// Update progress tracking to use users table
+export const trackSectionVisit = async (sectionId: string): Promise<void> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) throw new Error('No user logged in');
+
+    // Get current user data
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('visited_sections')
+      .eq('auth_id', user.id)
+      .single();
+
+    const currentSections = currentUser?.visited_sections || [];
+    const updatedSections = Array.from(new Set([...currentSections, sectionId]));
+
+    // Update users table
+    const { error } = await supabase
+      .from('users')
+      .update({
+        visited_sections: updatedSections,
+        last_active: new Date().toISOString()
+      })
+      .eq('auth_id', user.id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error tracking section visit:', error);
+    throw error;
   }
 };
 
