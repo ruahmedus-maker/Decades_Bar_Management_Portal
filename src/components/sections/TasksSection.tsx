@@ -9,10 +9,8 @@ import { supabase } from '@/lib/supabase';
 const SECTION_COLOR = '#3B82F6'; // Blue color for tasks
 const SECTION_COLOR_RGB = '59, 130, 246';
 
-// Animated Card Component with Colored Glow Effects
+// Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   // Different glow colors for different cards - blue theme for tasks
   const glowColors = [
     'linear-gradient(45deg, #3B82F6, #60A5FA, transparent)',
@@ -28,40 +26,15 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(59, 130, 246, 0.1)' 
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        backdropFilter: 'blur(12px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Colored Glow Effect */}
-      {isHovered && (
-        <div style={{
-          position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '18px',
-          background: glowColor,
-          zIndex: 0,
-          opacity: 0.7,
-          animation: 'pulse 2s infinite'
-        }} />
-      )}
-      
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
@@ -115,7 +88,6 @@ export default function TasksSection() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [priorityFilter, setPriorityFilter] = useState<'all' | Task['priority']>('all');
-  const [isHovered, setIsHovered] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Load tasks from Supabase
@@ -257,22 +229,14 @@ export default function TasksSection() {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(15px) saturate(170%)',
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: isHovered 
-          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(59, 130, 246, 0.15)'
-          : '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
         animation: 'fadeIn 0.5s ease'
       }}
       className="active"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       
       {/* Section Header */}
@@ -351,8 +315,7 @@ export default function TasksSection() {
               padding: '20px',
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
+              border: '1px solid rgba(255, 255, 255, 0.15)'
             }}>
               <h4 style={{ margin: 0, color: '#d69e2e', fontSize: '1.8rem' }}>{tasks.length}</h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Total Tasks</p>
@@ -362,8 +325,7 @@ export default function TasksSection() {
               padding: '20px',
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
+              border: '1px solid rgba(255, 255, 255, 0.15)'
             }}>
               <h4 style={{ margin: 0, color: '#e53e3e', fontSize: '1.8rem' }}>{pendingTasksCount}</h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Pending</p>
@@ -373,8 +335,7 @@ export default function TasksSection() {
               padding: '20px',
               background: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
+              border: '1px solid rgba(255, 255, 255, 0.15)'
             }}>
               <h4 style={{ margin: 0, color: '#38a169', fontSize: '1.8rem' }}>{completedTasksCount}</h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Completed</p>
@@ -447,18 +408,9 @@ export default function TasksSection() {
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontWeight: '600',
-                  transition: 'all 0.3s ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = `0 6px 20px rgba(${SECTION_COLOR_RGB}, 0.4)`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 🔄 Refresh
@@ -512,14 +464,7 @@ export default function TasksSection() {
                       key={task.id} 
                       style={{ 
                         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.3s ease',
                         background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent';
                       }}
                     >
                       <td style={{ padding: '15px' }}>
@@ -594,16 +539,7 @@ export default function TasksSection() {
                             cursor: 'pointer',
                             fontSize: '0.8rem',
                             fontWeight: '600',
-                            transition: 'all 0.3s ease',
                             minWidth: '140px'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'scale(1.05)';
-                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
                           {task.completed ? '↶ Mark Pending' : '✓ Mark Complete'}
