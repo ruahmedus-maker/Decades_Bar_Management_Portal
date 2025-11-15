@@ -75,8 +75,8 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 };
 
 
+
 // In lib/supabase-auth.ts - UPDATED with delay
-// In lib/supabase-auth.ts - COMPLETE REWRITE with delay and session handling
 export const signUpWithEmail = async (
   email: string, 
   password: string, 
@@ -126,21 +126,7 @@ export const signUpWithEmail = async (
       email: data.user.email 
     });
 
-    // 🔄 ADDED: Set session if available (this was the session issue I mentioned)
-    if (data.session) {
-      console.log('🔐 [SESSION] Setting auth session...');
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-      });
-      if (sessionError) {
-        console.error('❌ [SESSION ERROR] Failed to set session:', sessionError);
-      } else {
-        console.log('✅ [SESSION] Session established successfully');
-      }
-    }
-
-    // 🔄 ADDED DELAY: Wait for auth user to be fully created
+    // 🔄 ADDED DELAY HERE - Wait for auth user to be fully created
     console.log('⏳ Waiting for auth user to be fully processed...');
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('✅ Delay complete, proceeding to users table insert...');
