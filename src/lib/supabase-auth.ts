@@ -74,9 +74,9 @@ export const signInWithEmail = async (email: string, password: string): Promise<
   }
 };
 
-// SIMPLE: Sign up
-// In lib/supabase-auth.ts
-// In lib/supabase-auth.ts - FIXED signUpWithEmail
+
+// In lib/supabase-auth.ts - UPDATED with delay
+// In lib/supabase-auth.ts - COMPLETE REWRITE with delay and session handling
 export const signUpWithEmail = async (
   email: string, 
   password: string, 
@@ -87,9 +87,9 @@ export const signUpWithEmail = async (
   }
 ): Promise<AuthResponse> => {
   try {
-    console.log(`👤 Registering: ${email}`);
-    
-    // Validation (keep your existing code)
+    console.log('🔍 [REGISTRATION START]', { email, name: userData.name });
+
+    // Validation
     if (!userData.code) throw new Error('Registration code is required');
     if (!APPROVED_CODES.includes(userData.code)) throw new Error('Invalid registration code');
     if (userData.position === 'Admin' && !ADMIN_CODES.includes(userData.code)) {
@@ -100,6 +100,7 @@ export const signUpWithEmail = async (
     if (strengthError) throw new Error(strengthError);
 
     // 1. Create user in Supabase Auth
+    console.log('📝 [STEP 1] Creating auth user...');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -111,11 +112,49 @@ export const signUpWithEmail = async (
       }
     });
 
-    if (error) throw error;
-    if (!data.user) throw new Error('No user created');
+    if (error) {
+      console.error('❌ [AUTH ERROR] Auth user creation failed:', error);
+      throw error;
+    }
+    if (!data.user) {
+      console.error('❌ [AUTH ERROR] No user data returned');
+      throw new Error('No user data returned');
+    }
 
-    // 2. ✅ CRITICAL: Create record in users table for relationships
-    const { error: profileError } = await supabase
+    console.log('✅ [STEP 1 COMPLETE] Auth user created:', { 
+      id: data.user.id, 
+      email: data.user.email 
+    });
+
+    // 🔄 ADDED: Set session if available (this was the session issue I mentioned)
+    if (data.session) {
+      console.log('🔐 [SESSION] Setting auth session...');
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
+      if (sessionError) {
+        console.error('❌ [SESSION ERROR] Failed to set session:', sessionError);
+      } else {
+        console.log('✅ [SESSION] Session established successfully');
+      }
+    }
+
+    // 🔄 ADDED DELAY: Wait for auth user to be fully created
+    console.log('⏳ Waiting for auth user to be fully processed...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('✅ Delay complete, proceeding to users table insert...');
+
+    // 2. Create record in users table
+    console.log('📝 [STEP 2] Creating users table record...');
+    console.log('🔍 [INSERT DATA]', {
+      auth_id: data.user.id,
+      email: data.user.email,
+      name: userData.name,
+      position: userData.position
+    });
+
+    const { data: insertData, error: profileError } = await supabase
       .from('users')
       .insert({
         auth_id: data.user.id,
@@ -132,16 +171,33 @@ export const signUpWithEmail = async (
         visited_sections: [],
         test_results: {},
         section_visits: {}
-      });
+      })
+      .select();
 
     if (profileError) {
-      console.error('Error creating user profile:', profileError);
-      // Optional: Delete the auth user if profile creation fails
-      await supabase.auth.admin.deleteUser(data.user.id);
-      throw new Error('Failed to create user profile');
+      console.error('❌ [USERS TABLE ERROR] Insert failed:', profileError);
+      console.error('❌ [ERROR DETAILS]', {
+        message: profileError.message,
+        details: profileError.details,
+        hint: profileError.hint,
+        code: profileError.code
+      });
+      
+      // Try to delete the auth user if profile creation fails
+      try {
+        await supabase.auth.admin.deleteUser(data.user.id);
+        console.log('🗑️ [ROLLBACK] Auth user deleted');
+      } catch (deleteError) {
+        console.error('❌ [ROLLBACK ERROR] Failed to delete auth user:', deleteError);
+      }
+      
+      throw new Error(`Failed to create user profile: ${profileError.message}`);
     }
 
-    // ✅ FIX: Fetch the user data from users table instead of using metadata
+    console.log('✅ [STEP 2 COMPLETE] Users table record created:', insertData);
+
+    // 3. Verify the record was actually created
+    console.log('📝 [STEP 3] Verifying users table record...');
     const { data: userDataFromTable, error: fetchError } = await supabase
       .from('users')
       .select('*')
@@ -149,17 +205,28 @@ export const signUpWithEmail = async (
       .single();
 
     if (fetchError) {
-      console.error('Error fetching new user data:', fetchError);
-      throw new Error('User created but failed to fetch user data');
+      console.error('❌ [VERIFICATION ERROR] Failed to fetch user data:', fetchError);
+      throw new Error('User created but verification failed');
     }
 
+    if (!userDataFromTable) {
+      console.error('❌ [VERIFICATION ERROR] No data returned from verification query');
+      throw new Error('User created but verification returned no data');
+    }
+
+    console.log('✅ [STEP 3 COMPLETE] User data verified:', userDataFromTable);
+
     const authUser = convertToAuthUser(data.user, userDataFromTable);
-    console.log(`✅ Registered: ${authUser.name}`);
+    console.log('🎉 [REGISTRATION COMPLETE]', { 
+      name: authUser.name, 
+      email: authUser.email,
+      id: authUser.id 
+    });
     
     return { user: authUser, error: null };
 
   } catch (error: any) {
-    console.error(`❌ Registration failed:`, error);
+    console.error('💥 [REGISTRATION FAILED]', error);
     return { user: null, error: error.message || 'Registration failed' };
   }
 };
