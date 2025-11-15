@@ -6,7 +6,7 @@ import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
 import TasksSection from './TasksSection';
 import { supabase } from '@/lib/supabase';
-import { getAllUsers, updateUser } from '@/lib/auth';
+import { getAllUsers, updateUser } from '@/lib/supabase-auth';
 import { getProgressBreakdown } from '@/lib/progress';
 
 // Modern color theme for admin panel
@@ -452,21 +452,21 @@ function MaintenanceTicketsContent() {
         return;
       }
 
-      // Convert Supabase data to our MaintenanceTicket type
+      // ✅ FIXED: Use the correct field names that match your database
       const convertedTickets: MaintenanceTicket[] = (data || []).map((ticket: any) => ({
         id: ticket.id,
         floor: ticket.floor,
         location: ticket.location,
         title: ticket.title,
         description: ticket.description,
-        reportedBy: ticket.reported_by,
-        reportedByEmail: ticket.reported_by_email,
+        reported_by: ticket.reported_by, // ✅ Use snake_case to match database
+        reported_by_email: ticket.reported_by_email, // ✅ Use snake_case to match database
         status: ticket.status,
         priority: ticket.priority,
-        assignedTo: ticket.assigned_to,
+        assigned_to: ticket.assigned_to, // ✅ Use snake_case to match database
         notes: ticket.notes,
-        createdAt: ticket.created_at,
-        updatedAt: ticket.updated_at
+        created_at: ticket.created_at, // ✅ Use snake_case to match database
+        updated_at: ticket.updated_at // ✅ Use snake_case to match database
       }));
 
       setTickets(convertedTickets);
@@ -829,12 +829,12 @@ function MaintenanceTicketsContent() {
                   borderTop: '1px solid rgba(255, 255, 255, 0.1)'
                 }}>
                   <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-  <div><strong>Reported by:</strong> {ticket.reported_by || 'Unknown'}</div>
-  <div><strong>Date:</strong> {new Date(ticket.created_at).toLocaleDateString()}</div>
-  {ticket.assigned_to && (
-    <div><strong>Assigned to:</strong> {ticket.assigned_to}</div>
-  )}
-</div>
+                    <div><strong>Reported by:</strong> {ticket.reported_by || 'Unknown'}</div>
+                    <div><strong>Date:</strong> {new Date(ticket.created_at).toLocaleDateString()}</div>
+                    {ticket.assigned_to && (
+                      <div><strong>Assigned to:</strong> {ticket.assigned_to}</div>
+                    )}
+                  </div>
                   
                   <div style={{ display: 'flex', gap: '10px' }}>
                     {ticket.status === 'open' && (
@@ -918,6 +918,210 @@ function MaintenanceTicketsContent() {
   );
 }
 
+// Team Management Component
+function TeamManagementContent({ users, currentUser }: { users: User[], currentUser: User | null }) {
+  const { showToast } = useApp();
+
+  const handleUpdateUserRole = async (email: string, newPosition: 'Bartender' | 'Admin' | 'Trainee') => {
+    try {
+      await updateUser(email, { position: newPosition });
+      showToast(`Updated ${email} to ${newPosition}`);
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      showToast('Error updating user role');
+    }
+  };
+
+  const handleToggleUserStatus = async (user: User) => {
+    const newStatus = user.status === 'active' ? 'blocked' : 'active';
+    try {
+      await updateUser(user.email, { status: newStatus });
+      showToast(`${user.name} has been ${newStatus === 'active' ? 'unblocked' : 'blocked'}`);
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      showToast('Error updating user status');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '16px',
+        padding: '25px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <h4 style={{ 
+          color: 'white', 
+          margin: '0 0 20px 0',
+          fontSize: '1.2rem'
+        }}>
+          👥 Team Management ({users.length} users)
+        </h4>
+
+        {users.length === 0 ? (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px',
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontStyle: 'italic'
+          }}>
+            No users found.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {users.map((user, index) => (
+              <div 
+                key={user.email}
+                style={{
+                  padding: '20px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  transition: 'all 0.3s ease',
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <h5 style={{ 
+                      color: SECTION_COLOR, 
+                      margin: '0 0 8px 0',
+                      fontSize: '1.1rem',
+                      fontWeight: 600
+                    }}>
+                      {user.name}
+                      {user.email === currentUser?.email && (
+                        <span style={{ 
+                          marginLeft: '10px',
+                          fontSize: '0.7rem',
+                          background: 'rgba(37, 99, 235, 0.3)',
+                          color: 'white',
+                          padding: '2px 8px',
+                          borderRadius: '8px'
+                        }}>
+                          You
+                        </span>
+                      )}
+                    </h5>
+                    <p style={{ 
+                      color: 'rgba(255, 255, 255, 0.7)', 
+                      margin: 0,
+                      fontSize: '0.9rem'
+                    }}>
+                      {user.email}
+                    </p>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '10px', 
+                      marginTop: '10px',
+                      flexWrap: 'wrap'
+                    }}>
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '6px', 
+                        fontSize: '0.7rem',
+                        fontWeight: 'bold',
+                        background: 
+                          user.position === 'Admin' ? 'rgba(139, 92, 246, 0.2)' :
+                          user.position === 'Bartender' ? 'rgba(37, 99, 235, 0.2)' :
+                          'rgba(245, 158, 11, 0.2)',
+                        color: 
+                          user.position === 'Admin' ? ACCENT_COLOR :
+                          user.position === 'Bartender' ? SECTION_COLOR :
+                          WARNING_COLOR
+                      }}>
+                        {user.position}
+                      </span>
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '6px', 
+                        fontSize: '0.7rem',
+                        fontWeight: 'bold',
+                        background: user.status === 'active' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: user.status === 'active' ? SUCCESS_COLOR : DANGER_COLOR
+                      }}>
+                        {user.status === 'active' ? 'Active' : 'Blocked'}
+                      </span>
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '6px', 
+                        fontSize: '0.7rem',
+                        fontWeight: 'bold',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                      }}>
+                        Progress: {user.progress || 0}%
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    {/* Role Dropdown */}
+                    <select
+                      value={user.position}
+                      onChange={(e) => handleUpdateUserRole(user.email, e.target.value as any)}
+                      disabled={user.email === currentUser?.email}
+                      style={{ 
+                        padding: '6px 10px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '6px',
+                        color: 'white',
+                        backdropFilter: 'blur(10px)',
+                        fontSize: '0.8rem',
+                        minWidth: '120px'
+                      }}
+                    >
+                      <option value="Bartender">Bartender</option>
+                      <option value="Admin">Admin</option>
+                      <option value="Trainee">Trainee</option>
+                    </select>
+                    
+                    {/* Status Toggle */}
+                    <button 
+                      onClick={() => handleToggleUserStatus(user)}
+                      disabled={user.email === currentUser?.email}
+                      style={{
+                        background: user.status === 'active' ? DANGER_COLOR : SUCCESS_COLOR,
+                        color: 'white',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        cursor: user.email === currentUser?.email ? 'not-allowed' : 'pointer',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease',
+                        opacity: user.email === currentUser?.email ? 0.5 : 1
+                      }}
+                    >
+                      {user.status === 'active' ? 'Block' : 'Unblock'}
+                    </button>
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  fontSize: '0.8rem',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  marginTop: '10px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  paddingTop: '10px'
+                }}>
+                  <span>Registered: {new Date(user.registeredDate).toLocaleDateString()}</span>
+                  <span>Last active: {user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPanelSection() {
   const { isAdmin: userIsAdmin, showToast, currentUser } = useApp();
   const [users, setUsers] = useState<User[]>([]);
@@ -969,14 +1173,14 @@ export default function AdminPanelSection() {
         return !HIDDEN_USERS.includes(user.email);
       });
       
+      setUsers(filteredUsers);
+
       // Filter to only show bartenders and trainees (not admins) in progress/management
       const bartendersAndTrainees = filteredUsers.filter(user => 
         user.position === 'Bartender' || user.position === 'Trainee'
       );
       
-      setUsers(bartendersAndTrainees);
-
-      // Load user progress
+      // Load user progress for bartenders and trainees only
       const progressData: UserProgress[] = await Promise.all(
         bartendersAndTrainees.map(async (user) => {
           const progress = await getProgressBreakdown(user.email);
@@ -993,7 +1197,7 @@ export default function AdminPanelSection() {
       );
       setUserProgress(progressData);
 
-      // Load test results
+      // Load test results for bartenders and trainees only
       const testData = bartendersAndTrainees.map(user => {
         const results = user.testResults || {};
         return { email: user.email, user, results };
@@ -1009,16 +1213,14 @@ export default function AdminPanelSection() {
         .from('tasks')
         .select('completed');
 
-      // Fix for pendingTickets
-const pendingTickets = (maintenanceTickets || []).filter((t: any) => 
-  t.status === 'open' || t.status === 'assigned'
-).length;
+      const pendingTickets = (maintenanceTickets || []).filter((t: any) => 
+        t.status === 'open' || t.status === 'assigned'
+      ).length;
 
-// Fix for completedTasks  
-const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
+      const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
 
       setQuickStats({
-        totalUsers: bartendersAndTrainees.length,
+        totalUsers: filteredUsers.length,
         activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
         pendingTickets,
         completedTasks,
@@ -1714,127 +1916,7 @@ const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
 
         {/* Management Tab */}
         {activeTab === 'management' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '16px',
-              padding: '25px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h4 style={{ 
-                color: 'white', 
-                margin: '0 0 20px 0',
-                fontSize: '1.2rem'
-              }}>
-                👥 User Management
-              </h4>
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <input
-                  type="email"
-                  placeholder="Enter email to block"
-                  value={blockEmail}
-                  onChange={(e) => setBlockEmail(e.target.value)}
-                  style={{
-                    flex: 1,
-                    minWidth: '200px',
-                    padding: '12px 15px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '8px',
-                    color: 'white',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <button 
-                  onClick={handleBlockUser}
-                  disabled={!blockEmail || blockEmail === currentUser?.email}
-                  style={{
-                    background: blockEmail && blockEmail !== currentUser?.email ? DANGER_COLOR : 'rgba(239, 68, 68, 0.5)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    cursor: blockEmail && blockEmail !== currentUser?.email ? 'pointer' : 'not-allowed',
-                    fontWeight: '600',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  🚫 Block User
-                </button>
-              </div>
-            </div>
-
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '16px',
-              padding: '25px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h4 style={{ 
-                color: 'white', 
-                margin: '0 0 20px 0',
-                fontSize: '1.2rem'
-              }}>
-                🚫 Blocked Users ({blockedUsers.length})
-              </h4>
-              {blockedUsers.length === 0 ? (
-                <div style={{ 
-                  textAlign: 'center', 
-                  padding: '40px',
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontStyle: 'italic'
-                }}>
-                  No users are currently blocked.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {blockedUsers.map((user, index) => (
-                    <div 
-                      key={user.email}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '15px',
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        borderRadius: '8px',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <div>
-                        <div style={{ color: 'white', fontWeight: 600 }}>{user.name}</div>
-                        <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem' }}>
-                          {user.email} • {user.position}
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => handleUnblockUser(user.email)}
-                        style={{
-                          background: SUCCESS_COLOR,
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          fontWeight: '600',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        Unblock
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <TeamManagementContent users={users} currentUser={currentUser} />
         )}
 
         {/* Maintenance Tab */}
