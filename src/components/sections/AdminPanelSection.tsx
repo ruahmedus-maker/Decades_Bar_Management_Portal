@@ -54,8 +54,6 @@ const HIDDEN_USERS = [
 
 // Enhanced Card Component
 function AdminCard({ title, value, change, icon, color, onClick }: any) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div 
       style={{
@@ -65,13 +63,8 @@ function AdminCard({ title, value, change, icon, color, onClick }: any) {
         border: `1px solid rgba(255, 255, 255, 0.15)`,
         backdropFilter: 'blur(10px)',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        boxShadow: isHovered ? `0 10px 30px rgba(${color}, 0.3)` : 'none',
         borderLeft: `4px solid ${color}`
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -211,7 +204,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 1000,
-      backdropFilter: 'blur(5px)'
     }}>
       <div style={{
         background: 'rgba(30, 41, 59, 0.95)',
@@ -220,7 +212,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
         width: '90%',
         maxWidth: '500px',
         border: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-        backdropFilter: 'blur(20px)',
         boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
       }}>
         <div style={{
@@ -269,7 +260,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 color: 'white',
-                backdropFilter: 'blur(10px)'
               }}
               required
             />
@@ -296,7 +286,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 color: 'white',
-                backdropFilter: 'blur(10px)',
                 resize: 'vertical'
               }}
             />
@@ -322,7 +311,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderRadius: '8px',
                   color: 'white',
-                  backdropFilter: 'blur(10px)'
                 }}
                 required
               >
@@ -354,7 +342,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderRadius: '8px',
                   color: 'white',
-                  backdropFilter: 'blur(10px)'
                 }}
                 required
               >
@@ -385,7 +372,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 color: 'white',
-                backdropFilter: 'blur(10px)'
               }}
             />
           </div>
@@ -402,7 +388,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: '600',
-                transition: 'all 0.3s ease'
               }}
             >
               Cancel
@@ -418,7 +403,6 @@ function TaskCreationModal({ isOpen, onClose, onTaskCreated }: any) {
                 borderRadius: '8px',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 fontWeight: '600',
-                transition: 'all 0.3s ease'
               }}
             >
               {isSubmitting ? 'Creating...' : 'Create Task'}
@@ -459,14 +443,14 @@ function MaintenanceTicketsContent() {
         location: ticket.location,
         title: ticket.title,
         description: ticket.description,
-        reported_by: ticket.reported_by, // ✅ Use snake_case to match database
-        reported_by_email: ticket.reported_by_email, // ✅ Use snake_case to match database
+        reported_by: ticket.reported_by,
+        reported_by_email: ticket.reported_by_email,
         status: ticket.status,
         priority: ticket.priority,
-        assigned_to: ticket.assigned_to, // ✅ Use snake_case to match database
+        assigned_to: ticket.assigned_to,
         notes: ticket.notes,
-        created_at: ticket.created_at, // ✅ Use snake_case to match database
-        updated_at: ticket.updated_at // ✅ Use snake_case to match database
+        created_at: ticket.created_at,
+        updated_at: ticket.updated_at
       }));
 
       setTickets(convertedTickets);
@@ -601,7 +585,6 @@ function MaintenanceTicketsContent() {
           borderRadius: '12px',
           padding: '40px',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          backdropFilter: 'blur(10px)',
           textAlign: 'center',
           color: 'white'
         }}>
@@ -653,7 +636,6 @@ function MaintenanceTicketsContent() {
         borderRadius: '12px',
         padding: '20px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(10px)'
       }}>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div>
@@ -668,7 +650,6 @@ function MaintenanceTicketsContent() {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 color: 'white',
-                backdropFilter: 'blur(10px)',
                 minWidth: '150px'
               }}
             >
@@ -685,18 +666,6 @@ function MaintenanceTicketsContent() {
             marginLeft: 'auto',
             alignItems: 'center'
           }}>
-            <span style={{
-              background: 'linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.1))',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '0.8rem',
-              color: '#2DD4BF',
-              fontWeight: 'bold',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(45, 212, 191, 0.3)'
-            }}>
-              🔄 Cloud Sync Active
-            </span>
             <button 
               onClick={loadTickets}
               style={{ 
@@ -707,7 +676,6 @@ function MaintenanceTicketsContent() {
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: '600',
-                transition: 'all 0.3s ease',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px'
@@ -725,7 +693,6 @@ function MaintenanceTicketsContent() {
         borderRadius: '12px',
         padding: '20px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(10px)'
       }}>
         <h4 style={{ 
           color: 'white', 
@@ -754,18 +721,6 @@ function MaintenanceTicketsContent() {
                   background: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                  transition: 'all 0.3s ease',
-                  backdropFilter: 'blur(10px)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
-                  e.currentTarget.style.borderColor = `rgba(${SECTION_COLOR_RGB}, 0.4)`;
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
@@ -849,7 +804,6 @@ function MaintenanceTicketsContent() {
                           cursor: 'pointer',
                           fontSize: '0.8rem',
                           fontWeight: '600',
-                          transition: 'all 0.3s ease'
                         }}
                       >
                         Assign to Me
@@ -867,7 +821,6 @@ function MaintenanceTicketsContent() {
                           cursor: 'pointer',
                           fontSize: '0.8rem',
                           fontWeight: '600',
-                          transition: 'all 0.3s ease'
                         }}
                       >
                         Mark Completed
@@ -885,7 +838,6 @@ function MaintenanceTicketsContent() {
                           cursor: 'pointer',
                           fontSize: '0.8rem',
                           fontWeight: '600',
-                          transition: 'all 0.3s ease'
                         }}
                       >
                         Close Ticket
@@ -902,7 +854,6 @@ function MaintenanceTicketsContent() {
                         cursor: 'pointer',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        transition: 'all 0.3s ease'
                       }}
                     >
                       Delete Ticket
@@ -922,10 +873,17 @@ function MaintenanceTicketsContent() {
 function TeamManagementContent({ users, currentUser }: { users: User[], currentUser: User | null }) {
   const { showToast } = useApp();
 
+  // Filter to show only Bartenders and Trainees (no Admins)
+  const teamUsers = users.filter(user => 
+    user.position === 'Bartender' || user.position === 'Trainee'
+  );
+
   const handleUpdateUserRole = async (email: string, newPosition: 'Bartender' | 'Admin' | 'Trainee') => {
     try {
       await updateUser(email, { position: newPosition });
       showToast(`Updated ${email} to ${newPosition}`);
+      // Reload the page to reflect changes
+      window.location.reload();
     } catch (error) {
       console.error('Error updating user role:', error);
       showToast('Error updating user role');
@@ -937,6 +895,8 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
     try {
       await updateUser(user.email, { status: newStatus });
       showToast(`${user.name} has been ${newStatus === 'active' ? 'unblocked' : 'blocked'}`);
+      // Reload the page to reflect changes
+      window.location.reload();
     } catch (error) {
       console.error('Error updating user status:', error);
       showToast('Error updating user status');
@@ -950,28 +910,27 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
         borderRadius: '16px',
         padding: '25px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(10px)'
       }}>
         <h4 style={{ 
           color: 'white', 
           margin: '0 0 20px 0',
           fontSize: '1.2rem'
         }}>
-          👥 Team Management ({users.length} users)
+          👥 Team Management ({teamUsers.length} users)
         </h4>
 
-        {users.length === 0 ? (
+        {teamUsers.length === 0 ? (
           <div style={{ 
             textAlign: 'center', 
             padding: '40px',
             color: 'rgba(255, 255, 255, 0.7)',
             fontStyle: 'italic'
           }}>
-            No users found.
+            No bartenders or trainees found.
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {users.map((user, index) => (
+            {teamUsers.map((user, index) => (
               <div 
                 key={user.email}
                 style={{
@@ -979,8 +938,6 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                   background: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                  transition: 'all 0.3s ease',
-                  backdropFilter: 'blur(10px)'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
@@ -1069,13 +1026,11 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         borderRadius: '6px',
                         color: 'white',
-                        backdropFilter: 'blur(10px)',
                         fontSize: '0.8rem',
                         minWidth: '120px'
                       }}
                     >
                       <option value="Bartender">Bartender</option>
-                      <option value="Admin">Admin</option>
                       <option value="Trainee">Trainee</option>
                     </select>
                     
@@ -1092,7 +1047,6 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                         cursor: user.email === currentUser?.email ? 'not-allowed' : 'pointer',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        transition: 'all 0.3s ease',
                         opacity: user.email === currentUser?.email ? 0.5 : 1
                       }}
                     >
@@ -1129,7 +1083,6 @@ export default function AdminPanelSection() {
   const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
   const [blockEmail, setBlockEmail] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events' | 'tasks'>('overview');
-  const [isHovered, setIsHovered] = useState(false);
   const [quickStats, setQuickStats] = useState<QuickStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -1220,7 +1173,7 @@ export default function AdminPanelSection() {
       const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
 
       setQuickStats({
-        totalUsers: filteredUsers.length,
+        totalUsers: bartendersAndTrainees.length, // Only count bartenders/trainees for stats
         activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
         pendingTickets,
         completedTasks,
@@ -1293,7 +1246,6 @@ export default function AdminPanelSection() {
         borderRadius: '20px',
         overflow: 'hidden',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
         padding: '40px',
         textAlign: 'center',
@@ -1312,7 +1264,6 @@ export default function AdminPanelSection() {
         borderRadius: '20px',
         overflow: 'hidden',
         background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
         padding: '40px',
         textAlign: 'center',
@@ -1332,21 +1283,11 @@ export default function AdminPanelSection() {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
-          : '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: isHovered 
-          ? '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(37, 99, 235, 0.15)'
-          : '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)'
+        background: 'rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
       className="active"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       
       {/* Section Header */}
@@ -1354,7 +1295,6 @@ export default function AdminPanelSection() {
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
         padding: '25px',
         borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
-        backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -1387,7 +1327,6 @@ export default function AdminPanelSection() {
             fontSize: '0.9rem',
             color: 'white',
             fontWeight: '600',
-            backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
             Admin Access
@@ -1437,7 +1376,6 @@ export default function AdminPanelSection() {
                 cursor: 'pointer',
                 fontWeight: activeTab === tab.id ? 600 : 500,
                 color: activeTab === tab.id ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
-                transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
                 display: 'flex',
                 alignItems: 'center',
@@ -1445,18 +1383,6 @@ export default function AdminPanelSection() {
                 fontSize: '0.9rem'
               }}
               onClick={() => setActiveTab(tab.id as any)}
-              onMouseEnter={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.color = '#ffffff';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
-                  e.currentTarget.style.background = 'transparent';
-                }
-              }}
             >
               <span>{tab.icon}</span>
               {tab.label}
@@ -1511,7 +1437,6 @@ export default function AdminPanelSection() {
               padding: '25px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               marginBottom: '30px',
-              backdropFilter: 'blur(10px)'
             }}>
               <h4 style={{ 
                 color: 'white', 
@@ -1535,7 +1460,6 @@ export default function AdminPanelSection() {
                     borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
-                    transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -1554,7 +1478,6 @@ export default function AdminPanelSection() {
                     borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
-                    transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -1573,7 +1496,6 @@ export default function AdminPanelSection() {
                     borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
-                    transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -1592,7 +1514,6 @@ export default function AdminPanelSection() {
                     borderRadius: '10px',
                     cursor: 'pointer',
                     fontWeight: '600',
-                    transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -1610,7 +1531,6 @@ export default function AdminPanelSection() {
               borderRadius: '16px',
               padding: '25px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)'
             }}>
               <h4 style={{ 
                 color: 'white', 
@@ -1635,7 +1555,6 @@ export default function AdminPanelSection() {
                         background: 'rgba(255, 255, 255, 0.05)',
                         borderRadius: '10px',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.3s ease'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -1694,7 +1613,6 @@ export default function AdminPanelSection() {
             borderRadius: '16px',
             padding: '25px',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
               <h4 style={{ 
@@ -1715,7 +1633,6 @@ export default function AdminPanelSection() {
                     borderRadius: '8px',
                     cursor: 'pointer',
                     fontWeight: '600',
-                    transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px'
@@ -1745,7 +1662,6 @@ export default function AdminPanelSection() {
                       background: 'rgba(255, 255, 255, 0.06)',
                       borderRadius: '12px',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
-                      transition: 'all 0.3s ease'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
@@ -1798,7 +1714,6 @@ export default function AdminPanelSection() {
                             progress.completionStatus === 'poor' ? DANGER_COLOR :
                             '#718096',
                           width: `${progress.progressPercentage}%`,
-                          transition: 'width 0.5s ease'
                         }} 
                       />
                     </div>
@@ -1826,7 +1741,6 @@ export default function AdminPanelSection() {
             borderRadius: '16px',
             padding: '25px',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)'
           }}>
             <h4 style={{ 
               color: 'white', 
@@ -1844,7 +1758,6 @@ export default function AdminPanelSection() {
                     background: 'rgba(255, 255, 255, 0.06)',
                     borderRadius: '12px',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease'
                   }}
                 >
                   <h5 style={{ color: SECTION_COLOR, margin: '0 0 15px 0', fontSize: '1.1rem', fontWeight: 600 }}>
@@ -1931,7 +1844,6 @@ export default function AdminPanelSection() {
             borderRadius: '16px',
             padding: '25px',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)'
           }}>
             <SpecialEventsSection isAdminView={true} />
           </div>
@@ -1944,7 +1856,6 @@ export default function AdminPanelSection() {
             borderRadius: '16px',
             padding: '25px',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)'
           }}>
             <TasksSection />
           </div>
