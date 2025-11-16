@@ -10,7 +10,7 @@ const SECTION_COLOR = '#3B82F6'; // Blue color for tasks
 const SECTION_COLOR_RGB = '59, 130, 246';
 
 // Card Component without Hover Effects
-function AnimatedCard({ title, description, items, footer, index, children }: any) {
+function AnimatedCard({ title, description, items, footer, children }: any) {
   return (
     <div 
       style={{
@@ -291,7 +291,6 @@ export default function TasksSection() {
         <AnimatedCard
           title="📊 Task Overview"
           description="Current status of all tasks across the venue"
-          index={0}
         >
           <div style={{
             display: 'grid',
@@ -335,7 +334,6 @@ export default function TasksSection() {
         {/* Filters */}
         <AnimatedCard
           title="🔍 Filter Tasks"
-          index={1}
         >
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap', marginTop: '10px' }}>
             <div>
@@ -412,7 +410,6 @@ export default function TasksSection() {
         <AnimatedCard
           title="📋 Task List"
           description={`Showing ${filteredTasks.length} tasks matching your filters`}
-          index={2}
         >
           {filteredTasks.length === 0 ? (
             <div style={{ 
