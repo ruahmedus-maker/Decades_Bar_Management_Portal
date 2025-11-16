@@ -934,13 +934,13 @@ export default function AdminPanelSection() {
 
         {activeTab === 'tasks' && (
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '25px',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-          }}>
-            <TasksSection />
-          </div>
+  background: 'transparent',
+  borderRadius: '0',
+  padding: '0',
+  border: 'none'
+}}>
+  <TasksSection />
+</div>
         )}
       </div>
     </div>
