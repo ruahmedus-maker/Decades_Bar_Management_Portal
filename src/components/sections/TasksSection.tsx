@@ -11,16 +11,6 @@ const SECTION_COLOR_RGB = '59, 130, 246';
 
 // Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: any) {
-  // Different glow colors for different cards - blue theme for tasks
-  const glowColors = [
-    'linear-gradient(45deg, #3B82F6, #60A5FA, transparent)',
-    'linear-gradient(45deg, #60A5FA, #93C5FD, transparent)',
-    'linear-gradient(45deg, #2563EB, #3B82F6, transparent)',
-    'linear-gradient(45deg, #1D4ED8, #3B82F6, transparent)'
-  ];
-
-  const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #60A5FA, transparent)`;
-
   return (
     <div 
       style={{
@@ -233,8 +223,7 @@ export default function TasksSection() {
         backdropFilter: 'blur(15px) saturate(170%)',
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
       className="active"
     >
