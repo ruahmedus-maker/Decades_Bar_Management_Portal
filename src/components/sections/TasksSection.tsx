@@ -5,79 +5,9 @@ import { useApp } from '@/contexts/AppContext';
 import { Task } from '@/types';
 import { supabase } from '@/lib/supabase';
 
-// Define the section color for tasks management
-const SECTION_COLOR = '#3B82F6'; // Blue color for tasks
-const SECTION_COLOR_RGB = '59, 130, 246';
-
-// Card Component without ANY Hover Effects
-function AnimatedCard({ title, description, items, footer, children }: any) {
-  return (
-    <div 
-      style={{
-        borderRadius: '16px',
-        margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
-        border: '1px solid rgba(255, 255, 255, 0.18)',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
-    >
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-          backdropFilter: 'blur(8px)'
-        }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
-            {title}
-          </h4>
-        </div>
-        <div style={{ padding: '20px' }}>
-          {children || (
-            <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
-                {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-        {footer && (
-          <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <span>{footer.left}</span>
-            <span>{footer.right}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function TasksSection() {
-  const { showToast, currentUser } = useApp();
+  const { showToast } = useApp();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
-  const [priorityFilter, setPriorityFilter] = useState<'all' | Task['priority']>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,8 +16,6 @@ export default function TasksSection() {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('Loading tasks for user:', currentUser?.email);
 
       const { data, error } = await supabase
         .from('tasks')
@@ -95,21 +23,11 @@ export default function TasksSection() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Supabase error loading tasks:', error);
-        
-        if (error.code === 'PGRST205') {
-          setError('TASKS_TABLE_NOT_FOUND');
-        } else {
-          setError(`Database error: ${error.message}`);
-        }
-        
-        showToast('Error loading tasks');
+        console.error('Error loading tasks:', error);
+        setError('Tasks table not found - create it in Supabase');
         return;
       }
 
-      console.log('Tasks loaded:', data);
-
-      // Convert Supabase data to our Task type
       const convertedTasks: Task[] = (data || []).map((task: any) => ({
         id: task.id,
         title: task.title,
@@ -124,608 +42,173 @@ export default function TasksSection() {
       }));
 
       setTasks(convertedTasks);
-    } catch (error: any) {
-      console.error('Unexpected error loading tasks:', error);
-      setError(`Unexpected error: ${error.message}`);
-      showToast('Error loading tasks');
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      setError('Failed to load tasks');
     } finally {
       setLoading(false);
     }
   };
 
-  // Set up real-time subscription
   useEffect(() => {
     loadTasks();
-
-    // Subscribe to real-time changes
-    const subscription = supabase
-      .channel('tasks-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks'
-        },
-        () => {
-          console.log('Real-time update received for tasks');
-          loadTasks();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
-
-  const handleUpdateTaskStatus = async (task: Task, completed: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ 
-          completed,
-          completed_at: completed ? new Date().toISOString() : undefined,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', task.id);
-
-      if (error) throw error;
-
-      showToast(`Task marked as ${completed ? 'completed' : 'pending'}!`);
-    } catch (error) {
-      console.error('Error updating task:', error);
-      showToast('Error updating task');
-    }
-  };
-
-  const getPriorityColor = (priority: Task['priority']) => {
-    switch (priority) {
-      case 'high': return '#e53e3e';
-      case 'medium': return '#d69e2e';
-      case 'low': return '#38a169';
-      default: return '#718096';
-    }
-  };
-
-  const filteredTasks = tasks.filter(task => {
-    const statusMatch = filter === 'all' || 
-      (filter === 'pending' && !task.completed) || 
-      (filter === 'completed' && task.completed);
-    
-    const priorityMatch = priorityFilter === 'all' || task.priority === priorityFilter;
-    
-    return statusMatch && priorityMatch;
-  });
-
-  const pendingTasksCount = tasks.filter(task => !task.completed).length;
-  const completedTasksCount = tasks.filter(task => task.completed).length;
 
   if (loading) {
     return (
-      <div 
-        id="tasks-section"
-        style={{
-          marginBottom: '30px',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(15px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-          border: '1px solid rgba(255, 255, 255, 0.22)',
-          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-          padding: '40px',
-          textAlign: 'center',
-          color: 'white'
-        }}
-      >
-        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
+      <div style={{
+        marginBottom: '30px',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <div>⏳</div>
         <h3>Loading Tasks...</h3>
-        <p>Connecting to cloud database</p>
-      </div>
-    );
-  }
-
-  if (error === 'TASKS_TABLE_NOT_FOUND') {
-    return (
-      <div 
-        id="tasks-section"
-        style={{
-          marginBottom: '30px',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(15px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-          border: '1px solid rgba(255, 255, 255, 0.22)',
-          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-          padding: '40px',
-          textAlign: 'center',
-          color: 'white'
-        }}
-      >
-        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>🗃️</div>
-        <h3>Tasks Table Not Found</h3>
-        <p style={{ marginBottom: '20px', lineHeight: '1.6' }}>
-          The tasks table doesn't exist in your Supabase database. You need to create it first.
-        </p>
-        
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.08)', 
-          borderRadius: '12px', 
-          padding: '20px', 
-          marginBottom: '20px',
-          textAlign: 'left'
-        }}>
-          <h4 style={{ color: SECTION_COLOR, margin: '0 0 15px 0' }}>How to fix this:</h4>
-          <ol style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
-            <li style={{ marginBottom: '10px' }}>Go to your Supabase dashboard</li>
-            <li style={{ marginBottom: '10px' }}>Navigate to the SQL Editor</li>
-            <li style={{ marginBottom: '10px' }}>Run this SQL command to create the tasks table:</li>
-          </ol>
-          
-          <pre style={{ 
-            background: 'rgba(0, 0, 0, 0.3)', 
-            padding: '15px', 
-            borderRadius: '8px', 
-            overflow: 'auto',
-            fontSize: '0.8rem',
-            color: '#f8f8f2',
-            marginTop: '15px'
-          }}>
-{`CREATE TABLE tasks (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  assigned_to TEXT,
-  due_date TIMESTAMP WITH TIME ZONE,
-  completed BOOLEAN DEFAULT FALSE,
-  completed_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  event_id UUID,
-  priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high'))
-);`}
-          </pre>
-        </div>
-
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button 
-            onClick={loadTasks}
-            style={{ 
-              background: SECTION_COLOR,
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-          >
-            🔄 Check Again
-          </button>
-          <button 
-            onClick={() => {
-              // Create demo data for testing
-              const demoTasks: Task[] = [
-                {
-                  id: 'demo-1',
-                  title: 'Setup Training Session',
-                  description: 'Organize bartender training for new cocktail menu',
-                  assignedTo: 'Bar Manager',
-                  dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                  completed: false,
-                  createdAt: new Date().toISOString(),
-                  eventId: 'test',
-                  priority: 'high'
-                },
-                {
-                  id: 'demo-2',
-                  title: 'Inventory Check',
-                  description: 'Weekly inventory audit and restocking',
-                  assignedTo: 'Head Bartender',
-                  dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-                  completed: true,
-                  createdAt: new Date().toISOString(),
-                  eventId: 'test1',
-                  priority: 'medium'
-                },
-                {
-                  id: 'demo-3',
-                  title: 'Clean Glassware',
-                  description: 'Ensure all glassware is properly cleaned and polished',
-                  assignedTo: 'Bar Staff',
-                  dueDate: new Date().toISOString(),
-                  completed: false,
-                  createdAt: new Date().toISOString(),
-                  eventId: 'test2',
-                  priority: 'low'
-                }
-              ];
-              setTasks(demoTasks);
-              setError(null);
-            }}
-            style={{ 
-              background: '#10b981',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-          >
-            🧪 Use Demo Data
-          </button>
-        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div 
-        id="tasks-section"
-        style={{
-          marginBottom: '30px',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(15px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-          border: '1px solid rgba(255, 255, 255, 0.22)',
-          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-          padding: '40px',
-          textAlign: 'center',
-          color: 'white'
-        }}
-      >
-        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>❌</div>
-        <h3>Error Loading Tasks</h3>
-        <p style={{ marginBottom: '20px' }}>{error}</p>
+      <div style={{
+        marginBottom: '30px',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <div>❌</div>
+        <h3>Tasks Feature</h3>
+        <p>Task management will be available after database setup</p>
         <button 
-          onClick={loadTasks}
+          onClick={() => {
+            // Use demo data
+            const demoTasks: Task[] = [
+              {
+                id: '1',
+                title: 'Setup Training Session',
+                description: 'Organize bartender training',
+                assignedTo: 'Manager',
+                dueDate: new Date().toISOString(),
+                completed: false,
+                createdAt: new Date().toISOString(),
+                eventId: 'null',
+                priority: 'high'
+              },
+              {
+                id: '2', 
+                title: 'Inventory Check',
+                description: 'Weekly stock audit',
+                assignedTo: 'Staff',
+                dueDate: new Date().toISOString(),
+                completed: true,
+                createdAt: new Date().toISOString(),
+                eventId: 'null',
+                priority: 'medium'
+              }
+            ];
+            setTasks(demoTasks);
+            setError(null);
+          }}
           style={{ 
-            background: SECTION_COLOR,
+            background: '#3B82F6',
             color: 'white',
             border: 'none',
             padding: '10px 20px',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontWeight: '600'
+            marginTop: '15px'
           }}
         >
-          🔄 Retry Loading
+          Use Demo Data
         </button>
       </div>
     );
   }
 
   return (
-    <div 
-      id="tasks-section"
-      style={{
-        marginBottom: '30px',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
-        border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
-      }}
-    >
-      
-      {/* Section Header */}
+    <div style={{
+      marginBottom: '30px',
+      background: 'rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: '20px',
+      overflow: 'hidden'
+    }}>
+      {/* Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(59, 130, 246, 0.3)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
-        backdropFilter: 'blur(10px)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
-        <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
-            Tasks Management
-          </h3>
-          <p style={{
-            margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.95rem',
-            marginTop: '4px'
-          }}>
-            Manage and track all assigned tasks and responsibilities
-          </p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            background: 'linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.1))',
-            padding: '6px 12px',
-            borderRadius: '20px',
-            fontSize: '0.8rem',
-            color: '#2DD4BF',
-            fontWeight: 'bold',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(45, 212, 191, 0.3)'
-          }}>
-            🔄 Cloud Sync Active
-          </span>
-          <span style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            fontSize: '0.9rem',
-            color: 'white',
-            fontWeight: '600',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            Admin Only
-          </span>
-        </div>
+        <h3 style={{ color: 'white', margin: 0 }}>Tasks Management</h3>
+        <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: '5px 0 0 0' }}>
+          Manage and track assigned tasks
+        </p>
       </div>
 
+      {/* Content */}
       <div style={{ padding: '25px' }}>
-        {/* Quick Stats */}
-        <AnimatedCard
-          title="📊 Task Overview"
-          description="Current status of all tasks across the venue"
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '15px',
-            marginTop: '10px'
-          }}>
-            <div style={{
-              textAlign: 'center',
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)'
-            }}>
-              <h4 style={{ margin: 0, color: '#d69e2e', fontSize: '1.8rem' }}>{tasks.length}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Total Tasks</p>
-            </div>
-            <div style={{
-              textAlign: 'center',
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)'
-            }}>
-              <h4 style={{ margin: 0, color: '#e53e3e', fontSize: '1.8rem' }}>{pendingTasksCount}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Pending</p>
-            </div>
-            <div style={{
-              textAlign: 'center',
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)'
-            }}>
-              <h4 style={{ margin: 0, color: '#38a169', fontSize: '1.8rem' }}>{completedTasksCount}</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)' }}>Completed</p>
-            </div>
-          </div>
-        </AnimatedCard>
-
-        {/* Filters */}
-        <AnimatedCard
-          title="🔍 Filter Tasks"
-        >
-          <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap', marginTop: '10px' }}>
-            <div>
-              <label style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Status:</label>
-              <select 
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
-                style={{ 
-                  marginLeft: '8px', 
-                  padding: '8px 12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  backdropFilter: 'blur(10px)',
-                  minWidth: '150px'
-                }}
-              >
-                <option value="all">All Tasks</option>
-                <option value="pending">Pending Only</option>
-                <option value="completed">Completed Only</option>
-              </select>
-            </div>
-            <div>
-              <label style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Priority:</label>
-              <select 
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value as any)}
-                style={{ 
-                  marginLeft: '8px', 
-                  padding: '8px 12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  backdropFilter: 'blur(10px)',
-                  minWidth: '150px'
-                }}
-              >
-                <option value="all">All Priorities</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
-            <div style={{ 
-              display: 'flex', 
-              gap: '10px', 
-              marginLeft: 'auto',
-              alignItems: 'center'
-            }}>
-              <button 
-                onClick={loadTasks}
-                style={{ 
-                  background: SECTION_COLOR,
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                🔄 Refresh
-              </button>
-            </div>
-          </div>
-        </AnimatedCard>
-
-        {/* Tasks List */}
-        <AnimatedCard
-          title="📋 Task List"
-          description={`Showing ${filteredTasks.length} tasks matching your filters`}
-        >
-          {filteredTasks.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px',
-              color: 'rgba(255, 255, 255, 0.7)',
-              fontStyle: 'italic'
-            }}>
-              No tasks found matching your filters.
-            </div>
+        <div style={{ marginBottom: '20px' }}>
+          <h4 style={{ color: 'white', margin: '0 0 15px 0' }}>Task List ({tasks.length} tasks)</h4>
+          
+          {tasks.length === 0 ? (
+            <p style={{ color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center' }}>
+              No tasks found
+            </p>
           ) : (
-            <div style={{ overflowX: 'auto', marginTop: '15px' }}>
-              <table style={{ 
-                width: '100%', 
-                borderCollapse: 'collapse', 
-                fontSize: '0.9rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '8px',
-                overflow: 'hidden'
-              }}>
-                <thead>
-                  <tr style={{ 
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)'
+            <div>
+              {tasks.map((task) => (
+                <div 
+                  key={task.id}
+                  style={{
+                    padding: '15px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    marginBottom: '10px'
+                  }}
+                >
+                  <div style={{ 
+                    fontWeight: 'bold', 
+                    color: 'white',
+                    textDecoration: task.completed ? 'line-through' : 'none'
                   }}>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Task</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Event</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Assigned To</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Due Date</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Priority</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Status</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTasks.map((task, index) => (
-                    <tr 
-                      key={task.id} 
-                      style={{ 
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                        background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent'
-                      }}
-                    >
-                      <td style={{ padding: '15px' }}>
-                        <div>
-                          <div style={{ 
-                            fontWeight: 'bold', 
-                            textDecoration: task.completed ? 'line-through' : 'none',
-                            color: task.completed ? 'rgba(255, 255, 255, 0.6)' : 'white'
-                          }}>
-                            {task.title}
-                          </div>
-                          {task.description && (
-                            <div style={{ 
-                              fontSize: '0.8rem', 
-                              color: 'rgba(255, 255, 255, 0.6)', 
-                              marginTop: '4px',
-                              lineHeight: 1.4
-                            }}>
-                              {task.description}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '15px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                        {task.eventId ? `Event: ${task.eventId}` : 'Standalone Task'}
-                      </td>
-                      <td style={{ padding: '15px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                        {task.assignedTo}
-                      </td>
-                      <td style={{ padding: '15px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <span style={{ 
-                          padding: '6px 12px', 
-                          borderRadius: '12px', 
-                          fontSize: '0.8rem',
-                          background: `${getPriorityColor(task.priority)}20`,
-                          color: getPriorityColor(task.priority),
-                          fontWeight: 'bold',
-                          display: 'inline-block',
-                          minWidth: '70px',
-                          textAlign: 'center'
-                        }}>
-                          {task.priority.toUpperCase()}
-                        </span>
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <span style={{ 
-                          padding: '6px 12px', 
-                          borderRadius: '12px', 
-                          fontSize: '0.8rem',
-                          background: task.completed ? 'rgba(56, 161, 105, 0.2)' : 'rgba(229, 62, 62, 0.2)',
-                          color: task.completed ? '#38a169' : '#e53e3e',
-                          fontWeight: 'bold',
-                          display: 'inline-block',
-                          minWidth: '100px',
-                          textAlign: 'center'
-                        }}>
-                          {task.completed ? 'COMPLETED' : 'PENDING'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <button 
-                          onClick={() => handleUpdateTaskStatus(task, !task.completed)}
-                          style={{ 
-                            background: task.completed ? '#d69e2e' : '#38a169', 
-                            color: 'white', 
-                            border: 'none', 
-                            padding: '8px 16px', 
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '0.8rem',
-                            fontWeight: '600',
-                            minWidth: '140px'
-                          }}
-                        >
-                          {task.completed ? '↶ Mark Pending' : '✓ Mark Complete'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    {task.title}
+                  </div>
+                  {task.description && (
+                    <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem', marginTop: '5px' }}>
+                      {task.description}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '10px', fontSize: '0.8rem' }}>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>Assigned: {task.assignedTo}</span>
+                    <span style={{ 
+                      color: task.completed ? '#10b981' : '#ef4444',
+                      fontWeight: 'bold'
+                    }}>
+                      {task.completed ? 'Completed' : 'Pending'}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-        </AnimatedCard>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <button 
+            onClick={loadTasks}
+            style={{ 
+              background: '#3B82F6',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Refresh Tasks
+          </button>
+        </div>
       </div>
     </div>
   );
