@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 const SECTION_COLOR = '#3B82F6'; // Blue color for tasks
 const SECTION_COLOR_RGB = '59, 130, 246';
 
-// Card Component without Hover Effects
+// Card Component without ANY Hover Effects
 function AnimatedCard({ title, description, items, footer, children }: any) {
   return (
     <div 
@@ -22,7 +22,26 @@ function AnimatedCard({ title, description, items, footer, children }: any) {
         WebkitBackdropFilter: 'blur(12px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        // Explicitly disable all hover effects
+        transform: 'none !important',
+        transition: 'none !important',
+        cursor: 'default'
+      }}
+      // Disable hover by preventing mouse events from changing styles
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
+        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
+        e.currentTarget.style.backdropFilter = 'blur(12px) saturate(160%)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
+        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
+        e.currentTarget.style.backdropFilter = 'blur(12px) saturate(160%)';
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
@@ -87,11 +106,7 @@ export default function TasksSection() {
       setLoading(true);
       setError(null);
       
-      // Check if user is authenticated
-      if (!currentUser) {
-        setError('User not authenticated');
-        return;
-      }
+      console.log('Loading tasks for user:', currentUser?.email);
 
       const { data, error } = await supabase
         .from('tasks')
@@ -99,11 +114,13 @@ export default function TasksSection() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error loading tasks:', error);
-        setError(error.message);
+        console.error('Supabase error loading tasks:', error);
+        setError(`Database error: ${error.message}`);
         showToast('Error loading tasks');
         return;
       }
+
+      console.log('Tasks loaded:', data);
 
       // Convert Supabase data to our Task type
       const convertedTasks: Task[] = (data || []).map((task: any) => ({
@@ -120,9 +137,9 @@ export default function TasksSection() {
       }));
 
       setTasks(convertedTasks);
-    } catch (error) {
-      console.error('Error loading tasks:', error);
-      setError('Failed to load tasks');
+    } catch (error: any) {
+      console.error('Unexpected error loading tasks:', error);
+      setError(`Unexpected error: ${error.message}`);
       showToast('Error loading tasks');
     } finally {
       setLoading(false);
@@ -131,31 +148,29 @@ export default function TasksSection() {
 
   // Set up real-time subscription
   useEffect(() => {
-    if (currentUser) {
-      loadTasks();
+    loadTasks();
 
-      // Subscribe to real-time changes
-      const subscription = supabase
-        .channel('tasks-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'tasks'
-          },
-          () => {
-            console.log('Real-time update received for tasks');
-            loadTasks();
-          }
-        )
-        .subscribe();
+    // Subscribe to real-time changes
+    const subscription = supabase
+      .channel('tasks-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks'
+        },
+        () => {
+          console.log('Real-time update received for tasks');
+          loadTasks();
+        }
+      )
+      .subscribe();
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-  }, [currentUser]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleUpdateTaskStatus = async (task: Task, completed: boolean) => {
     try {
@@ -171,7 +186,6 @@ export default function TasksSection() {
       if (error) throw error;
 
       showToast(`Task marked as ${completed ? 'completed' : 'pending'}!`);
-      // Real-time subscription will handle the update
     } catch (error) {
       console.error('Error updating task:', error);
       showToast('Error updating task');
@@ -245,22 +259,52 @@ export default function TasksSection() {
       >
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>❌</div>
         <h3>Error Loading Tasks</h3>
-        <p>{error}</p>
-        <button 
-          onClick={loadTasks}
-          style={{ 
-            background: SECTION_COLOR,
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: '600',
-            marginTop: '15px'
-          }}
-        >
-          🔄 Retry
-        </button>
+        <p style={{ marginBottom: '20px' }}>{error}</p>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          <button 
+            onClick={loadTasks}
+            style={{ 
+              background: SECTION_COLOR,
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            🔄 Retry Loading
+          </button>
+          <button 
+            onClick={() => {
+              // Create a dummy task for testing
+              const dummyTasks: Task[] = [{
+                id: '1',
+                title: 'Test Task',
+                description: 'This is a test task',
+                assignedTo: 'Test User',
+                dueDate: new Date().toISOString(),
+                completed: false,
+                createdAt: new Date().toISOString(),
+                eventId: 'test',
+                priority: 'medium'
+              }];
+              setTasks(dummyTasks);
+              setError(null);
+            }}
+            style={{ 
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            🧪 Use Test Data
+          </button>
+        </div>
       </div>
     );
   }
@@ -276,7 +320,23 @@ export default function TasksSection() {
         backdropFilter: 'blur(15px) saturate(170%)',
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+        // Explicitly disable all hover effects
+        transform: 'none !important',
+        transition: 'none !important'
+      }}
+      // Disable hover by preventing mouse events from changing styles
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = '0 16px 50px rgba(0, 0, 0, 0.2)';
+        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.22)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = '0 16px 50px rgba(0, 0, 0, 0.2)';
+        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.22)';
       }}
     >
       
@@ -321,7 +381,7 @@ export default function TasksSection() {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(45, 212, 191, 0.3)'
           }}>
-            🔄 Cloud Sync Active
+            {tasks.length > 0 ? '🔄 Cloud Sync Active' : '⚠️ Offline Mode'}
           </span>
           <span style={{
             background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
@@ -451,6 +511,15 @@ export default function TasksSection() {
                   alignItems: 'center',
                   gap: '8px'
                 }}
+                // Disable hover effects on button
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 🔄 Refresh
               </button>
@@ -470,7 +539,7 @@ export default function TasksSection() {
               color: 'rgba(255, 255, 255, 0.7)',
               fontStyle: 'italic'
             }}>
-              No tasks found matching your filters.
+              No tasks found. {tasks.length === 0 && 'The tasks table might be empty or there might be a connection issue.'}
             </div>
           ) : (
             <div style={{ overflowX: 'auto', marginTop: '15px' }}>
@@ -503,6 +572,13 @@ export default function TasksSection() {
                       style={{ 
                         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                         background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent'
+                      }}
+                      // Disable row hover
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent';
                       }}
                     >
                       <td style={{ padding: '15px' }}>
@@ -578,6 +654,15 @@ export default function TasksSection() {
                             fontSize: '0.8rem',
                             fontWeight: '600',
                             minWidth: '140px'
+                          }}
+                          // Disable button hover
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
                           {task.completed ? '↶ Mark Pending' : '✓ Mark Complete'}
