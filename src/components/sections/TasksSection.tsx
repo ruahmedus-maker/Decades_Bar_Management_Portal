@@ -79,11 +79,20 @@ export default function TasksSection() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [priorityFilter, setPriorityFilter] = useState<'all' | Task['priority']>('all');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load tasks from Supabase
   const loadTasks = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      // Check if user is authenticated
+      if (!currentUser) {
+        setError('User not authenticated');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
@@ -91,6 +100,7 @@ export default function TasksSection() {
 
       if (error) {
         console.error('Error loading tasks:', error);
+        setError(error.message);
         showToast('Error loading tasks');
         return;
       }
@@ -112,6 +122,7 @@ export default function TasksSection() {
       setTasks(convertedTasks);
     } catch (error) {
       console.error('Error loading tasks:', error);
+      setError('Failed to load tasks');
       showToast('Error loading tasks');
     } finally {
       setLoading(false);
@@ -120,29 +131,31 @@ export default function TasksSection() {
 
   // Set up real-time subscription
   useEffect(() => {
-    loadTasks();
+    if (currentUser) {
+      loadTasks();
 
-    // Subscribe to real-time changes
-    const subscription = supabase
-      .channel('tasks-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks'
-        },
-        () => {
-          console.log('Real-time update received for tasks');
-          loadTasks();
-        }
-      )
-      .subscribe();
+      // Subscribe to real-time changes
+      const subscription = supabase
+        .channel('tasks-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'tasks'
+          },
+          () => {
+            console.log('Real-time update received for tasks');
+            loadTasks();
+          }
+        )
+        .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [currentUser]);
 
   const handleUpdateTaskStatus = async (task: Task, completed: boolean) => {
     try {
@@ -212,6 +225,46 @@ export default function TasksSection() {
     );
   }
 
+  if (error) {
+    return (
+      <div 
+        id="tasks-section"
+        style={{
+          marginBottom: '30px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+          padding: '40px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
+        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>❌</div>
+        <h3>Error Loading Tasks</h3>
+        <p>{error}</p>
+        <button 
+          onClick={loadTasks}
+          style={{ 
+            background: SECTION_COLOR,
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            marginTop: '15px'
+          }}
+        >
+          🔄 Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div 
       id="tasks-section"
@@ -225,7 +278,6 @@ export default function TasksSection() {
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
-      className="active"
     >
       
       {/* Section Header */}
