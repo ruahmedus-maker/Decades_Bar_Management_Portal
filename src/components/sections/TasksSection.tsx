@@ -22,26 +22,7 @@ function AnimatedCard({ title, description, items, footer, children }: any) {
         WebkitBackdropFilter: 'blur(12px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
-        position: 'relative',
-        // Explicitly disable all hover effects
-        transform: 'none !important',
-        transition: 'none !important',
-        cursor: 'default'
-      }}
-      // Disable hover by preventing mouse events from changing styles
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-        e.currentTarget.style.backdropFilter = 'blur(12px) saturate(160%)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-        e.currentTarget.style.backdropFilter = 'blur(12px) saturate(160%)';
+        position: 'relative'
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
@@ -115,7 +96,13 @@ export default function TasksSection() {
 
       if (error) {
         console.error('Supabase error loading tasks:', error);
-        setError(`Database error: ${error.message}`);
+        
+        if (error.code === 'PGRST205') {
+          setError('TASKS_TABLE_NOT_FOUND');
+        } else {
+          setError(`Database error: ${error.message}`);
+        }
+        
         showToast('Error loading tasks');
         return;
       }
@@ -239,6 +226,142 @@ export default function TasksSection() {
     );
   }
 
+  if (error === 'TASKS_TABLE_NOT_FOUND') {
+    return (
+      <div 
+        id="tasks-section"
+        style={{
+          marginBottom: '30px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+          boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+          padding: '40px',
+          textAlign: 'center',
+          color: 'white'
+        }}
+      >
+        <div style={{ fontSize: '2rem', marginBottom: '16px' }}>🗃️</div>
+        <h3>Tasks Table Not Found</h3>
+        <p style={{ marginBottom: '20px', lineHeight: '1.6' }}>
+          The tasks table doesn't exist in your Supabase database. You need to create it first.
+        </p>
+        
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.08)', 
+          borderRadius: '12px', 
+          padding: '20px', 
+          marginBottom: '20px',
+          textAlign: 'left'
+        }}>
+          <h4 style={{ color: SECTION_COLOR, margin: '0 0 15px 0' }}>How to fix this:</h4>
+          <ol style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+            <li style={{ marginBottom: '10px' }}>Go to your Supabase dashboard</li>
+            <li style={{ marginBottom: '10px' }}>Navigate to the SQL Editor</li>
+            <li style={{ marginBottom: '10px' }}>Run this SQL command to create the tasks table:</li>
+          </ol>
+          
+          <pre style={{ 
+            background: 'rgba(0, 0, 0, 0.3)', 
+            padding: '15px', 
+            borderRadius: '8px', 
+            overflow: 'auto',
+            fontSize: '0.8rem',
+            color: '#f8f8f2',
+            marginTop: '15px'
+          }}>
+{`CREATE TABLE tasks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  assigned_to TEXT,
+  due_date TIMESTAMP WITH TIME ZONE,
+  completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  event_id UUID,
+  priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high'))
+);`}
+          </pre>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button 
+            onClick={loadTasks}
+            style={{ 
+              background: SECTION_COLOR,
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            🔄 Check Again
+          </button>
+          <button 
+            onClick={() => {
+              // Create demo data for testing
+              const demoTasks: Task[] = [
+                {
+                  id: 'demo-1',
+                  title: 'Setup Training Session',
+                  description: 'Organize bartender training for new cocktail menu',
+                  assignedTo: 'Bar Manager',
+                  dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  completed: false,
+                  createdAt: new Date().toISOString(),
+                  eventId: 'test',
+                  priority: 'high'
+                },
+                {
+                  id: 'demo-2',
+                  title: 'Inventory Check',
+                  description: 'Weekly inventory audit and restocking',
+                  assignedTo: 'Head Bartender',
+                  dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                  completed: true,
+                  createdAt: new Date().toISOString(),
+                  eventId: 'test1',
+                  priority: 'medium'
+                },
+                {
+                  id: 'demo-3',
+                  title: 'Clean Glassware',
+                  description: 'Ensure all glassware is properly cleaned and polished',
+                  assignedTo: 'Bar Staff',
+                  dueDate: new Date().toISOString(),
+                  completed: false,
+                  createdAt: new Date().toISOString(),
+                  eventId: 'test2',
+                  priority: 'low'
+                }
+              ];
+              setTasks(demoTasks);
+              setError(null);
+            }}
+            style={{ 
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            🧪 Use Demo Data
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div 
@@ -260,51 +383,20 @@ export default function TasksSection() {
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>❌</div>
         <h3>Error Loading Tasks</h3>
         <p style={{ marginBottom: '20px' }}>{error}</p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          <button 
-            onClick={loadTasks}
-            style={{ 
-              background: SECTION_COLOR,
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-          >
-            🔄 Retry Loading
-          </button>
-          <button 
-            onClick={() => {
-              // Create a dummy task for testing
-              const dummyTasks: Task[] = [{
-                id: '1',
-                title: 'Test Task',
-                description: 'This is a test task',
-                assignedTo: 'Test User',
-                dueDate: new Date().toISOString(),
-                completed: false,
-                createdAt: new Date().toISOString(),
-                eventId: 'test',
-                priority: 'medium'
-              }];
-              setTasks(dummyTasks);
-              setError(null);
-            }}
-            style={{ 
-              background: '#10b981',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-          >
-            🧪 Use Test Data
-          </button>
-        </div>
+        <button 
+          onClick={loadTasks}
+          style={{ 
+            background: SECTION_COLOR,
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600'
+          }}
+        >
+          🔄 Retry Loading
+        </button>
       </div>
     );
   }
@@ -320,23 +412,7 @@ export default function TasksSection() {
         backdropFilter: 'blur(15px) saturate(170%)',
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        // Explicitly disable all hover effects
-        transform: 'none !important',
-        transition: 'none !important'
-      }}
-      // Disable hover by preventing mouse events from changing styles
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 16px 50px rgba(0, 0, 0, 0.2)';
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.22)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 16px 50px rgba(0, 0, 0, 0.2)';
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.22)';
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
     >
       
@@ -381,7 +457,7 @@ export default function TasksSection() {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(45, 212, 191, 0.3)'
           }}>
-            {tasks.length > 0 ? '🔄 Cloud Sync Active' : '⚠️ Offline Mode'}
+            🔄 Cloud Sync Active
           </span>
           <span style={{
             background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
@@ -511,15 +587,6 @@ export default function TasksSection() {
                   alignItems: 'center',
                   gap: '8px'
                 }}
-                // Disable hover effects on button
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
               >
                 🔄 Refresh
               </button>
@@ -539,7 +606,7 @@ export default function TasksSection() {
               color: 'rgba(255, 255, 255, 0.7)',
               fontStyle: 'italic'
             }}>
-              No tasks found. {tasks.length === 0 && 'The tasks table might be empty or there might be a connection issue.'}
+              No tasks found matching your filters.
             </div>
           ) : (
             <div style={{ overflowX: 'auto', marginTop: '15px' }}>
@@ -572,13 +639,6 @@ export default function TasksSection() {
                       style={{ 
                         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                         background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent'
-                      }}
-                      // Disable row hover
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent';
                       }}
                     >
                       <td style={{ padding: '15px' }}>
@@ -654,15 +714,6 @@ export default function TasksSection() {
                             fontSize: '0.8rem',
                             fontWeight: '600',
                             minWidth: '140px'
-                          }}
-                          // Disable button hover
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.boxShadow = 'none';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
                           {task.completed ? '↶ Mark Pending' : '✓ Mark Complete'}
