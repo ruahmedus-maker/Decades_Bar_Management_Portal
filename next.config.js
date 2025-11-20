@@ -22,6 +22,27 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  // Add cache headers that prevent aggressive caching during development
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
+  // Disable cache for static generation in development
+  experimental: {
+    staleTimes: {
+      dynamic: 0, // Always fresh for dynamic content
+      static: 0,  // Always fresh for static content
+    },
+  },
 }
 
 module.exports = nextConfig
