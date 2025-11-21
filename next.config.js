@@ -11,18 +11,16 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: true,
   },
-  // Aggressive cache headers
+  // Add cache busting for static assets
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
+  // Aggressive cache headers for development
   async headers() {
     return [
       {
@@ -35,11 +33,19 @@ const nextConfig = {
         ],
       },
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
           {
             key: 'Cache-Control',
             value: 'no-cache, no-store, must-revalidate, max-age=0',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
           },
         ],
       },
@@ -51,6 +57,13 @@ const nextConfig = {
       static: 0,
     },
   },
+  // Force turbopack to not cache aggressively
+  webpack: (config, { dev, isServer }) => {
+    if (dev) {
+      config.cache = false;
+    }
+    return config;
+  },
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;
