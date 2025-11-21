@@ -1,63 +1,34 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Turbopack for development
+  // Turbopack for development (remove if causing issues in production)
   turbopack: {
     root: __dirname,
   },
   
   reactStrictMode: true,
   
-  // Image configuration - fix for static assets
+  // Optimized image configuration for Vercel
   images: {
-    domains: ['example.com'],
-    unoptimized: true,
-    // Add this to prevent 401 errors
-    dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: [],
+    unoptimized: false, // Let Vercel handle optimization
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
   },
   
   // Build configuration
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Let's see actual ESLint errors
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Let's see TypeScript errors
   },
   
-  // Force fresh builds
-  generateBuildId: async () => {
-    return `build-${Date.now()}`;
-  },
-  
-  // Environment variables with build ID
-  env: {
-    NEXT_PUBLIC_BUILD_ID: `build-${Date.now()}`,
-  },
-  
-  // Headers to fix 401 errors and cache issues
+  // Clean cache headers
   async headers() {
     return [
       {
-        // Apply to all routes
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate, max-age=0',
-          },
-          {
-            key: 'CDN-Cache-Control',
-            value: 'no-cache'
-          },
-          {
-            key: 'Vercel-CDN-Cache-Control',
-            value: 'no-cache'
-          }
-        ],
-      },
-      {
-        // Static assets - allow public access
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -67,43 +38,30 @@ const nextConfig = {
         ],
       },
       {
-        // Fix for image 401 errors
         source: '/images/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=86400',
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: 'public, max-age=86400, must-revalidate',
           },
         ],
       },
       {
-        // Fix for icon 401 errors
         source: '/icon-(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=86400',
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: 'public, max-age=86400, must-revalidate',
           },
         ],
       },
     ];
   },
   
-  // Enable trailing slash for better URL handling
+  // Enable trailing slashes for consistent URLs
   trailingSlash: false,
   
-  // Disable compression to avoid caching issues
-  compress: false,
-  
-  // Power your Vercel deployment
+  // Disable powered by header for security
   poweredByHeader: false,
 }
 
