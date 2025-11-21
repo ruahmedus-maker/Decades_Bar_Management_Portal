@@ -94,6 +94,7 @@ export const supabaseSpecialEvents = {
                 description: task.description || '',
                 assignedTo: task.assigned_to,
                 dueDate: task.due_date || '',
+                status: task.completed ? 'completed' : 'pending', // Add status field
                 completed: task.completed,
                 completedAt: task.completed_at || '',
                 createdAt: task.created_at,
@@ -121,12 +122,10 @@ export const supabaseSpecialEvents = {
 
   createEvent: async (event: SpecialEventInput): Promise<string> => {
     try {
-      const id = `event-${Date.now()}`;
-      
-      const { error } = await supabase
+      // Remove the manual ID generation - let Supabase generate UUID
+      const { data, error } = await supabase
         .from('special_events')
         .insert({
-          id,
           name: event.name,
           date: event.date,
           theme: event.theme,
@@ -134,10 +133,14 @@ export const supabaseSpecialEvents = {
           notes: event.notes,
           created_by: event.createdBy,
           status: event.status
-        });
+        })
+        .select('id') // Return the generated ID
+        .single();
 
       if (error) throw error;
-      return id;
+      if (!data) throw new Error('No data returned from event creation');
+      
+      return data.id; // Return the auto-generated UUID
     } catch (error) {
       console.error('Error creating event in Supabase:', error);
       throw error;
@@ -195,7 +198,7 @@ export const supabaseSpecialEvents = {
           due_date: task.dueDate,
           completed: task.completed,
           completed_at: null,
-          event_id: eventId,
+          event_id: eventId, // This should now be a UUID
           priority: task.priority
         });
 
@@ -209,18 +212,24 @@ export const supabaseSpecialEvents = {
 
   updateTask: async (taskId: string, updates: Partial<Task>): Promise<void> => {
     try {
+      const updateData: any = {
+        title: updates.title,
+        description: updates.description,
+        assigned_to: updates.assignedTo,
+        due_date: updates.dueDate,
+        completed: updates.completed,
+        priority: updates.priority,
+        updated_at: new Date().toISOString()
+      };
+
+      // Only update completed_at if the task is being marked as completed
+      if (updates.completed !== undefined) {
+        updateData.completed_at = updates.completed ? new Date().toISOString() : null;
+      }
+
       const { error } = await supabase
         .from('tasks')
-        .update({
-          title: updates.title,
-          description: updates.description,
-          assigned_to: updates.assignedTo,
-          due_date: updates.dueDate,
-          completed: updates.completed,
-          completed_at: updates.completedAt,
-          priority: updates.priority,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', taskId);
 
       if (error) throw error;
