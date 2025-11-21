@@ -16,10 +16,9 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent", // Changed for Safari
+    statusBarStyle: "black-translucent",
     title: "Decades Bar",
   },
-  // Added for Safari compatibility
   formatDetection: {
     telephone: false,
   },
@@ -31,7 +30,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  // Safari-specific viewport settings
   viewportFit: "cover",
 };
 
@@ -40,9 +38,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Generate a unique build ID for cache busting
-  const buildId = `build-${Date.now()}`;
-
   return (
     <html lang="en">
       <head>
@@ -75,20 +70,10 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#2DD4BF" />
         <meta name="msapplication-tap-highlight" content="no" />
         
-        {/* Enhanced Cache Prevention */}
-        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
+        {/* Cache Prevention */}
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
-        <meta httpEquiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-        
-        {/* Version-based cache busting */}
-        <meta name="version" content={buildId} />
-        
-        {/* Cache busting for CSS and JS */}
-        <link rel="stylesheet" href={`/globals.css?v=${buildId}`} />
-        
-        {/* Prevent search engine caching */}
-        <meta name="robots" content="noarchive" />
       </head>
       <body 
         className={inter.className}
@@ -99,7 +84,6 @@ export default function RootLayout({
           fontFamily: 'system-ui, sans-serif',
           background: 'transparent',
           overflowX: 'hidden',
-          // Safari-specific body styles
           WebkitTouchCallout: 'none',
           WebkitUserSelect: 'none',
           KhtmlUserSelect: 'none',
@@ -107,7 +91,6 @@ export default function RootLayout({
           msUserSelect: 'none',
           userSelect: 'none',
         }}
-        data-build={buildId}
       >
         <DecadesBanner />
         <div style={{ 
@@ -125,46 +108,6 @@ export default function RootLayout({
         
         {/* Chunk Error Handler */}
         <ChunkErrorHandler />
-        
-        {/* Cache busting script */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Force cache refresh on page load
-              if (performance.navigation.type === 1) {
-                // Page was reloaded
-                console.log('Page reload detected - ensuring fresh content');
-              }
-              
-              // Additional cache busting for service worker
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for(let registration of registrations) {
-                    registration.update();
-                  }
-                });
-              }
-              
-              // Version check for cache busting
-              const currentBuild = '${buildId}';
-              const storedBuild = localStorage.getItem('app-build');
-              
-              if (storedBuild !== currentBuild) {
-                console.log('New build detected, clearing caches');
-                localStorage.setItem('app-build', currentBuild);
-                
-                // Clear various caches
-                if ('caches' in window) {
-                  caches.keys().then(function(names) {
-                    for (let name of names) {
-                      caches.delete(name);
-                    }
-                  });
-                }
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   );
