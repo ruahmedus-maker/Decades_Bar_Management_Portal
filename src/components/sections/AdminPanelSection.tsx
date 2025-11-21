@@ -301,18 +301,20 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
 }
 
 // Maintenance Tickets Management Component for Admin Panel
+// Maintenance Tickets Management Component for Admin Panel
 function MaintenanceTicketsManagement() {
   const { showToast } = useApp();
   const [tickets, setTickets] = useState<MaintenanceTicket[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'open' | 'assigned' | 'in-progress' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'open' | 'assigned' | 'in-progress' | 'completed' | 'closed'>('all');
   const [selectedTicket, setSelectedTicket] = useState<MaintenanceTicket | null>(null);
   const [assignmentForm, setAssignmentForm] = useState({
     assignedTo: '',
     notes: '',
     status: 'open' as MaintenanceTicket['status']
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadTickets();
@@ -323,6 +325,7 @@ function MaintenanceTicketsManagement() {
     try {
       setLoading(true);
       const ticketsData = await supabaseMaintenance.getTickets();
+      console.log('Loaded tickets:', ticketsData);
       setTickets(ticketsData);
     } catch (error) {
       console.error('Error loading tickets:', error);
@@ -339,6 +342,7 @@ function MaintenanceTicketsManagement() {
       const teamUsers = allUsers.filter(user => 
         user.position === 'Bartender' || user.position === 'Trainee'
       );
+      console.log('Loaded users for assignment:', teamUsers);
       setUsers(teamUsers);
     } catch (error) {
       console.error('Error loading users:', error);
@@ -347,45 +351,83 @@ function MaintenanceTicketsManagement() {
 
   const handleUpdateTicket = async (ticketId: string, updates: Partial<MaintenanceTicket>) => {
     try {
+      setIsSubmitting(true);
+      console.log('Updating ticket:', ticketId, 'with updates:', updates);
+      
       await supabaseMaintenance.updateTicket(ticketId, updates);
       showToast('Ticket updated successfully!');
-      loadTickets();
+      
+      // Refresh the tickets list
+      await loadTickets();
       setSelectedTicket(null);
     } catch (error: any) {
       console.error('Error updating ticket:', error);
       showToast(`Error updating ticket: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDeleteTicket = async (ticketId: string) => {
-    if (!confirm('Are you sure you want to delete this ticket?')) return;
+    if (!confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) return;
 
     try {
+      setIsSubmitting(true);
+      console.log('Deleting ticket:', ticketId);
+      
       await supabaseMaintenance.deleteTicket(ticketId);
       showToast('Ticket deleted successfully!');
-      loadTickets();
+      
+      // Refresh the tickets list
+      await loadTickets();
       setSelectedTicket(null);
     } catch (error: any) {
       console.error('Error deleting ticket:', error);
       showToast(`Error deleting ticket: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleAssignTicket = (e: React.FormEvent) => {
+  const handleAssignTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedTicket) return;
 
-    const updates: Partial<MaintenanceTicket> = {
-      status: assignmentForm.status,
-      notes: assignmentForm.notes || undefined
-    };
+    try {
+      setIsSubmitting(true);
+      
+      const updates: Partial<MaintenanceTicket> = {
+        status: assignmentForm.status,
+        notes: assignmentForm.notes || undefined
+      };
 
-    if (assignmentForm.assignedTo) {
-      updates.assigned_to = assignmentForm.assignedTo;
+      if (assignmentForm.assignedTo) {
+        updates.assigned_to = assignmentForm.assignedTo;
+        // If assigning to someone and status is open, automatically set to assigned
+        if (assignmentForm.status === 'open') {
+          updates.status = 'assigned';
+        }
+      }
+
+      console.log('Assigning ticket with updates:', updates);
+      
+      await handleUpdateTicket(selectedTicket.id, updates);
+      setAssignmentForm({ assignedTo: '', notes: '', status: 'open' });
+    } catch (error) {
+      console.error('Error in handleAssignTicket:', error);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    handleUpdateTicket(selectedTicket.id, updates);
-    setAssignmentForm({ assignedTo: '', notes: '', status: 'open' });
+  // Quick status update functions
+  const handleQuickStatusUpdate = async (ticketId: string, newStatus: MaintenanceTicket['status']) => {
+    try {
+      console.log('Quick updating ticket:', ticketId, 'to status:', newStatus);
+      await handleUpdateTicket(ticketId, { status: newStatus });
+    } catch (error) {
+      console.error('Error in quick status update:', error);
+    }
   };
 
   const getStatusColor = (status: MaintenanceTicket['status']) => {
@@ -507,20 +549,23 @@ function MaintenanceTicketsManagement() {
             <option value="assigned">Assigned</option>
             <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
+            <option value="closed">Closed</option>
           </select>
           <button 
             onClick={loadTickets}
+            disabled={loading}
             style={{ 
               background: '#3B82F6',
               color: 'white',
               border: 'none',
               padding: '8px 16px',
               borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '0.9rem'
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: '0.9rem',
+              opacity: loading ? 0.6 : 1
             }}
           >
-            Refresh
+            {loading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
       </div>
@@ -537,12 +582,14 @@ function MaintenanceTicketsManagement() {
             <h4 style={{ color: 'white', margin: 0 }}>Manage Ticket: {selectedTicket.title}</h4>
             <button 
               onClick={() => setSelectedTicket(null)}
+              disabled={isSubmitting}
               style={{ 
                 background: 'none',
                 border: 'none',
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontSize: '1.5rem',
-                cursor: 'pointer'
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.5 : 1
               }}
             >
               ×
@@ -557,6 +604,7 @@ function MaintenanceTicketsManagement() {
                 <select
                   value={assignmentForm.assignedTo}
                   onChange={(e) => setAssignmentForm({ ...assignmentForm, assignedTo: e.target.value })}
+                  disabled={isSubmitting}
                   style={{
                     padding: '10px',
                     background: 'rgba(255, 255, 255, 0.1)',
@@ -564,7 +612,8 @@ function MaintenanceTicketsManagement() {
                     borderRadius: '6px',
                     color: 'white',
                     fontSize: '1rem',
-                    width: '100%'
+                    width: '100%',
+                    opacity: isSubmitting ? 0.6 : 1
                   }}
                 >
                   <option value="">Unassigned</option>
@@ -582,6 +631,7 @@ function MaintenanceTicketsManagement() {
                 <select
                   value={assignmentForm.status}
                   onChange={(e) => setAssignmentForm({ ...assignmentForm, status: e.target.value as any })}
+                  disabled={isSubmitting}
                   style={{
                     padding: '10px',
                     background: 'rgba(255, 255, 255, 0.1)',
@@ -589,7 +639,8 @@ function MaintenanceTicketsManagement() {
                     borderRadius: '6px',
                     color: 'white',
                     fontSize: '1rem',
-                    width: '100%'
+                    width: '100%',
+                    opacity: isSubmitting ? 0.6 : 1
                   }}
                 >
                   <option value="open">Open</option>
@@ -609,6 +660,7 @@ function MaintenanceTicketsManagement() {
                 onChange={(e) => setAssignmentForm({ ...assignmentForm, notes: e.target.value })}
                 placeholder="Add notes or instructions..."
                 rows={3}
+                disabled={isSubmitting}
                 style={{
                   padding: '10px',
                   background: 'rgba(255, 255, 255, 0.1)',
@@ -617,40 +669,82 @@ function MaintenanceTicketsManagement() {
                   color: 'white',
                   fontSize: '1rem',
                   width: '100%',
-                  resize: 'vertical'
+                  resize: 'vertical',
+                  opacity: isSubmitting ? 0.6 : 1
                 }}
               />
             </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <button 
                 type="submit"
+                disabled={isSubmitting}
                 style={{ 
                   background: '#3182ce',
                   color: 'white',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  fontSize: '0.9rem',
+                  opacity: isSubmitting ? 0.6 : 1
                 }}
               >
-                Update Ticket
+                {isSubmitting ? 'Updating...' : 'Update Ticket'}
               </button>
               <button 
                 type="button"
                 onClick={() => handleDeleteTicket(selectedTicket.id)}
+                disabled={isSubmitting}
                 style={{ 
                   background: '#e53e3e',
                   color: 'white',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  fontSize: '0.9rem',
+                  opacity: isSubmitting ? 0.6 : 1
                 }}
               >
-                Delete Ticket
+                {isSubmitting ? 'Deleting...' : 'Delete Ticket'}
               </button>
+              {/* Quick Action Buttons */}
+              <div style={{ display: 'flex', gap: '5px', marginLeft: 'auto' }}>
+                <button 
+                  type="button"
+                  onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'in-progress')}
+                  disabled={isSubmitting}
+                  style={{ 
+                    background: '#d69e2e',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    fontSize: '0.8rem',
+                    opacity: isSubmitting ? 0.6 : 1
+                  }}
+                >
+                  Mark In Progress
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'completed')}
+                  disabled={isSubmitting}
+                  style={{ 
+                    background: '#38a169',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    fontSize: '0.8rem',
+                    opacity: isSubmitting ? 0.6 : 1
+                  }}
+                >
+                  Mark Completed
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -761,27 +855,68 @@ function MaintenanceTicketsManagement() {
                       {new Date(ticket.created_at).toLocaleDateString()}
                     </td>
                     <td style={{ padding: '12px' }}>
-                      <button 
-                        onClick={() => {
-                          setSelectedTicket(ticket);
-                          setAssignmentForm({
-                            assignedTo: ticket.assigned_to || '',
-                            notes: ticket.notes || '',
-                            status: ticket.status
-                          });
-                        }}
-                        style={{ 
-                          background: '#d4af37', 
-                          color: 'white', 
-                          border: 'none', 
-                          padding: '6px 12px', 
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem'
-                        }}
-                      >
-                        Manage
-                      </button>
+                      <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
+                        <button 
+                          onClick={() => {
+                            setSelectedTicket(ticket);
+                            setAssignmentForm({
+                              assignedTo: ticket.assigned_to || '',
+                              notes: ticket.notes || '',
+                              status: ticket.status
+                            });
+                          }}
+                          style={{ 
+                            background: '#d4af37', 
+                            color: 'white', 
+                            border: 'none', 
+                            padding: '6px 12px', 
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.8rem'
+                          }}
+                        >
+                          Manage
+                        </button>
+                        {/* Quick Action Buttons */}
+                        <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
+                          {ticket.status !== 'in-progress' && (
+                            <button 
+                              onClick={() => handleQuickStatusUpdate(ticket.id, 'in-progress')}
+                              disabled={isSubmitting}
+                              style={{ 
+                                background: '#d69e2e',
+                                color: 'white',
+                                border: 'none',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                fontSize: '0.7rem',
+                                opacity: isSubmitting ? 0.6 : 1
+                              }}
+                            >
+                              In Progress
+                            </button>
+                          )}
+                          {ticket.status !== 'completed' && (
+                            <button 
+                              onClick={() => handleQuickStatusUpdate(ticket.id, 'completed')}
+                              disabled={isSubmitting}
+                              style={{ 
+                                background: '#38a169',
+                                color: 'white',
+                                border: 'none',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                fontSize: '0.7rem',
+                                opacity: isSubmitting ? 0.6 : 1
+                              }}
+                            >
+                              Complete
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1422,7 +1557,7 @@ export default function AdminPanelSection() {
           <TeamManagementContent users={users} currentUser={currentUser} />
         )}
 
-        // In AdminPanelSection.tsx, replace the maintenance tab section:
+        
 {activeTab === 'maintenance' && (
   <div style={{
     background: 'rgba(255, 255, 255, 0.08)',
