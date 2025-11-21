@@ -24,12 +24,17 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Cache busting
+  // FIX: Use a stable but unique build ID
   generateBuildId: async () => {
-    return `build-${Date.now()}`;
+    // Use commit hash if available, fallback to timestamp
+    if (process.env.VERCEL_GIT_COMMIT_SHA) {
+      return `build-${process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 8)}`;
+    }
+    // For local development, use a stable ID per day
+    return `build-${new Date().toISOString().split('T')[0]}`;
   },
   
-  // Clean headers
+  // Cache busting
   async headers() {
     return [
       {
@@ -42,20 +47,20 @@ const nextConfig = {
         ],
       },
       {
-        source: '/images/(.*)',
+        source: '/static/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=86400, must-revalidate',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
       {
-        source: '/icon-(.*)',
+        source: '/manifest.json',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=86400, must-revalidate',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       },
