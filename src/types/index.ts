@@ -64,9 +64,6 @@ export interface EmployeeFolder {
   counselingRecords: CounselingRecord[];
 }
 
-// Add to your existing types.ts
-
-// Add this to your Task interface
 export interface Task {
   id: string;
   title: string;
@@ -93,9 +90,6 @@ export interface SpecialEvent {
   createdBy: string; // User email
   status: 'planned' | 'in-progress' | 'completed' | 'cancelled';
 }
-
-// Add to your existing types.ts
-// app/types/index.ts
 
 export interface MaintenanceTicket {
   id: string;
