@@ -16,36 +16,22 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Add cache busting for static assets
+  // Generate unique build ID
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
-  // Aggressive cache headers for development
+  env: {
+    NEXT_PUBLIC_BUILD_ID: `build-${Date.now()}`,
+  },
+  // Disable all caching
   async headers() {
     return [
       {
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/(.*)',
+        source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'no-cache, no-store, must-revalidate, max-age=0',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
           },
         ],
       },
@@ -56,13 +42,6 @@ const nextConfig = {
       dynamic: 0,
       static: 0,
     },
-  },
-  // Force turbopack to not cache aggressively
-  webpack: (config, { dev, isServer }) => {
-    if (dev) {
-      config.cache = false;
-    }
-    return config;
   },
 }
 

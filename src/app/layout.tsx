@@ -5,10 +5,15 @@ import DecadesBanner from '@/components/DecadesBanner';
 import PWAInstaller from '@/components/PWAInstaller';
 import InstallPrompt from '@/components/InstallPrompt';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
+import VersionChecker from '@/components/VersionChecker';
+import VersionDisplay from '@/components/VersionDisplay';
 
 const inter = Inter({ 
   subsets: ["latin"],
 });
+
+// This will be unique for each build
+const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || `build-${Date.now()}`;
 
 export const metadata: Metadata = {
   title: "Decades Bar Training Portal",
@@ -39,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-build={BUILD_ID}>
       <head>
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
@@ -69,6 +74,9 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-TileColor" content="#2DD4BF" />
         <meta name="msapplication-tap-highlight" content="no" />
+        
+        {/* Build ID for cache busting */}
+        <meta name="build-id" content={BUILD_ID} />
         
         {/* Cache Prevention */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -108,6 +116,11 @@ export default function RootLayout({
         
         {/* Chunk Error Handler */}
         <ChunkErrorHandler />
+        
+        {/* Version Checker - This will auto-reload if version changes */}
+        <VersionChecker />
+        <VersionDisplay />
+        
       </body>
     </html>
   );
