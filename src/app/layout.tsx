@@ -4,7 +4,7 @@ import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
 import PWAInstaller from '@/components/PWAInstaller';
 import InstallPrompt from '@/components/InstallPrompt';
-
+import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -108,6 +108,9 @@ export default function RootLayout({
         {/* PWA Components */}
         <PWAInstaller />
         <InstallPrompt />
+        
+        {/* Chunk Error Handler */}
+        <ChunkErrorHandler />
         
       </body>
     </html>
