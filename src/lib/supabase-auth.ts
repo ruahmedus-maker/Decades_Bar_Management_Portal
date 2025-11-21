@@ -300,18 +300,42 @@ export const createTestUsers = async (): Promise<void> => {
 // ===== CRUD OPERATIONS =====
 
 // Get all users (for admin panel) - USING AUTH API
+// In supabase-auth.ts - UPDATED VERSION
 export const getAllUsers = async (): Promise<AuthUser[]> => {
   try {
-    // Note: This requires service role key for admin operations
-    // For now, we'll return current user or empty array
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) return [];
-    
-    // Convert current user to AuthUser
-    const authUser = convertToAuthUser(user, user.user_metadata);
-    return [authUser];
-    
+    // Query the users table directly
+    const { data: usersData, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching users from database:', error);
+      return [];
+    }
+
+    if (!usersData) return [];
+
+    // Convert database records to AuthUser objects
+    const users: AuthUser[] = usersData.map(userData => ({
+      id: userData.id,
+      auth_id: userData.auth_id,
+      name: userData.name,
+      email: userData.email,
+      position: userData.position,
+      status: userData.status || 'active',
+      progress: userData.progress || 0,
+      acknowledged: userData.acknowledged || false,
+      acknowledgementDate: userData.acknowledgement_date || null,
+      registeredDate: userData.registered_date || new Date().toISOString(),
+      lastActive: userData.last_active || new Date().toISOString(),
+      loginCount: userData.login_count || 0,
+      visitedSections: userData.visited_sections || [],
+      testResults: userData.test_results || {},
+      sectionVisits: userData.section_visits || {}
+    }));
+
+    return users;
   } catch (error) {
     console.error('Error fetching users:', error);
     return [];

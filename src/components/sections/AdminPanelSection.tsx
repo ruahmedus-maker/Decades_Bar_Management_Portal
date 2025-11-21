@@ -692,25 +692,24 @@ export default function AdminPanelSection() {
                 >
                   <span>🔄</span> Refresh Data
                 </button>
-                // In the Quick Actions grid, add this button:
-<button 
-  onClick={() => setActiveTab('tasks')}
-  style={{
-    background: 'rgba(139, 92, 246, 0.2)',
-    color: 'white',
-    border: '1px solid rgba(139, 92, 246, 0.4)',
-    padding: '15px',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    justifyContent: 'center'
-  }}
->
-  <span>✅</span> Manage Tasks
-</button>
+                <button 
+                      onClick={() => setActiveTab('tasks')}
+                      style={{
+                        background: 'rgba(139, 92, 246, 0.2)',
+                        color: 'white',
+                        border: '1px solid rgba(139, 92, 246, 0.4)',
+                        padding: '15px',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        justifyContent: 'center'
+                      }}
+                  >
+                  <span>✅</span> Manage Tasks
+                </button>
               </div>
             </div>
 
