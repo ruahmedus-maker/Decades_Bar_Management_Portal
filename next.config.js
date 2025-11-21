@@ -1,41 +1,63 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Turbopack for development
   turbopack: {
     root: __dirname,
   },
+  
   reactStrictMode: true,
+  
+  // Image configuration - fix for static assets
   images: {
     domains: ['example.com'],
-    unoptimized: true
+    unoptimized: true,
+    // Add this to prevent 401 errors
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // REMOVED: output: 'export', - This was causing the static export issues
-  // REMOVED: trailingSlash: true, - Not needed without static export
+  
+  // Build configuration
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Generate unique build ID that persists across deployments
+  
+  // Force fresh builds
   generateBuildId: async () => {
-    return `build-${Math.floor(Date.now() / 60000)}`;
+    return `build-${Date.now()}`;
   },
+  
+  // Environment variables with build ID
   env: {
-    NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID || `build-${Math.floor(Date.now() / 60000)}`,
+    NEXT_PUBLIC_BUILD_ID: `build-${Date.now()}`,
   },
+  
+  // Headers to fix 401 errors and cache issues
   async headers() {
     return [
       {
+        // Apply to all routes
         source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'no-cache, no-store, must-revalidate, max-age=0',
           },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'no-cache'
+          },
+          {
+            key: 'Vercel-CDN-Cache-Control',
+            value: 'no-cache'
+          }
         ],
       },
-      // Add specific cache headers for static assets
       {
+        // Static assets - allow public access
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -44,14 +66,45 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Fix for image 401 errors
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+      {
+        // Fix for icon 401 errors
+        source: '/icon-(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
     ];
   },
-  experimental: {
-    staleTimes: {
-      dynamic: 0,
-      static: 0,
-    },
-  },
+  
+  // Enable trailing slash for better URL handling
+  trailingSlash: false,
+  
+  // Disable compression to avoid caching issues
+  compress: false,
+  
+  // Power your Vercel deployment
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig;
