@@ -14,6 +14,8 @@ export default function TasksSection() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+
 
   // Task form state
   const [newTask, setNewTask] = useState({
@@ -178,7 +180,8 @@ export default function TasksSection() {
   if (!confirm('Are you sure you want to delete this task?')) return;
 
   try {
-    setLoading(true); // Show loading state
+    setDeletingTaskId(taskId);
+    console.log('🗑️ Deleting task:', taskId);
     
     const { error } = await supabase
       .from('tasks')
@@ -186,18 +189,21 @@ export default function TasksSection() {
       .eq('id', taskId);
 
     if (error) {
-      console.error('Supabase delete error:', error);
-      throw new Error(`Database error: ${error.message}`);
+      console.error('❌ Supabase delete error:', error);
+      throw error;
     }
 
+    console.log('✅ Task deleted successfully from database');
     showToast('Task deleted successfully');
-    await loadTasks(); // Wait for reload to complete
+    
+    // Update local state immediately instead of waiting for reload
+    setTasks(prev => prev.filter(task => task.id !== taskId));
     
   } catch (error: any) {
-    console.error('Error deleting task:', error);
+    console.error('❌ Error deleting task:', error);
     showToast(`Error deleting task: ${error.message}`);
   } finally {
-    setLoading(false);
+    setDeletingTaskId(null);
   }
 };
 
@@ -208,19 +214,22 @@ export default function TasksSection() {
     }
   }, [currentUser, isAdmin]);
 
-  if (loading) {
-    return (
-      <div style={{
-        marginBottom: '30px',
-        padding: '40px',
-        textAlign: 'center',
-        color: 'white'
-      }}>
-        <div>⏳</div>
-        <h3>Loading Tasks...</h3>
-      </div>
-    );
-  }
+  if (loading && tasks.length === 0) {
+  return (
+    <div style={{
+      marginBottom: '30px',
+      padding: '40px',
+      textAlign: 'center',
+      color: 'white'
+    }}>
+      <div>⏳</div>
+      <h3>Loading Tasks...</h3>
+      <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+        Connecting to database...
+      </p>
+    </div>
+  );
+}
 
   if (error) {
     return (
@@ -609,22 +618,24 @@ export default function TasksSection() {
                       
                       {/* Delete button for admins */}
                       {isAdmin && (
-                        <button 
-                          onClick={() => deleteTask(task.id)}
-                          style={{ 
-                            background: '#EF4444',
-                            color: 'white',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '0.8rem',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          Delete
-                        </button>
-                      )}
+                          <button 
+                            onClick={() => deleteTask(task.id)}
+                            disabled={deletingTaskId === task.id}
+                            style={{ 
+                              background: deletingTaskId === task.id ? '#6B7280' : '#EF4444',
+                              color: 'white',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              cursor: deletingTaskId === task.id ? 'not-allowed' : 'pointer',
+                              fontSize: '0.8rem',
+                              whiteSpace: 'nowrap',
+                              opacity: deletingTaskId === task.id ? 0.6 : 1
+                            }}
+                          >
+                            {deletingTaskId === task.id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>
