@@ -66,16 +66,18 @@ export interface EmployeeFolder {
 
 // Add to your existing types.ts
 
+// Add this to your Task interface
 export interface Task {
   id: string;
   title: string;
   description: string;
-  assignedTo: string; // User email
+  assignedTo: string;
   dueDate: string;
-  completed: boolean;
-  completedAt?: string;
+  status: 'pending' | 'in-progress' | 'completed'; // Add status field
+  completed: boolean; // Keep for backward compatibility
+  completedAt: string | null;
   createdAt: string;
-  eventId?: string; // Link to special event if applicable
+  eventId: string | null;
   priority: 'low' | 'medium' | 'high';
 }
 

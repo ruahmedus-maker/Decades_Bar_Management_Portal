@@ -54,6 +54,7 @@ export default function TasksSection() {
         description: task.description,
         assignedTo: task.assigned_to,
         dueDate: task.due_date,
+        status: task.status || (task.completed ? 'completed' : 'pending'),
         completed: task.completed,
         completedAt: task.completed_at,
         createdAt: task.created_at,
@@ -84,22 +85,36 @@ export default function TasksSection() {
     }
   };
 
-  const markTaskComplete = async (taskId: string, completed: boolean) => {
+  const updateTaskStatus = async (taskId: string, status: 'pending' | 'in-progress' | 'completed') => {
     try {
+      const updateData: any = {
+        status,
+        completed: status === 'completed'
+      };
+      
+      if (status === 'completed') {
+        updateData.completed_at = new Date().toISOString();
+      } else {
+        updateData.completed_at = null;
+      }
+
       const { error } = await supabase
         .from('tasks')
-        .update({ 
-          completed,
-          completed_at: completed ? new Date().toISOString() : null
-        })
+        .update(updateData)
         .eq('id', taskId);
 
       if (error) throw error;
 
-      showToast(`Task marked as ${completed ? 'completed' : 'incomplete'}`);
-      loadTasks(); // Reload tasks to reflect changes
+      const statusMessages = {
+        'pending': 'Task marked as pending',
+        'in-progress': 'Task marked as in progress', 
+        'completed': 'Task marked as completed'
+      };
+      
+      showToast(statusMessages[status]);
+      loadTasks();
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error('Error updating task status:', error);
       showToast('Error updating task');
     }
   };
@@ -125,6 +140,7 @@ export default function TasksSection() {
         description: newTask.description,
         assigned_to: newTask.assignedTo,
         due_date: newTask.dueDate || null,
+        status: 'pending',
         completed: false,
         priority: newTask.priority,
         created_by: currentUser.email
@@ -462,7 +478,7 @@ export default function TasksSection() {
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     marginBottom: '10px',
-                    opacity: task.completed ? 0.7 : 1
+                    opacity: task.status === 'completed' ? 0.7 : 1
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -470,7 +486,7 @@ export default function TasksSection() {
                       <div style={{ 
                         fontWeight: 'bold', 
                         color: 'white',
-                        textDecoration: task.completed ? 'line-through' : 'none',
+                        textDecoration: task.status === 'completed' ? 'line-through' : 'none',
                         marginBottom: '5px'
                       }}>
                         {task.title}
@@ -485,6 +501,22 @@ export default function TasksSection() {
                           color: 'white'
                         }}>
                           {task.priority}
+                        </span>
+                        <span style={{ 
+                          marginLeft: '10px',
+                          fontSize: '0.7rem',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: 
+                            task.status === 'completed' ? 'rgba(16, 185, 129, 0.2)' :
+                            task.status === 'in-progress' ? 'rgba(59, 130, 246, 0.2)' :
+                            'rgba(245, 158, 11, 0.2)',
+                          color: 
+                            task.status === 'completed' ? '#10B981' :
+                            task.status === 'in-progress' ? '#3B82F6' : '#F59E0B'
+                        }}>
+                          {task.status === 'completed' ? '✅ Completed' :
+                           task.status === 'in-progress' ? '🟡 In Progress' : '⚪ Pending'}
                         </span>
                       </div>
                       {task.description && (
@@ -501,13 +533,7 @@ export default function TasksSection() {
                             📅 Due: {new Date(task.dueDate).toLocaleDateString()}
                           </span>
                         )}
-                        <span style={{ 
-                          color: task.completed ? '#10B981' : '#F59E0B',
-                          fontWeight: 'bold'
-                        }}>
-                          {task.completed ? '✅ Completed' : '🟡 Pending'}
-                        </span>
-                        {task.completed && task.completedAt && (
+                        {task.status === 'completed' && task.completedAt && (
                           <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                             Completed: {new Date(task.completedAt).toLocaleDateString()}
                           </span>
@@ -515,10 +541,30 @@ export default function TasksSection() {
                       </div>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      {!task.completed && (
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {/* Pending -> Start Task */}
+                      {task.status === 'pending' && (
                         <button 
-                          onClick={() => markTaskComplete(task.id, true)}
+                          onClick={() => updateTaskStatus(task.id, 'in-progress')}
+                          style={{ 
+                            background: '#3B82F6',
+                            color: 'white',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '0.8rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Start Task
+                        </button>
+                      )}
+                      
+                      {/* In Progress -> Complete */}
+                      {task.status === 'in-progress' && (
+                        <button 
+                          onClick={() => updateTaskStatus(task.id, 'completed')}
                           style={{ 
                             background: '#10B981',
                             color: 'white',
@@ -533,9 +579,11 @@ export default function TasksSection() {
                           Complete
                         </button>
                       )}
-                      {task.completed && (
+                      
+                      {/* Completed -> Reopen */}
+                      {task.status === 'completed' && (
                         <button 
-                          onClick={() => markTaskComplete(task.id, false)}
+                          onClick={() => updateTaskStatus(task.id, 'in-progress')}
                           style={{ 
                             background: '#F59E0B',
                             color: 'white',
@@ -550,6 +598,8 @@ export default function TasksSection() {
                           Reopen
                         </button>
                       )}
+                      
+                      {/* Delete button for admins */}
                       {isAdmin && (
                         <button 
                           onClick={() => deleteTask(task.id)}
