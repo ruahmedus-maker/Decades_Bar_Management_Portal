@@ -175,23 +175,31 @@ export default function TasksSection() {
   };
 
   const deleteTask = async (taskId: string) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+  if (!confirm('Are you sure you want to delete this task?')) return;
 
-    try {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', taskId);
+  try {
+    setLoading(true); // Show loading state
+    
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', taskId);
 
-      if (error) throw error;
-
-      showToast('Task deleted successfully');
-      loadTasks();
-    } catch (error: any) {
-      console.error('Error deleting task:', error);
-      showToast(`Error deleting task: ${error.message}`);
+    if (error) {
+      console.error('Supabase delete error:', error);
+      throw new Error(`Database error: ${error.message}`);
     }
-  };
+
+    showToast('Task deleted successfully');
+    await loadTasks(); // Wait for reload to complete
+    
+  } catch (error: any) {
+    console.error('Error deleting task:', error);
+    showToast(`Error deleting task: ${error.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     loadTasks();

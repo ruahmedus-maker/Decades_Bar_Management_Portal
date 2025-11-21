@@ -8,8 +8,8 @@ const nextConfig = {
     domains: ['example.com'],
     unoptimized: true
   },
-  output: 'export',
-  trailingSlash: true,
+  // REMOVED: output: 'export', - This was causing the static export issues
+  // REMOVED: trailingSlash: true, - Not needed without static export
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -18,11 +18,9 @@ const nextConfig = {
   },
   // Generate unique build ID that persists across deployments
   generateBuildId: async () => {
-    // Use a timestamp that only changes on actual builds, not page loads
-    return `build-${Math.floor(Date.now() / 60000)}`; // Changes every minute
+    return `build-${Math.floor(Date.now() / 60000)}`;
   },
   env: {
-    // This will be set during build time, not runtime
     NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID || `build-${Math.floor(Date.now() / 60000)}`,
   },
   async headers() {
@@ -33,6 +31,16 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'no-cache, no-store, must-revalidate, max-age=0',
+          },
+        ],
+      },
+      // Add specific cache headers for static assets
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
