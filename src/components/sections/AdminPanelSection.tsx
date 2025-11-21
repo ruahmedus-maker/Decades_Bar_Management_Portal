@@ -675,24 +675,6 @@ export default function AdminPanelSection() {
                   <span>🎉</span> Plan Event
                 </button>
                 <button 
-                  onClick={loadAllData}
-                  style={{
-                    background: 'rgba(16, 185, 129, 0.2)',
-                    color: 'white',
-                    border: '1px solid rgba(16, 185, 129, 0.4)',
-                    padding: '15px',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <span>🔄</span> Refresh Data
-                </button>
-                <button 
                       onClick={() => setActiveTab('tasks')}
                       style={{
                         background: 'rgba(139, 92, 246, 0.2)',
@@ -709,6 +691,24 @@ export default function AdminPanelSection() {
                       }}
                   >
                   <span>✅</span> Manage Tasks
+                </button>
+                <button 
+                  onClick={loadAllData}
+                  style={{
+                    background: 'rgba(16, 185, 129, 0.2)',
+                    color: 'white',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <span>🔄</span> Refresh Data
                 </button>
               </div>
             </div>
