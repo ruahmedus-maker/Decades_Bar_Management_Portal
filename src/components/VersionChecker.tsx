@@ -1,58 +1,61 @@
 'use client';
 
-import { useEffect } from 'react';
-
-const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || `build-${Date.now()}`;
+import { useEffect, useState } from 'react';
+import { getBuildInfo } from '@/lib/build-info';
 
 export default function VersionChecker() {
+  const [hasChecked, setHasChecked] = useState(false);
+
   useEffect(() => {
     const checkVersion = () => {
+      const buildInfo = getBuildInfo();
       const storedBuild = localStorage.getItem('app-build');
-      const currentBuild = BUILD_ID;
+      const storedTime = localStorage.getItem('app-build-time');
       
       console.log('🔍 Version Check:', {
+        current: buildInfo.id,
         stored: storedBuild,
-        current: currentBuild,
-        match: storedBuild === currentBuild
+        currentTime: buildInfo.time,
+        storedTime: storedTime
       });
-      
-      if (storedBuild !== currentBuild) {
-        console.log('🔄 New build detected, clearing cache and reloading...');
-        localStorage.setItem('app-build', currentBuild);
+
+      // Only reload if this is a different build AND we haven't just reloaded
+      if (storedBuild && storedBuild !== buildInfo.id && !hasChecked) {
+        console.log('🔄 New build detected, updating cache...');
         
-        // Clear all possible caches
+        // Update stored version
+        localStorage.setItem('app-build', buildInfo.id);
+        localStorage.setItem('app-build-time', buildInfo.time);
+        
+        // Clear caches without forcing immediate reload
         if ('caches' in window) {
           caches.keys().then(names => {
             names.forEach(name => caches.delete(name));
           });
         }
-        
-        // Clear service workers
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => registration.unregister());
-          });
+
+        // Show a message to user instead of auto-reloading
+        if (confirm('A new version is available. Reload to see the latest changes?')) {
+          window.location.reload();
         }
         
-        // Clear various storages
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // Force reload with cache bust
-        setTimeout(() => {
-          window.location.href = window.location.href + '?v=' + Date.now();
-        }, 1000);
+        setHasChecked(true);
+      } else if (!storedBuild) {
+        // First time load - just store the version
+        localStorage.setItem('app-build', buildInfo.id);
+        localStorage.setItem('app-build-time', buildInfo.time);
+        setHasChecked(true);
       }
     };
 
     // Check on mount
     checkVersion();
     
-    // Check every 30 seconds in case of background updates
-    const interval = setInterval(checkVersion, 30000);
+    // Only check every 2 minutes, not every 30 seconds
+    const interval = setInterval(checkVersion, 120000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [hasChecked]);
 
   return null;
 }

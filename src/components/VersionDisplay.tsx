@@ -1,14 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getBuildInfo } from '@/lib/build-info';
 
 export default function VersionDisplay() {
-  const [version, setVersion] = useState('');
+  const [info, setInfo] = useState({ current: '', stored: '', time: '' });
   
   useEffect(() => {
-    const buildId = process.env.NEXT_PUBLIC_BUILD_ID || `build-${Date.now()}`;
+    const buildInfo = getBuildInfo();
     const storedBuild = localStorage.getItem('app-build');
-    setVersion(`Current: ${buildId} | Stored: ${storedBuild}`);
+    const storedTime = localStorage.getItem('app-build-time');
+    
+    setInfo({
+      current: buildInfo.id,
+      stored: storedBuild || 'none',
+      time: storedTime ? new Date(storedTime).toLocaleTimeString() : 'none'
+    });
   }, []);
 
   return (
@@ -18,12 +25,17 @@ export default function VersionDisplay() {
       right: '10px',
       background: 'rgba(0,0,0,0.8)',
       color: 'white',
-      padding: '5px 10px',
+      padding: '8px 12px',
       borderRadius: '5px',
-      fontSize: '12px',
+      fontSize: '11px',
       zIndex: 10000,
+      maxWidth: '200px',
+      fontFamily: 'monospace',
     }}>
-      {version}
+      <div><strong>Build:</strong> {info.current}</div>
+      <div><strong>Stored:</strong> {info.stored}</div>
+      <div><strong>Time:</strong> {info.time}</div>
+      <div><strong>Status:</strong> {info.current === info.stored ? '✅ Current' : '🔄 Update Available'}</div>
     </div>
   );
 }

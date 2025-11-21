@@ -16,14 +16,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Generate unique build ID
+  // Generate unique build ID that persists across deployments
   generateBuildId: async () => {
-    return `build-${Date.now()}`;
+    // Use a timestamp that only changes on actual builds, not page loads
+    return `build-${Math.floor(Date.now() / 60000)}`; // Changes every minute
   },
   env: {
-    NEXT_PUBLIC_BUILD_ID: `build-${Date.now()}`,
+    // This will be set during build time, not runtime
+    NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID || `build-${Math.floor(Date.now() / 60000)}`,
   },
-  // Disable all caching
   async headers() {
     return [
       {

@@ -7,13 +7,13 @@ import InstallPrompt from '@/components/InstallPrompt';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import VersionChecker from '@/components/VersionChecker';
 import VersionDisplay from '@/components/VersionDisplay';
+import { getBuildInfo } from '@/lib/build-info';
 
 const inter = Inter({ 
   subsets: ["latin"],
 });
 
-// This will be unique for each build
-const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || `build-${Date.now()}`;
+const buildInfo = getBuildInfo();
 
 export const metadata: Metadata = {
   title: "Decades Bar Training Portal",
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-build={BUILD_ID}>
+    <html lang="en" data-build={buildInfo.id}>
       <head>
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
@@ -75,8 +75,9 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#2DD4BF" />
         <meta name="msapplication-tap-highlight" content="no" />
         
-        {/* Build ID for cache busting */}
-        <meta name="build-id" content={BUILD_ID} />
+        {/* Build Info */}
+        <meta name="build-id" content={buildInfo.id} />
+        <meta name="build-time" content={buildInfo.time} />
         
         {/* Cache Prevention */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -100,6 +101,9 @@ export default function RootLayout({
           userSelect: 'none',
         }}
       >
+        {/* Version Display - Remove this after testing */}
+        <VersionDisplay />
+        
         <DecadesBanner />
         <div style={{ 
           position: 'relative',
@@ -117,9 +121,8 @@ export default function RootLayout({
         {/* Chunk Error Handler */}
         <ChunkErrorHandler />
         
-        {/* Version Checker - This will auto-reload if version changes */}
+        {/* Version Checker - Fixed to prevent loops */}
         <VersionChecker />
-        <VersionDisplay />
         
       </body>
     </html>
