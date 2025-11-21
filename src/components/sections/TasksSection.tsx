@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { Task } from '@/types';
+import { Task, User } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { getAllUsers } from '@/lib/supabase-auth';
 
 export default function TasksSection() {
   const { showToast, currentUser, isAdmin } = useApp();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -22,7 +24,7 @@ export default function TasksSection() {
     priority: 'medium' as 'low' | 'medium' | 'high'
   });
 
-  // Load tasks from Supabase
+  // Load tasks and users from Supabase
   const loadTasks = async () => {
     try {
       setLoading(true);
@@ -68,6 +70,20 @@ export default function TasksSection() {
     }
   };
 
+  // Load users for the dropdown
+  const loadUsers = async () => {
+    try {
+      const allUsers = await getAllUsers();
+      // Filter to only show bartenders and trainees (not admins) for task assignment
+      const teamUsers = allUsers.filter(user => 
+        user.position === 'Bartender' || user.position === 'Trainee'
+      );
+      setUsers(teamUsers);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+  };
+
   const markTaskComplete = async (taskId: string, completed: boolean) => {
     try {
       const { error } = await supabase
@@ -100,7 +116,7 @@ export default function TasksSection() {
       }
 
       if (!newTask.assignedTo.trim()) {
-        showToast('Assignee is required');
+        showToast('Please select someone to assign the task to');
         return;
       }
 
@@ -114,11 +130,15 @@ export default function TasksSection() {
         created_by: currentUser.email
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('tasks')
-        .insert([taskData]);
+        .insert([taskData])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       showToast('Task created successfully!');
       setNewTask({
@@ -130,9 +150,9 @@ export default function TasksSection() {
       });
       setShowCreateForm(false);
       loadTasks();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating task:', error);
-      showToast('Error creating task');
+      showToast(`Error creating task: ${error.message}`);
     } finally {
       setCreating(false);
     }
@@ -151,14 +171,17 @@ export default function TasksSection() {
 
       showToast('Task deleted successfully');
       loadTasks();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting task:', error);
-      showToast('Error deleting task');
+      showToast(`Error deleting task: ${error.message}`);
     }
   };
 
   useEffect(() => {
     loadTasks();
+    if (isAdmin) {
+      loadUsers();
+    }
   }, [currentUser, isAdmin]);
 
   if (loading) {
@@ -267,20 +290,34 @@ export default function TasksSection() {
                   resize: 'vertical'
                 }}
               />
-              <input
-                type="email"
-                placeholder="Assign To (Email) *"
-                value={newTask.assignedTo}
-                onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
-                style={{
-                  padding: '10px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem'
-                }}
-              />
+              
+              {/* User Dropdown */}
+              <div>
+                <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
+                  Assign To *
+                </label>
+                <select
+                  value={newTask.assignedTo}
+                  onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
+                  style={{
+                    padding: '10px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    width: '100%'
+                  }}
+                >
+                  <option value="">Select Team Member</option>
+                  {users.map((user) => (
+                    <option key={user.email} value={user.email}>
+                      {user.name} ({user.position}) - {user.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
