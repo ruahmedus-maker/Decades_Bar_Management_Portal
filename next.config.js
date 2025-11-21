@@ -22,25 +22,33 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
-  // Add cache headers that prevent aggressive caching during development
+  // Aggressive cache headers
   async headers() {
     return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
+            value: 'no-cache, no-store, must-revalidate, max-age=0',
           },
         ],
       },
     ];
   },
-  // Disable cache for static generation in development
   experimental: {
     staleTimes: {
-      dynamic: 0, // Always fresh for dynamic content
-      static: 0,  // Always fresh for static content
+      dynamic: 0,
+      static: 0,
     },
   },
 }
