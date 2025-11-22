@@ -854,70 +854,99 @@ function MaintenanceTicketsManagement() {
                     <td style={{ padding: '12px', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.7)' }}>
                       {new Date(ticket.created_at).toLocaleDateString()}
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
-                        <button 
-                          onClick={() => {
-                            setSelectedTicket(ticket);
-                            setAssignmentForm({
-                              assignedTo: ticket.assigned_to || '',
-                              notes: ticket.notes || '',
-                              status: ticket.status
-                            });
-                          }}
-                          style={{ 
-                            background: '#d4af37', 
-                            color: 'white', 
-                            border: 'none', 
-                            padding: '6px 12px', 
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '0.8rem'
-                          }}
-                        >
-                          Manage
-                        </button>
-                        {/* Quick Action Buttons */}
-                        <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
-                          {ticket.status !== 'in-progress' && (
-                            <button 
-                              onClick={() => handleQuickStatusUpdate(ticket.id, 'in-progress')}
-                              disabled={isSubmitting}
-                              style={{ 
-                                background: '#d69e2e',
-                                color: 'white',
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                fontSize: '0.7rem',
-                                opacity: isSubmitting ? 0.6 : 1
-                              }}
-                            >
-                              In Progress
-                            </button>
-                          )}
-                          {ticket.status !== 'completed' && (
-                            <button 
-                              onClick={() => handleQuickStatusUpdate(ticket.id, 'completed')}
-                              disabled={isSubmitting}
-                              style={{ 
-                                background: '#38a169',
-                                color: 'white',
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                fontSize: '0.7rem',
-                                opacity: isSubmitting ? 0.6 : 1
-                              }}
-                            >
-                              Complete
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+                    <td style={{ padding: '12px', minWidth: '150px' }}>
+  <div style={{ display: 'flex', gap: '8px', flexDirection: 'column', alignItems: 'flex-start' }}>
+    {/* Manage Button */}
+    <button 
+      onClick={() => {
+        setSelectedTicket(ticket);
+        setAssignmentForm({
+          assignedTo: ticket.assigned_to || '',
+          notes: ticket.notes || '',
+          status: ticket.status
+        });
+      }}
+      style={{ 
+        background: '#d4af37', 
+        color: 'white', 
+        border: 'none', 
+        padding: '8px 16px', 
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        width: '100%',
+        textAlign: 'center'
+      }}
+    >
+      🛠️ Manage
+    </button>
+    
+    {/* Quick Action Buttons */}
+    <div style={{ display: 'flex', gap: '6px', width: '100%', flexWrap: 'wrap' }}>
+      {ticket.status !== 'in-progress' && ticket.status !== 'completed' && ticket.status !== 'closed' && (
+        <button 
+          onClick={() => handleQuickStatusUpdate(ticket.id, 'in-progress')}
+          disabled={isSubmitting}
+          style={{ 
+            background: '#d69e2e',
+            color: 'white',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            flex: 1,
+            opacity: isSubmitting ? 0.6 : 1
+          }}
+        >
+          🔄 Progress
+        </button>
+      )}
+      {ticket.status !== 'completed' && ticket.status !== 'closed' && (
+        <button 
+          onClick={() => handleQuickStatusUpdate(ticket.id, 'completed')}
+          disabled={isSubmitting}
+          style={{ 
+            background: '#38a169',
+            color: 'white',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            flex: 1,
+            opacity: isSubmitting ? 0.6 : 1
+          }}
+        >
+          ✅ Complete
+        </button>
+      )}
+      {ticket.status === 'completed' && (
+        <button 
+          onClick={() => handleQuickStatusUpdate(ticket.id, 'closed')}
+          disabled={isSubmitting}
+          style={{ 
+            background: '#718096',
+            color: 'white',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            flex: 1,
+            opacity: isSubmitting ? 0.6 : 1
+          }}
+        >
+          🔒 Close
+        </button>
+      )}
+    </div>
+  </div>
+</td>
                   </tr>
                 ))}
               </tbody>
