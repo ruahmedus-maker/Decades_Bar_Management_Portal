@@ -1,4 +1,4 @@
-// contexts/AppContext.tsx - UPDATED IMPORTS
+// contexts/AppContext.tsx - UPDATED WITH BACKGROUND IMAGE MANAGEMENT
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import {
   signOut, 
   getCurrentSession, 
   onAuthStateChange 
-} from '@/lib/supabase-auth'; // ← Updated import
+} from '@/lib/supabase-auth';
 import { trackSectionVisit, submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
 
 interface RegistrationData {
@@ -31,6 +31,12 @@ interface AppContextType {
     show: boolean;
   };
   userProgress: any;
+  // Background Image Management
+  backgroundImages: string[];
+  setBackgroundImages: (images: string[]) => void;
+  uploadBackgroundImage: (file: File) => Promise<string>;
+  deleteBackgroundImage: (imageUrl: string) => Promise<void>;
+  // Auth & Progress Methods
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegistrationData) => Promise<void>;
   logout: () => Promise<void>;
@@ -45,33 +51,62 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Default fallback images
+const defaultBackgroundImages = [
+  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1920&h=1080&fit=crop',
+  'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=1920&h=1080&fit=crop',
+  'https://images.unsplash.com/photo-1556009127-85d6f4bce551?w=1920&h=1080&fit=crop',
+];
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('welcome');
   const [toast, setToast] = useState({ message: '', show: false });
   const [userProgress, setUserProgress] = useState<any>(null);
+  const [backgroundImages, setBackgroundImages] = useState<string[]>(defaultBackgroundImages);
 
-  // In AppContext.tsx - SIMPLIFIED
-useEffect(() => {
-  const initAuth = async () => {
-    await initializeAuth();
-    
-    // Check for existing session
-    const user = await getCurrentSession();
-    setCurrentUser(user);
-    setIsLoading(false);
-  };
+  // Initialize auth and load saved background images
+  useEffect(() => {
+    const initApp = async () => {
+      await initializeAuth();
+      
+      // Check for existing session
+      const user = await getCurrentSession();
+      setCurrentUser(user);
 
-  initAuth();
+      // Load saved background images from localStorage
+      const savedImages = localStorage.getItem('decades-background-images');
+      if (savedImages) {
+        try {
+          const parsedImages = JSON.parse(savedImages);
+          if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+            setBackgroundImages(parsedImages);
+          }
+        } catch (error) {
+          console.error('Error loading saved background images:', error);
+        }
+      }
 
-  // Listen for auth state changes
-  const { data: { subscription } } = onAuthStateChange((user) => {
-    setCurrentUser(user);
-  });
+      setIsLoading(false);
+    };
 
-  return () => subscription.unsubscribe();
-}, []);
+    initApp();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = onAuthStateChange((user) => {
+      setCurrentUser(user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Save background images to localStorage whenever they change
+  useEffect(() => {
+    if (backgroundImages.length > 0) {
+      localStorage.setItem('decades-background-images', JSON.stringify(backgroundImages));
+    }
+  }, [backgroundImages]);
 
   // Load user progress when currentUser changes
   useEffect(() => {
@@ -99,8 +134,56 @@ useEffect(() => {
     }
   };
 
+  // Background Image Management Methods
+  const uploadBackgroundImage = async (file: File): Promise<string> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const blob = await response.json();
+      
+      // Add new image to the beginning of the list
+      const updatedImages = [blob.url, ...backgroundImages];
+      setBackgroundImages(updatedImages);
+      
+      return blob.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  };
+
+  const deleteBackgroundImage = async (imageUrl: string) => {
+    try {
+      // Remove from local state
+      const updatedImages = backgroundImages.filter(img => img !== imageUrl);
+      setBackgroundImages(updatedImages);
+
+      // If we're deleting the last image, restore defaults
+      if (updatedImages.length === 0) {
+        setBackgroundImages(defaultBackgroundImages);
+      }
+
+      // Note: In a production app, you'd also call a DELETE API route
+      // to remove the file from Vercel Blob storage
+    } catch (error) {
+      console.error('Delete error:', error);
+      throw error;
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    const { user, error } = await signInWithEmail(email, password); // ← Updated function
+    const { user, error } = await signInWithEmail(email, password);
     if (error) throw new Error(error);
     if (!user) throw new Error('Login failed');
     
@@ -109,7 +192,7 @@ useEffect(() => {
   };
 
   const register = async (userData: RegistrationData) => {
-    const { user, error } = await signUpWithEmail( // ← Updated function
+    const { user, error } = await signUpWithEmail(
       userData.email, 
       userData.password, 
       {
@@ -127,7 +210,7 @@ useEffect(() => {
   };
 
   const logout = async () => {
-    const { error } = await signOut(); // ← Updated function
+    const { error } = await signOut();
     if (error) {
       console.error('Logout error:', error);
     }
@@ -168,6 +251,12 @@ useEffect(() => {
     activeSection,
     toast,
     userProgress,
+    // Background Image Management
+    backgroundImages,
+    setBackgroundImages,
+    uploadBackgroundImage,
+    deleteBackgroundImage,
+    // Auth & Progress Methods
     login,
     register,
     logout,

@@ -1,3 +1,5 @@
+'use client';
+
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -7,7 +9,9 @@ import InstallPrompt from '@/components/InstallPrompt';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import VersionChecker from '@/components/VersionChecker';
 import VersionDisplay from '@/components/VersionDisplay';
+import ImageManager from '@/components/ImageManager';
 import { getBuildInfo } from '@/lib/build-info';
+import { useApp } from '@/contexts/AppContext';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -15,6 +19,7 @@ const inter = Inter({
 
 const buildInfo = getBuildInfo();
 
+// Note: Metadata and Viewport must remain server-side exports
 export const metadata: Metadata = {
   title: "Decades Bar Training Portal",
   description: "Training & Procedures Portal for Decades Bar Staff",
@@ -37,6 +42,57 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: "cover",
 };
+
+// Client component wrapper that contains the body content
+function ClientBody({ children }: { children: React.ReactNode }) {
+  const { isAdmin } = useApp();
+
+  return (
+    <body 
+      className={inter.className}
+      style={{ 
+        margin: 0, 
+        padding: 0,
+        minHeight: '100vh',
+        fontFamily: 'system-ui, sans-serif',
+        background: 'transparent',
+        overflowX: 'hidden',
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
+        userSelect: 'none',
+      }}
+    >
+      {/* Version Display - Remove this after testing */}
+      <VersionDisplay />
+      
+      <DecadesBanner />
+      <div style={{ 
+        position: 'relative',
+        zIndex: 10,
+        minHeight: '100vh',
+        background: 'transparent',
+      }}>
+        {children}
+      </div>
+      
+      {/* PWA Components */}
+      <PWAInstaller />
+      <InstallPrompt />
+      
+      {/* Chunk Error Handler */}
+      <ChunkErrorHandler />
+      
+      {/* Version Checker - Fixed to prevent loops */}
+      <VersionChecker />
+      
+      {/* Image Manager - Only show for admins */}
+      {isAdmin && <ImageManager />}
+    </body>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -84,47 +140,7 @@ export default function RootLayout({
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
       </head>
-      <body 
-        className={inter.className}
-        style={{ 
-          margin: 0, 
-          padding: 0,
-          minHeight: '100vh',
-          fontFamily: 'system-ui, sans-serif',
-          background: 'transparent',
-          overflowX: 'hidden',
-          WebkitTouchCallout: 'none',
-          WebkitUserSelect: 'none',
-          KhtmlUserSelect: 'none',
-          MozUserSelect: 'none',
-          msUserSelect: 'none',
-          userSelect: 'none',
-        }}
-      >
-        {/* Version Display - Remove this after testing */}
-        <VersionDisplay />
-        
-        <DecadesBanner />
-        <div style={{ 
-          position: 'relative',
-          zIndex: 10,
-          minHeight: '100vh',
-          background: 'transparent',
-        }}>
-          {children}
-        </div>
-        
-        {/* PWA Components */}
-        <PWAInstaller />
-        <InstallPrompt />
-        
-        {/* Chunk Error Handler */}
-        <ChunkErrorHandler />
-        
-        {/* Version Checker - Fixed to prevent loops */}
-        <VersionChecker />
-        
-      </body>
+      <ClientBody>{children}</ClientBody>
     </html>
   );
 }
