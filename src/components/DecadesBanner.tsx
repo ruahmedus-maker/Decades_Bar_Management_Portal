@@ -4,11 +4,11 @@
 import { useState, useEffect } from 'react';
 
 const bannerImages = [
-  '/images/decades/banner-main.jpg',
-  '/images/decades/banner-main2.jpg',
-  '/images/decades/banner-main3.jpg',
-  '/images/decades/banner-main4.jpg',
-  '/images/decades/banner-main5.jpg',
+  'https://waclqm1d0d2eutah.public.blob.vercel-storage.com/banner-main5.jpg',
+  'https://waclqm1d0d2eutah.public.blob.vercel-storage.com/banner-main2.jpg',
+  'https://waclqm1d0d2eutah.public.blob.vercel-storage.com/banner-main4.jpg',
+  'https://waclqm1d0d2eutah.public.blob.vercel-storage.com/banner-main3.jpg',
+  'https://waclqm1d0d2eutah.public.blob.vercel-storage.com/banner-main.jpg',
 ];
 
 export default function DecadesBanner() {
