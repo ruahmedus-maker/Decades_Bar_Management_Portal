@@ -6,8 +6,6 @@ import InstallPrompt from '@/components/InstallPrompt';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import VersionChecker from '@/components/VersionChecker';
 import VersionDisplay from '@/components/VersionDisplay';
-import ImageManager from '@/components/ImageManager';
-import { useApp } from '@/contexts/AppContext';
 import { Inter } from "next/font/google";
 
 const inter = Inter({ 
@@ -15,8 +13,6 @@ const inter = Inter({
 });
 
 export default function ClientBody({ children }: { children: React.ReactNode }) {
-  const { isAdmin } = useApp();
-
   return (
     <body 
       className={inter.className}
@@ -57,9 +53,6 @@ export default function ClientBody({ children }: { children: React.ReactNode }) 
       
       {/* Version Checker - Fixed to prevent loops */}
       <VersionChecker />
-      
-      {/* Image Manager - Only show for admins */}
-      {isAdmin && <ImageManager />}
     </body>
   );
 }
