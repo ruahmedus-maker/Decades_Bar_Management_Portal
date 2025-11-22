@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { getBuildInfo } from '@/lib/build-info';
-
+import { AppProvider } from '@/contexts/AppContext';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -82,7 +82,9 @@ export default function RootLayout({
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
       </head>
-      <ClientBody>{children}</ClientBody>
+      <AppProvider>
+        <ClientBody>{children}</ClientBody>
+      </AppProvider>
     </html>
   );
 }
