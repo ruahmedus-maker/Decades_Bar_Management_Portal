@@ -1,280 +1,242 @@
+// lib/supabase-progress.ts - UPDATED FOR NEW TABLE STRUCTURE
 import { supabase } from './supabase';
-import { User } from '@/types';
 
-// Define types for database rows
-interface SectionVisitRow {
-  id: number;
-  user_email: string;
-  section_id: string;
-  first_visit: string;
-  last_visit: string;
-  total_time: number;
-  completed: boolean;
-  quiz_passed: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-interface UserRow {
-  email: string;
-  name: string;
-  position: string;
-  status: string;
-  progress: number;
-  acknowledged: boolean;
-  acknowledgement_date: string | null;
-  registered_date: string;
-  last_active: string;
-  login_count: number;
-  password_hash: string;
-  visited_sections: string[] | null;
-  test_results: any;
-  section_visits: any;
-  created_at: string;
-  updated_at: string;
-}
-
-// Define the actual sections (same as your current progress.ts)
-const ALL_SECTIONS = [
-  'welcome',
-  'training',
-  'uniform-guide',
-  'social-media',
-  'resources',
-  'procedures',
-  'policies',
-  'glassware-guide',
-  'faq',
-  'drinks-specials',
-  'comps-voids',
-  'cocktails',
-  'aloha-pos',
-  'bar-cleanings'
-];
-
-const EXCLUDED_SECTIONS = [
-  'admin-panel',
-  'employee-counselings', 
-  'schedule-report',
-  'special-events'
+// Define the actual sections that match your training content
+const SECTION_CONFIG = [
+  { id: 'welcome', label: 'Welcome & Introduction', timeRequired: 60 },
+  { id: 'training', label: 'Training Program', timeRequired: 60 },
+  { id: 'uniform-guide', label: 'Uniform Guide', timeRequired: 60 },
+  { id: 'social-media', label: 'Social Media Policy', timeRequired: 60 },
+  { id: 'resources', label: 'Resources', timeRequired: 60 },
+  { id: 'procedures', label: 'Procedures', timeRequired: 60 },
+  { id: 'policies', label: 'Policies', timeRequired: 60 },
+  { id: 'glassware-guide', label: 'Glassware Guide', timeRequired: 60 },
+  { id: 'faq', label: 'FAQ', timeRequired: 60 },
+  { id: 'drinks-specials', label: 'Drinks & Specials', timeRequired: 60 },
+  { id: 'comps-voids', label: 'Comps & Voids', timeRequired: 60 },
+  { id: 'cocktails', label: 'Cocktails', timeRequired: 60 },
+  { id: 'aloha-pos', label: 'Aloha POS System', timeRequired: 60 },
+  { id: 'bar-cleanings', label: 'Bar Cleaning Procedures', timeRequired: 60 }
 ];
 
 const TRACKED_POSITIONS = ['Bartender', 'Trainee'];
-const MINIMUM_SECTION_TIME = 30;
 
 export const supabaseProgress = {
-  // Track section visit with real-time updates
-  trackSectionVisit: async (userEmail: string, sectionId: string, timeSpent: number = 0): Promise<void> => {
+  // Track when user visits a section - USES user_progress TABLE
+  async trackSectionVisit(userEmail: string, sectionId: string, timeSpent: number = 30): Promise<void> {
     try {
-      // Check if section visit already exists
-      const { data: existingVisit, error: fetchError } = await supabase
-        .from('section_visits')
+      // First get the user ID from email
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, auth_id')
+        .eq('email', userEmail)
+        .single();
+
+      if (userError) throw userError;
+      if (!userData) throw new Error('User not found');
+
+      // Get existing progress for this section from user_progress table
+      const { data: existingProgress } = await supabase
+        .from('user_progress')
         .select('*')
-        .eq('user_email', userEmail)
+        .eq('user_id', userData.id)
         .eq('section_id', sectionId)
         .single();
 
-      const now = new Date().toISOString();
-      const completed = timeSpent >= MINIMUM_SECTION_TIME;
+      const newTimeSpent = (existingProgress?.time_spent || 0) + timeSpent;
+      
+      // Get time required from SECTION_CONFIG
+      const sectionConfig = SECTION_CONFIG.find(s => s.id === sectionId);
+      const timeRequired = sectionConfig?.timeRequired || 60;
+      const completed = newTimeSpent >= timeRequired;
 
-      if (fetchError || !existingVisit) {
-        // Create new section visit
-        const { error: insertError } = await supabase
-          .from('section_visits')
-          .insert({
-            user_email: userEmail,
-            section_id: sectionId,
-            first_visit: now,
-            last_visit: now,
-            total_time: timeSpent,
-            completed: completed,
-            quiz_passed: false
-          });
-
-        if (insertError) throw insertError;
-      } else {
-        // Update existing section visit
-        const { error: updateError } = await supabase
-          .from('section_visits')
-          .update({
-            last_visit: now,
-            total_time: (existingVisit.total_time || 0) + timeSpent,
-            completed: (existingVisit as SectionVisitRow).completed || completed,
-            updated_at: now
-          })
-          .eq('user_email', userEmail)
-          .eq('section_id', sectionId);
-
-        if (updateError) throw updateError;
-      }
-
-      // Update user's progress in users table
-      await supabaseProgress.updateUserProgress(userEmail);
-    } catch (error) {
-      console.error('Error tracking section visit in Supabase:', error);
-      throw error;
-    }
-  },
-
-  // Update user's overall progress
-  updateUserProgress: async (userEmail: string): Promise<void> => {
-    try {
-      // Get all section visits for user
-      const { data: sectionVisits, error } = await supabase
-        .from('section_visits')
-        .select('*')
-        .eq('user_email', userEmail);
+      // Upsert the progress into user_progress table
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert({
+          user_id: userData.id,
+          section_id: sectionId,
+          time_spent: newTimeSpent,
+          completed: completed,
+          last_visit: new Date().toISOString(),
+          first_visit: existingProgress?.first_visit || new Date().toISOString()
+        });
 
       if (error) throw error;
-
-      // Calculate progress
-      const completedSections = (sectionVisits as SectionVisitRow[])?.filter((visit: SectionVisitRow) => 
-        visit.completed && ALL_SECTIONS.includes(visit.section_id)
-      ).length || 0;
-
-      const progress = Math.round((completedSections / ALL_SECTIONS.length) * 100);
-
-      // Update user's progress
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({
-          progress: Math.min(progress, 100),
-          last_active: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('email', userEmail);
-
-      if (updateError) throw updateError;
+      
+      console.log(`📊 Progress tracked: ${sectionId} - ${newTimeSpent}s/${timeRequired}s`);
     } catch (error) {
-      console.error('Error updating user progress in Supabase:', error);
+      console.error('Error tracking section visit:', error);
       throw error;
     }
   },
 
-  // Get user's progress breakdown
-  getProgressBreakdown: async (userEmail: string): Promise<any> => {
+  // Get progress breakdown for a user - USES user_progress TABLE
+  async getProgressBreakdown(userEmail: string) {
     try {
-      // Get user data
-      const { data: user, error: userError } = await supabase
+      // Get user's data including position
+      const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('*')
+        .select('id, position, acknowledged')
         .eq('email', userEmail)
         .single();
 
       if (userError) throw userError;
 
-      // Get section visits
-      const { data: sectionVisits, error: visitsError } = await supabase
-        .from('section_visits')
+      // Get user's progress from user_progress table
+      const { data: userProgress, error: progressError } = await supabase
+        .from('user_progress')
         .select('*')
-        .eq('user_email', userEmail);
+        .eq('user_id', userData.id);
 
-      if (visitsError) throw visitsError;
+      if (progressError) throw progressError;
 
-      // Create section details
-      const sectionDetails = ALL_SECTIONS.map(sectionId => {
-        const visit = (sectionVisits as SectionVisitRow[])?.find((v: SectionVisitRow) => v.section_id === sectionId);
-        const timeSpent = visit?.total_time || 0;
-        const completed = visit?.completed || false;
-        const progress = Math.min(Math.round((timeSpent / MINIMUM_SECTION_TIME) * 100), 100);
-
+      // Calculate progress details based on SECTION_CONFIG
+      const sectionDetails = SECTION_CONFIG.map(section => {
+        const userSection = userProgress?.find(p => p.section_id === section.id);
+        const timeSpent = userSection?.time_spent || 0;
+        const completed = timeSpent >= section.timeRequired;
+        const progress = Math.min(100, Math.round((timeSpent / section.timeRequired) * 100));
+        
         return {
-          id: sectionId,
-          label: sectionId.split('-').map(word => 
-            word.charAt(0).toUpperCase() + word.slice(1)
-          ).join(' '),
+          id: section.id,
+          label: section.label,
           completed,
           timeSpent,
-          timeRequired: MINIMUM_SECTION_TIME,
+          timeRequired: section.timeRequired,
           progress
         };
       });
 
       const completedSections = sectionDetails.filter(s => s.completed).length;
-      const progress = Math.round((completedSections / ALL_SECTIONS.length) * 100);
-      const canAcknowledge = progress === 100 && 
-                            !(user as UserRow).acknowledged && 
-                            TRACKED_POSITIONS.includes((user as UserRow).position);
+      const totalSections = sectionDetails.length;
+      const overallProgress = totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0;
+      
+      // User can acknowledge if all sections are completed AND they haven't already acknowledged
+      const canAcknowledge = overallProgress === 100 && !userData.acknowledged;
+
+      console.log(`📈 Progress calculated: ${overallProgress}% - ${completedSections}/${totalSections} sections`);
 
       return {
-        progress,
+        progress: overallProgress,
         canAcknowledge,
         sectionDetails,
-        sectionsVisited: completedSections,
-        totalSections: ALL_SECTIONS.length
+        sectionsVisited: userProgress?.length || 0,
+        totalSections: SECTION_CONFIG.length,
+        isTracked: TRACKED_POSITIONS.includes(userData.position)
       };
     } catch (error) {
-      console.error('Error getting progress breakdown from Supabase:', error);
-      throw error;
+      console.error('Error getting progress breakdown:', error);
+      // Return empty progress on error
+      return {
+        progress: 0,
+        canAcknowledge: false,
+        sectionDetails: [],
+        sectionsVisited: 0,
+        totalSections: SECTION_CONFIG.length,
+        isTracked: false
+      };
     }
   },
 
-  // Submit acknowledgement
-  submitAcknowledgement: async (userEmail: string): Promise<void> => {
+  // Submit acknowledgement - USES users TABLE
+  async submitAcknowledgement(userEmail: string): Promise<void> {
     try {
       const { error } = await supabase
         .from('users')
-        .update({
+        .update({ 
           acknowledged: true,
-          acknowledgement_date: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          acknowledgement_date: new Date().toISOString()
         })
         .eq('email', userEmail);
 
       if (error) throw error;
+      
+      console.log(`✅ Acknowledgement submitted for: ${userEmail}`);
     } catch (error) {
-      console.error('Error submitting acknowledgement in Supabase:', error);
+      console.error('Error submitting acknowledgement:', error);
       throw error;
     }
   },
 
-  // Real-time subscription for progress updates
-  subscribeToUserProgress: (userEmail: string, callback: (progress: any) => void) => {
-    const subscription = supabase
-      .channel('user-progress-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'section_visits',
-          filter: `user_email=eq.${userEmail}`
-        },
-        async () => {
-          // Refresh progress when user's section visits change
-          const progress = await supabaseProgress.getProgressBreakdown(userEmail);
-          callback(progress);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'users',
-          filter: `email=eq.${userEmail}`
-        },
-        async () => {
-          // Refresh progress when user data changes
-          const progress = await supabaseProgress.getProgressBreakdown(userEmail);
-          callback(progress);
-        }
-      )
-      .subscribe();
+  // Real-time subscription for progress updates - USES user_progress TABLE
+  // lib/supabase-progress.ts - CORRECTED real-time subscription
+subscribeToUserProgress(userEmail: string, callback: (progress: any) => void) {
+  console.log(`🔔 Setting up real-time subscription for: ${userEmail}`);
+  
+  const subscription = supabase
+    .channel('progress-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'user_progress'
+      },
+      async (payload) => {
+        try {
+          // Safe access to payload.new with type checking
+          if (payload.new && typeof payload.new === 'object' && 'id' in payload.new) {
+            const progressRecord = payload.new as { id: string; user_id: string };
+            
+            const { data: user } = await supabase
+              .from('users')
+              .select('email')
+              .eq('id', progressRecord.user_id)
+              .single();
 
-    return subscription;
-  },
+            if (user && user.email === userEmail) {
+              console.log('🔄 Real-time progress update for current user');
+              const progress = await this.getProgressBreakdown(userEmail);
+              callback(progress);
+            }
+          }
+        } catch (error) {
+          console.error('Error processing real-time update:', error);
+        }
+      }
+    )
+    .subscribe();
 
-  // Migration: Move existing progress data to Supabase
-  migrateProgressToSupabase: async (): Promise<{ success: boolean; count: number }> => {
+  return {
+    unsubscribe: () => {
+      console.log('🔕 Unsubscribing from progress updates');
+      supabase.removeChannel(subscription);
+    }
+  };
+},
+
+  // Force complete a section (for debugging) - USES user_progress TABLE
+  async forceCompleteSection(userEmail: string, sectionId: string): Promise<void> {
     try {
-      // This would migrate existing localStorage progress data to Supabase
-      // You can implement this based on your current localStorage structure
-      console.log('Progress migration to Supabase completed');
-      return { success: true, count: 0 };
+      // First get user ID
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+
+      if (!userData) throw new Error('User not found');
+
+      const sectionConfig = SECTION_CONFIG.find(s => s.id === sectionId);
+      const timeRequired = sectionConfig?.timeRequired || 60;
+
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert({
+          user_id: userData.id,
+          section_id: sectionId,
+          time_spent: timeRequired,
+          completed: true,
+          last_visit: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      console.log(`⚡ Section force completed: ${sectionId}`);
     } catch (error) {
-      console.error('Error migrating progress to Supabase:', error);
-      return { success: false, count: 0 };
+      console.error('Error forcing section completion:', error);
+      throw error;
     }
   }
 };
