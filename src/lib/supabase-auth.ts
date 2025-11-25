@@ -50,6 +50,72 @@ export const initializeAuth = async (): Promise<void> => {
   console.log('🔐 Auth system ready');
 };
 
+// SINGLE function for test user management
+export const setupTestUsers = async (): Promise<{ success: boolean; message: string }> => {
+  if (process.env.NODE_ENV !== 'development') {
+    return { success: false, message: 'Test users only available in development' };
+  }
+
+  try {
+    const testUsers = [
+      { email: 'bartender@decadesbar.com', password: 'password123', name: 'Test Bartender', position: 'Bartender' as const },
+      { email: 'trainee@decadesbar.com', password: 'password123', name: 'Test Trainee', position: 'Trainee' as const },
+      { email: 'admin@decadesbar.com', password: 'admin123', name: 'Test Admin', position: 'Admin' as const }
+    ];
+
+    let createdCount = 0;
+
+    for (const user of testUsers) {
+      try {
+        // Just delete from custom users table
+        await supabase.from('users').delete().eq('email', user.email);
+
+        // Try to sign up (will fail if auth user exists, but that's OK)
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: user.email,
+          password: user.password,
+          options: { data: { name: user.name, position: user.position } }
+        });
+
+        // Create in custom table regardless of auth result
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            email: user.email,
+            name: user.name,
+            position: user.position,
+            created_at: new Date().toISOString(),
+            status: 'active',
+            progress: 0,
+            acknowledged: false,
+            registeredDate: new Date().toISOString(),
+            lastActive: new Date().toISOString(),
+            loginCount: 0,
+            visitedSections: [],
+            testResults: {},
+            sectionVisits: {}
+          });
+
+        if (!insertError) {
+          createdCount++;
+          console.log(`✅ Test user ready: ${user.email}`);
+        }
+
+      } catch (error) {
+        console.log(`Error with ${user.email}:`, error);
+      }
+    }
+
+    return { 
+      success: createdCount > 0, 
+      message: `Ready! ${createdCount}/3 test users available` 
+    };
+
+  } catch (error) {
+    return { success: false, message: 'Setup failed' };
+  }
+};
+
 // SIMPLE: Sign in
 export const signInWithEmail = async (email: string, password: string): Promise<AuthResponse> => {
   try {
@@ -73,8 +139,6 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     return { user: null, error: error.message || 'Sign in failed' };
   }
 };
-
-
 
 // In lib/supabase-auth.ts - UPDATED with delay
 export const signUpWithEmail = async (
@@ -282,20 +346,6 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
   });
 };
 
-// SIMPLE: Create test users (manual process)
-export const createTestUsers = async (): Promise<void> => {
-  console.log('👤 Creating test users...');
-  
-  // Just log the test credentials - users will register themselves
-  const testUsers = [
-    { email: 'bartender@decadesbar.com', password: 'password123', role: 'Bartender' },
-    { email: 'trainee@decadesbar.com', password: 'password123', role: 'Trainee' },
-    { email: 'admin@decadesbar.com', password: 'admin123', role: 'Admin' }
-  ];
-  
-  console.log('Test credentials:', testUsers);
-  console.log('Users should register themselves using these credentials');
-};
 
 // ===== CRUD OPERATIONS =====
 

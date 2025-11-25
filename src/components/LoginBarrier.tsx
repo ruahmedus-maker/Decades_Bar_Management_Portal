@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth'; // ← Updated import
+import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth';
+import { setupTestUsers } from '@/lib/supabase-auth';
 
 // Tropical Teal/Blue color scheme to match sidebar
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
@@ -29,8 +30,30 @@ export default function LoginBarrier() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
+  const [isSettingUp, setIsSettingUp] = useState(false);
+  const [setupMessage, setSetupMessage] = useState('');
 
-  // REMOVED: initializeTestUsers - now handled by initializeAuth in AppContext
+  const handleQuickSetup = async () => {
+    setIsSettingUp(true);
+    setSetupMessage('Setting up test users...');
+    
+    try {
+      const { success, message } = await setupTestUsers();
+      setSetupMessage(message);
+      
+      if (success) {
+        setTimeout(() => {
+          setSetupMessage('');
+          // Auto-login with bartender after successful setup
+          handleQuickLogin('bartender@decadesbar.com', 'password123');
+        }, 1500);
+      }
+    } catch (error) {
+      setSetupMessage('Setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsSettingUp(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,8 +144,6 @@ export default function LoginBarrier() {
       setPasswordStrength('');
     }
   };
-
-  // ... (all your existing styles remain the same - they're perfect!)
 
   // PERFORMANCE OPTIMIZED Style objects
   const loginBarrierStyle = {
@@ -280,6 +301,29 @@ export default function LoginBarrier() {
     transform: 'translateY(-1px)',
   };
 
+  const quickSetupButtonStyle = {
+    background: 'linear-gradient(135deg, #10B981, #059669)',
+    color: 'white',
+    border: 'none',
+    padding: '14px 20px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: '1rem',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+    backdropFilter: 'blur(2px)',
+    width: '100%',
+    marginBottom: '15px',
+    transform: 'translateZ(0)',
+  };
+
+  const quickSetupButtonHoverStyle = {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
+    background: 'linear-gradient(135deg, #059669, #10B981)',
+  };
+
   const passwordStrengthStyle = {
     fontSize: '0.8rem',
     padding: '4px 8px',
@@ -300,6 +344,50 @@ export default function LoginBarrier() {
           <h2 style={titleStyle}>🔐 Decades Bar Management Portal</h2>
           <p style={subtitleStyle}>Please log in to access the training materials</p>
         </div>
+
+        {/* Quick Setup Button - Only show in development */}
+        {process.env.NODE_ENV === 'development' && !isRegistering && (
+          <div style={{ marginBottom: '25px' }}>
+            <button
+              type="button"
+              onClick={handleQuickSetup}
+              disabled={isSettingUp || isLoading}
+              style={{
+                ...quickSetupButtonStyle,
+                opacity: isSettingUp ? 0.7 : 1,
+                cursor: isSettingUp ? 'not-allowed' : 'pointer'
+              }}
+              onMouseEnter={(e) => !isSettingUp && !isLoading && Object.assign(e.currentTarget.style, quickSetupButtonHoverStyle)}
+              onMouseLeave={(e) => !isSettingUp && !isLoading && Object.assign(e.currentTarget.style, quickSetupButtonStyle)}
+            >
+              {isSettingUp ? '🔄 Setting Up Test Users...' : '🚀 Quick Setup & Enter'}
+            </button>
+            
+            {setupMessage && (
+              <div style={{
+                padding: '10px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                fontSize: '0.8rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                textAlign: 'center' as const,
+                marginBottom: '10px',
+              }}>
+                {setupMessage}
+              </div>
+            )}
+            
+            <p style={{
+              margin: '0',
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.6)',
+              textAlign: 'center' as const,
+            }}>
+              This will reset all test users and auto-login as Bartender
+            </p>
+          </div>
+        )}
 
         {/* Test Credentials Section - Only show in development */}
         {process.env.NODE_ENV === 'development' && !isRegistering && (
@@ -326,10 +414,14 @@ export default function LoginBarrier() {
                     key={index}
                     type="button"
                     onClick={() => handleQuickLogin(cred.email, cred.password)}
-                    disabled={isLoading}
-                    style={testButtonStyle}
-                    onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, testButtonHoverStyle)}
-                    onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, testButtonStyle)}
+                    disabled={isLoading || isSettingUp}
+                    style={{
+                      ...testButtonStyle,
+                      opacity: (isLoading || isSettingUp) ? 0.6 : 1,
+                      cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
+                    }}
+                    onMouseEnter={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, testButtonHoverStyle)}
+                    onMouseLeave={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, testButtonStyle)}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span>{cred.role}</span>
@@ -359,7 +451,7 @@ export default function LoginBarrier() {
                 value={formData.email}
                 onChange={(e) => updateFormData('email', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -374,7 +466,7 @@ export default function LoginBarrier() {
                 value={formData.password}
                 onChange={(e) => updateFormData('password', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -384,10 +476,14 @@ export default function LoginBarrier() {
             </div>
             <button 
               type="submit" 
-              disabled={isLoading}
-              style={loginButtonStyle}
-              onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
-              onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonStyle)}
+              disabled={isLoading || isSettingUp}
+              style={{
+                ...loginButtonStyle,
+                opacity: (isLoading || isSettingUp) ? 0.7 : 1,
+                cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
+              }}
+              onMouseEnter={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
+              onMouseLeave={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, loginButtonStyle)}
             >
               {isLoading ? 'Logging in...' : 'Login with Email'}
             </button>
@@ -401,7 +497,7 @@ export default function LoginBarrier() {
                 value={formData.name}
                 onChange={(e) => updateFormData('name', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -416,7 +512,7 @@ export default function LoginBarrier() {
                 value={formData.email}
                 onChange={(e) => updateFormData('email', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -431,7 +527,7 @@ export default function LoginBarrier() {
                 value={formData.password}
                 onChange={(e) => updateFormData('password', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -451,7 +547,7 @@ export default function LoginBarrier() {
                 value={formData.confirmPassword}
                 onChange={(e) => updateFormData('confirmPassword', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -463,7 +559,7 @@ export default function LoginBarrier() {
               <select
                 value={formData.position}
                 onChange={(e) => updateFormData('position', e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={selectStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, { ...selectStyle, ...inputHoverStyle })}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, selectStyle)}
@@ -482,7 +578,7 @@ export default function LoginBarrier() {
                 value={formData.code}
                 onChange={(e) => updateFormData('code', e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSettingUp}
                 style={inputStyle}
                 onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
                 onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
@@ -492,10 +588,14 @@ export default function LoginBarrier() {
             </div>
             <button 
               type="submit" 
-              disabled={isLoading}
-              style={loginButtonStyle}
-              onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
-              onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonStyle)}
+              disabled={isLoading || isSettingUp}
+              style={{
+                ...loginButtonStyle,
+                opacity: (isLoading || isSettingUp) ? 0.7 : 1,
+                cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
+              }}
+              onMouseEnter={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
+              onMouseLeave={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, loginButtonStyle)}
             >
               {isLoading ? 'Registering...' : 'Register'}
             </button>
@@ -506,10 +606,14 @@ export default function LoginBarrier() {
           <button 
             type="button" 
             onClick={() => setIsRegistering(!isRegistering)}
-            disabled={isLoading}
-            style={toggleButtonStyle}
-            onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, toggleButtonHoverStyle)}
-            onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, toggleButtonStyle)}
+            disabled={isLoading || isSettingUp}
+            style={{
+              ...toggleButtonStyle,
+              opacity: (isLoading || isSettingUp) ? 0.6 : 1,
+              cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
+            }}
+            onMouseEnter={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, toggleButtonHoverStyle)}
+            onMouseLeave={(e) => !isLoading && !isSettingUp && Object.assign(e.currentTarget.style, toggleButtonStyle)}
           >
             {isRegistering ? 'Back to Login' : 'Need an account? Register here'}
           </button>
@@ -530,7 +634,7 @@ export default function LoginBarrier() {
               color: 'rgba(255, 255, 255, 0.5)',
               textAlign: 'center'
             }}>
-              🔧 Development Mode - Test credentials available above
+              🔧 Development Mode - Quick setup available above
             </p>
           </div>
         )}
