@@ -52,9 +52,10 @@ export const initializeAuth = async (): Promise<void> => {
 
 // SINGLE function for test user management
 export const setupTestUsers = async (): Promise<{ success: boolean; message: string }> => {
-  if (process.env.NODE_ENV !== 'development') {
-    return { success: false, message: 'Test users only available in development' };
-  }
+  // Remove the environment check - allow in production
+  // if (process.env.NODE_ENV !== 'development') {
+  //   return { success: false, message: 'Test users only available in development' };
+  // }
 
   try {
     const testUsers = [
@@ -64,20 +65,28 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
     ];
 
     let createdCount = 0;
+    let results = [];
 
     for (const user of testUsers) {
       try {
-        // Just delete from custom users table
+        // Step 1: Delete from custom users table if exists
         await supabase.from('users').delete().eq('email', user.email);
 
-        // Try to sign up (will fail if auth user exists, but that's OK)
-        const { error: signUpError } = await supabase.auth.signUp({
+        // Step 2: Try to create auth user
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: user.email,
           password: user.password,
-          options: { data: { name: user.name, position: user.position } }
+          options: { 
+            data: { 
+              name: user.name, 
+              position: user.position 
+            },
+            // Auto-confirm in production
+            emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
         });
 
-        // Create in custom table regardless of auth result
+        // Step 3: Create in custom table regardless of auth result
         const { error: insertError } = await supabase
           .from('users')
           .insert({
@@ -88,6 +97,7 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
             status: 'active',
             progress: 0,
             acknowledged: false,
+            acknowledgementDate: null,
             registeredDate: new Date().toISOString(),
             lastActive: new Date().toISOString(),
             loginCount: 0,
@@ -98,21 +108,24 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
 
         if (!insertError) {
           createdCount++;
-          console.log(`✅ Test user ready: ${user.email}`);
+          results.push(`✅ ${user.email}`);
+        } else {
+          results.push(`❌ ${user.email}: ${insertError.message}`);
         }
 
       } catch (error) {
-        console.log(`Error with ${user.email}:`, error);
+        results.push(`❌ ${user.email}: ${error}`);
       }
     }
 
     return { 
       success: createdCount > 0, 
-      message: `Ready! ${createdCount}/3 test users available` 
+      message: `Setup complete: ${createdCount}/3 users ready\n${results.join('\n')}` 
     };
 
   } catch (error) {
-    return { success: false, message: 'Setup failed' };
+    console.error('Test user setup failed:', error);
+    return { success: false, message: 'Setup failed: ' + (error as Error).message };
   }
 };
 

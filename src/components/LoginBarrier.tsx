@@ -401,13 +401,13 @@ export default function LoginBarrier() {
               border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
               <p style={{ 
-                margin: '0 0 10px 0', 
-                fontSize: '0.9rem', 
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontWeight: 600
-              }}>
-                🚀 TEST CREDENTIALS
-              </p>
+  margin: '0 0 10px 0', 
+  fontSize: '0.9rem', 
+  color: 'rgba(255, 255, 255, 0.7)',
+  fontWeight: 600
+}}>
+  🚀 QUICK ACCESS CREDENTIALS
+</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {TEST_CREDENTIALS.map((cred, index) => (
                   <button
@@ -622,21 +622,21 @@ export default function LoginBarrier() {
         {/* Development info */}
         {process.env.NODE_ENV === 'development' && (
           <div style={{ 
-            marginTop: '20px',
-            padding: '10px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <p style={{ 
-              margin: 0, 
-              fontSize: '0.75rem', 
-              color: 'rgba(255, 255, 255, 0.5)',
-              textAlign: 'center'
-            }}>
-              🔧 Development Mode - Quick setup available above
-            </p>
-          </div>
+  marginTop: '20px',
+  padding: '10px',
+  background: 'rgba(255, 255, 255, 0.05)',
+  borderRadius: '8px',
+  border: '1px solid rgba(255, 255, 255, 0.1)'
+}}>
+  <p style={{ 
+    margin: 0, 
+    fontSize: '0.75rem', 
+    color: 'rgba(255, 255, 255, 0.5)',
+    textAlign: 'center'
+  }}>
+    🔧 Quick setup available above
+  </p>
+</div>
         )}
       </div>
     </div>
