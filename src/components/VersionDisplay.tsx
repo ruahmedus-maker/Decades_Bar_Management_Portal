@@ -21,8 +21,8 @@ export default function VersionDisplay() {
   return (
     <div style={{
       position: 'fixed',
-      top: '10px',
-      right: '10px',
+      bottom: '10px',        // Changed from top to bottom
+      left: '10px',          // Changed from right to left
       background: 'rgba(0,0,0,0.8)',
       color: 'white',
       padding: '8px 12px',

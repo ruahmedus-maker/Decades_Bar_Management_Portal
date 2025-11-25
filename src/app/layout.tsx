@@ -104,7 +104,7 @@ export default function RootLayout({
           }}
         >
           {/* Version Display - Remove this after testing */}
-          {/* <VersionDisplay /> */}
+          <VersionDisplay />
           
           <DecadesBanner />
           <div style={{ 
@@ -124,7 +124,7 @@ export default function RootLayout({
           <ChunkErrorHandler />
           
           {/* Version Checker - Fixed to prevent loops */}
-          {/* <VersionChecker /> */}
+          <VersionChecker />
         </body>
       </AppProvider>
     </html>
