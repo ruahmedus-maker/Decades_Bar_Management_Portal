@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth';
-import { setupTestUsers } from '@/lib/supabase-auth';
 
 // Tropical Teal/Blue color scheme to match sidebar
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
 const SIDEBAR_COLOR_RGB = '45, 212, 191';
 const SIDEBAR_COLOR_DARK = '#0D9488'; // Darker teal
 
-// Test credentials - these now match what's created in initializeAuth
+// Test credentials
 const TEST_CREDENTIALS = [
   { email: 'bartender@decadesbar.com', password: 'password123', role: 'Bartender' },
   { email: 'trainee@decadesbar.com', password: 'password123', role: 'Trainee' },
@@ -30,28 +29,6 @@ export default function LoginBarrier() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
-  const [isSettingUp, setIsSettingUp] = useState(false);
-  const [setupMessage, setSetupMessage] = useState('');
-
-  const handleQuickSetup = async () => {
-  setIsSettingUp(true);
-  setSetupMessage('Setting up test users...');
-  
-  try {
-    const { success, message } = await setupTestUsers();
-    setSetupMessage(message);
-    
-    if (success) {
-      setTimeout(() => {
-        setSetupMessage('✅ Test users ready! Click any credential button above.');
-      }, 1500);
-    }
-  } catch (error) {
-    setSetupMessage('Setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
-  } finally {
-    setIsSettingUp(false);
-  }
-};
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -299,29 +276,6 @@ export default function LoginBarrier() {
     transform: 'translateY(-1px)',
   };
 
-  const quickSetupButtonStyle = {
-    background: 'linear-gradient(135deg, #10B981, #059669)',
-    color: 'white',
-    border: 'none',
-    padding: '14px 20px',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontWeight: 600,
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-    backdropFilter: 'blur(2px)',
-    width: '100%',
-    marginBottom: '15px',
-    transform: 'translateZ(0)',
-  };
-
-  const quickSetupButtonHoverStyle = {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
-    background: 'linear-gradient(135deg, #059669, #10B981)',
-  };
-
   const passwordStrengthStyle = {
     fontSize: '0.8rem',
     padding: '4px 8px',
@@ -336,234 +290,245 @@ export default function LoginBarrier() {
   };
 
   return (
-  <div id="login-barrier" style={loginBarrierStyle}>
-    <div style={loginContainerStyle}>
-      <div style={loginHeaderStyle}>
-        <h2 style={titleStyle}>🔐 Decades Bar Management Portal - DEBUG MODE</h2>
-        <p style={subtitleStyle}>Please log in to access the training materials</p>
-      </div>
+    <div id="login-barrier" style={loginBarrierStyle}>
+      <div style={loginContainerStyle}>
+        <div style={loginHeaderStyle}>
+          <h2 style={titleStyle}>🔐 Decades Bar Management Portal</h2>
+          <p style={subtitleStyle}>Please log in to access the training materials</p>
+        </div>
 
-      {/* QUICK SETUP BUTTON - ALWAYS SHOW */}
-      <div style={{ marginBottom: '25px' }}>
-        <button
-          type="button"
-          onClick={handleQuickSetup}
-          disabled={isSettingUp || isLoading}
-          style={{
-            ...quickSetupButtonStyle,
-            opacity: isSettingUp ? 0.7 : 1,
-            cursor: isSettingUp ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {isSettingUp ? '🔄 Setting Up Test Users...' : '🚀 Quick Setup & Enter'}
-        </button>
-        
-        {setupMessage && (
-          <div style={{
-            padding: '10px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            fontSize: '0.8rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            textAlign: 'center' as const,
-            marginBottom: '10px',
-          }}>
-            {setupMessage}
+        {/* Test Credentials Section */}
+        {!isRegistering && (
+          <div style={{ marginBottom: '25px' }}>
+            <div style={{ 
+              textAlign: 'center', 
+              marginBottom: '15px',
+              padding: '10px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <p style={{ 
+                margin: '0 0 10px 0', 
+                fontSize: '0.9rem', 
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontWeight: 600
+              }}>
+                🚀 QUICK ACCESS CREDENTIALS
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {TEST_CREDENTIALS.map((cred, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleQuickLogin(cred.email, cred.password)}
+                    disabled={isLoading}
+                    style={testButtonStyle}
+                    onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, testButtonHoverStyle)}
+                    onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, testButtonStyle)}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>{cred.role}</span>
+                      <span style={{ 
+                        fontSize: '0.75rem', 
+                        opacity: 0.7,
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        padding: '2px 6px',
+                        borderRadius: '4px'
+                      }}>
+                        {cred.email}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
-      </div>
 
-      {/* TEST CREDENTIALS - ALWAYS SHOW */}
-      <div style={{ marginBottom: '25px' }}>
+        {!isRegistering ? (
+          <form onSubmit={handleLogin} style={formStyle}>
+            <div style={formGroupStyle}>
+              <input
+                type="email"
+                placeholder="your.email@domain.com"
+                value={formData.email}
+                onChange={(e) => updateFormData('email', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <div style={formGroupStyle}>
+              <input
+                type="password"
+                placeholder="Your password"
+                value={formData.password}
+                onChange={(e) => updateFormData('password', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              style={loginButtonStyle}
+              onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
+              onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonStyle)}
+            >
+              {isLoading ? 'Logging in...' : 'Login with Email'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleRegister} style={formStyle}>
+            <div style={formGroupStyle}>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={(e) => updateFormData('name', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <div style={formGroupStyle}>
+              <input
+                type="email"
+                placeholder="your.email@decadesbar.com"
+                value={formData.email}
+                onChange={(e) => updateFormData('email', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <div style={formGroupStyle}>
+              <input
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={(e) => updateFormData('password', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+              {passwordStrength && (
+                <div style={{ ...passwordStrengthStyle, ...getPasswordStrengthColor(passwordStrength) }}>
+                  {passwordStrength}
+                </div>
+              )}
+            </div>
+            <div style={formGroupStyle}>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <div style={formGroupStyle}>
+              <select
+                value={formData.position}
+                onChange={(e) => updateFormData('position', e.target.value)}
+                disabled={isLoading}
+                style={selectStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, { ...selectStyle, ...inputHoverStyle })}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, selectStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...selectStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, selectStyle)}
+              >
+                <option value="Bartender">Bartender</option>
+                <option value="Admin">Admin (Code Required)</option>
+                <option value="Trainee">Trainee</option>
+              </select>
+            </div>
+            <div style={formGroupStyle}>
+              <input
+                type="password"
+                placeholder="Registration Code"
+                value={formData.code}
+                onChange={(e) => updateFormData('code', e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+                onMouseEnter={(e) => Object.assign(e.currentTarget.style, inputHoverStyle)}
+                onMouseLeave={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+                onFocus={(e) => Object.assign(e.currentTarget.style, { ...inputStyle, ...inputFocusStyle })}
+                onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              style={loginButtonStyle}
+              onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
+              onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonStyle)}
+            >
+              {isLoading ? 'Registering...' : 'Register'}
+            </button>
+          </form>
+        )}
+
+        <div style={{ textAlign: 'center' as const }}>
+          <button 
+            type="button" 
+            onClick={() => setIsRegistering(!isRegistering)}
+            disabled={isLoading}
+            style={toggleButtonStyle}
+            onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, toggleButtonHoverStyle)}
+            onMouseLeave={(e) => !isLoading && Object.assign(e.currentTarget.style, toggleButtonStyle)}
+          >
+            {isRegistering ? 'Back to Login' : 'Need an account? Register here'}
+          </button>
+        </div>
+
+        {/* Quick Access Info */}
         <div style={{ 
-          textAlign: 'center', 
-          marginBottom: '15px',
+          marginTop: '20px',
           padding: '10px',
-          background: 'rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '8px',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <p style={{ 
-            margin: '0 0 10px 0', 
-            fontSize: '0.9rem', 
-            color: 'rgba(255, 255, 255, 0.7)',
-            fontWeight: 600
+            margin: 0, 
+            fontSize: '0.75rem', 
+            color: 'rgba(255, 255, 255, 0.5)',
+            textAlign: 'center'
           }}>
-            🚀 QUICK ACCESS CREDENTIALS
+            🔧 Quick access credentials available above
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {TEST_CREDENTIALS.map((cred, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handleQuickLogin(cred.email, cred.password)}
-                disabled={isLoading || isSettingUp}
-                style={{
-                  ...testButtonStyle,
-                  opacity: (isLoading || isSettingUp) ? 0.6 : 1,
-                  cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>{cred.role}</span>
-                  <span style={{ 
-                    fontSize: '0.75rem', 
-                    opacity: 0.7,
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    padding: '2px 6px',
-                    borderRadius: '4px'
-                  }}>
-                    {cred.email}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
         </div>
       </div>
-
-      {/* REGULAR LOGIN FORM */}
-      {!isRegistering ? (
-        <form onSubmit={handleLogin} style={formStyle}>
-          <div style={formGroupStyle}>
-            <input
-              type="email"
-              placeholder="your.email@domain.com"
-              value={formData.email}
-              onChange={(e) => updateFormData('email', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <div style={formGroupStyle}>
-            <input
-              type="password"
-              placeholder="Your password"
-              value={formData.password}
-              onChange={(e) => updateFormData('password', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <button 
-            type="submit" 
-            disabled={isLoading || isSettingUp}
-            style={{
-              ...loginButtonStyle,
-              opacity: (isLoading || isSettingUp) ? 0.7 : 1,
-              cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {isLoading ? 'Logging in...' : 'Login with Email'}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={handleRegister} style={formStyle}>
-          {/* Registration form remains the same */}
-          <div style={formGroupStyle}>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={(e) => updateFormData('name', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <div style={formGroupStyle}>
-            <input
-              type="email"
-              placeholder="your.email@decadesbar.com"
-              value={formData.email}
-              onChange={(e) => updateFormData('email', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <div style={formGroupStyle}>
-            <input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => updateFormData('password', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-            {passwordStrength && (
-              <div style={{ ...passwordStrengthStyle, ...getPasswordStrengthColor(passwordStrength) }}>
-                {passwordStrength}
-              </div>
-            )}
-          </div>
-          <div style={formGroupStyle}>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={(e) => updateFormData('confirmPassword', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <div style={formGroupStyle}>
-            <select
-              value={formData.position}
-              onChange={(e) => updateFormData('position', e.target.value)}
-              disabled={isLoading || isSettingUp}
-              style={selectStyle}
-            >
-              <option value="Bartender">Bartender</option>
-              <option value="Admin">Admin (Code Required)</option>
-              <option value="Trainee">Trainee</option>
-            </select>
-          </div>
-          <div style={formGroupStyle}>
-            <input
-              type="password"
-              placeholder="Registration Code"
-              value={formData.code}
-              onChange={(e) => updateFormData('code', e.target.value)}
-              required
-              disabled={isLoading || isSettingUp}
-              style={inputStyle}
-            />
-          </div>
-          <button 
-            type="submit" 
-            disabled={isLoading || isSettingUp}
-            style={{
-              ...loginButtonStyle,
-              opacity: (isLoading || isSettingUp) ? 0.7 : 1,
-              cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {isLoading ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-      )}
-
-      <div style={{ textAlign: 'center' as const }}>
-        <button 
-          type="button" 
-          onClick={() => setIsRegistering(!isRegistering)}
-          disabled={isLoading || isSettingUp}
-          style={{
-            ...toggleButtonStyle,
-            opacity: (isLoading || isSettingUp) ? 0.6 : 1,
-            cursor: (isLoading || isSettingUp) ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {isRegistering ? 'Back to Login' : 'Need an account? Register here'}
-        </button>
-      </div>
     </div>
-  </div>
-);
+  );
 }
