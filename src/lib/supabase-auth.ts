@@ -52,11 +52,6 @@ export const initializeAuth = async (): Promise<void> => {
 
 // SINGLE function for test user management
 export const setupTestUsers = async (): Promise<{ success: boolean; message: string }> => {
-  // Remove the environment check - allow in production
-  // if (process.env.NODE_ENV !== 'development') {
-  //   return { success: false, message: 'Test users only available in development' };
-  // }
-
   try {
     const testUsers = [
       { email: 'bartender@decadesbar.com', password: 'password123', name: 'Test Bartender', position: 'Bartender' as const },
@@ -69,27 +64,41 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
 
     for (const user of testUsers) {
       try {
-        // Step 1: Delete from custom users table if exists
-        await supabase.from('users').delete().eq('email', user.email);
-
-        // Step 2: Try to create auth user
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        console.log(`🔄 Setting up user: ${user.email}`);
+        
+        // Step 1: Try to sign in first (to check if auth user exists)
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: user.email,
-          password: user.password,
-          options: { 
-            data: { 
-              name: user.name, 
-              position: user.position 
-            },
-            // Auto-confirm in production
-            emailRedirectTo: `${window.location.origin}/auth/callback`
-          }
+          password: user.password
         });
 
-        // Step 3: Create in custom table regardless of auth result
-        const { error: insertError } = await supabase
+        if (signInError) {
+          // Auth user doesn't exist or password is wrong, so create it
+          console.log(`Creating auth user for: ${user.email}`);
+          
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: user.email,
+            password: user.password,
+            options: {
+              data: {
+                name: user.name,
+                position: user.position
+              }
+            }
+          });
+
+          if (signUpError) {
+            results.push(`❌ Auth creation failed for ${user.email}: ${signUpError.message}`);
+            continue;
+          }
+        } else {
+          console.log(`✅ Auth user already exists: ${user.email}`);
+        }
+
+        // Step 2: Ensure user exists in custom users table
+        const { error: upsertError } = await supabase
           .from('users')
-          .insert({
+          .upsert({
             email: user.email,
             name: user.name,
             position: user.position,
@@ -104,13 +113,15 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
             visitedSections: [],
             testResults: {},
             sectionVisits: {}
+          }, {
+            onConflict: 'email'
           });
 
-        if (!insertError) {
-          createdCount++;
-          results.push(`✅ ${user.email}`);
+        if (upsertError) {
+          results.push(`❌ User table update failed for ${user.email}: ${upsertError.message}`);
         } else {
-          results.push(`❌ ${user.email}: ${insertError.message}`);
+          createdCount++;
+          results.push(`✅ ${user.email} ready`);
         }
 
       } catch (error) {
@@ -128,7 +139,6 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
     return { success: false, message: 'Setup failed: ' + (error as Error).message };
   }
 };
-
 // SIMPLE: Sign in
 export const signInWithEmail = async (email: string, password: string): Promise<AuthResponse> => {
   try {

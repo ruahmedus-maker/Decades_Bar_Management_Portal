@@ -345,28 +345,6 @@ export default function LoginBarrier() {
         <p style={subtitleStyle}>Please log in to access the training materials</p>
       </div>
 
-      {/* DEBUG: Force show everything */}
-      <div style={{ 
-        background: 'rgba(255,0,0,0.1)', 
-        padding: '10px', 
-        borderRadius: '8px',
-        border: '2px dashed red',
-        marginBottom: '20px'
-      }}>
-        <p style={{ color: 'white', margin: '0 0 10px 0', fontWeight: 'bold' }}>
-          🐛 DEBUG INFO:
-        </p>
-        <p style={{ color: 'white', margin: '0', fontSize: '12px' }}>
-          isRegistering: {isRegistering.toString()}
-        </p>
-        <p style={{ color: 'white', margin: '0', fontSize: '12px' }}>
-          isLoading: {isLoading.toString()}
-        </p>
-        <p style={{ color: 'white', margin: '0', fontSize: '12px' }}>
-          isSettingUp: {isSettingUp.toString()}
-        </p>
-      </div>
-
       {/* QUICK SETUP BUTTON - ALWAYS SHOW */}
       <div style={{ marginBottom: '25px' }}>
         <button
