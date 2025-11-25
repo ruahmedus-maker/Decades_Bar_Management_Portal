@@ -6,7 +6,7 @@ import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
 import TasksSection from './TasksSection';
 import { supabase } from '@/lib/supabase';
-import { getAllUsers, updateUser } from '@/lib/supabase-auth';
+import { getAllUsers, updateUser, deleteUser } from '@/lib/supabase-auth';
 import { getProgressBreakdown } from '@/lib/progress';
 import { supabaseMaintenance } from '@/lib/supabase-maintenance';
 
@@ -300,7 +300,7 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
   );
 }
 
-// Maintenance Tickets Management Component for Admin Panel
+
 // Maintenance Tickets Management Component for Admin Panel
 function MaintenanceTicketsManagement() {
   const { showToast } = useApp();

@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/progress';
+import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 
 // Define the section color for social media
@@ -93,11 +93,11 @@ const timerRef = useRef<NodeJS.Timeout | null>(null);
 useEffect(() => {
   if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
+  // Wait 60 seconds then mark as complete
   timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'social-media', 30);
+    trackSectionVisit(currentUser.email, 'social-media', 60);
     console.log('Section auto-completed after 30 seconds');
-  }, 30000);
+  }, 60000);
 
   return () => {
     if (timerRef.current) {

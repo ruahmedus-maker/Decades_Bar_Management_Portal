@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/progress';
+import { trackSectionVisit } from '@/lib/supabase-auth';
 
 
 // Define the cocktail section color
@@ -248,9 +248,9 @@ export default function CocktailsSection() {
     if (!currentUser) return;
 
     timerRef.current = setTimeout(() => {
-      trackSectionVisit(currentUser.email, 'cocktails', 30);
-      console.log('Section auto-completed after 30 seconds');
-    }, 30000);
+      trackSectionVisit(currentUser.email, 'cocktails', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
     return () => {
       if (timerRef.current) {

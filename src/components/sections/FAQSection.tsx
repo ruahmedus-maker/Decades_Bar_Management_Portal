@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/progress';
+import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 
 // Define the section color for FAQ
@@ -156,11 +156,11 @@ export default function FAQSection() {
 useEffect(() => {
   if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
+  // Wait 60 seconds then mark as complete
   timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'faq', 30);
-    console.log('Section auto-completed after 30 seconds');
-  }, 30000);
+    trackSectionVisit(currentUser.email, 'faq', 60);
+    console.log('Section auto-completed after 60 seconds');
+  }, 60000);
 
   return () => {
     if (timerRef.current) {

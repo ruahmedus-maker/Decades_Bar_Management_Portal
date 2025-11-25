@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { validatePasswordStrength } from '@/lib/supabase-auth'; // ← Updated import
-import { APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth'; // ← Updated import
+import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth'; // ← Updated import
 
 // Tropical Teal/Blue color scheme to match sidebar
 const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal

@@ -88,11 +88,11 @@ export default function CompsVoidsSection() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // Wait 30 seconds then mark as complete
+    // Wait 60 seconds then mark as complete
     timerRef.current = setTimeout(() => {
-      trackSectionVisit(currentUser.email, 'comps-voids', 30);
-      console.log('Section auto-completed after 30 seconds');
-    }, 30000);
+      trackSectionVisit(currentUser.email, 'comps-voids', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
     return () => {
       if (timerRef.current) {

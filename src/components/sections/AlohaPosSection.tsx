@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/progress';
+import { trackSectionVisit } from '@/lib/supabase-auth';
 
 // Define the section color for Aloha POS - Green theme
 const SECTION_COLOR = '#38A169'; // Green color for POS
@@ -365,11 +365,11 @@ export default function AlohaPosSection() {
 useEffect(() => {
   if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
+  // Wait 60 seconds then mark as complete
   timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'aloha-pos', 30);
-    console.log('Section auto-completed after 30 seconds');
-  }, 30000);
+    trackSectionVisit(currentUser.email, 'aloha-pos', 60);
+    console.log('Section auto-completed after 60 seconds');
+  }, 60000);
 
   return () => {
     if (timerRef.current) {

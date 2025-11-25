@@ -493,32 +493,12 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
 };
 
 // Update progress tracking to use users table
-export const trackSectionVisit = async (sectionId: string): Promise<void> => {
+// In supabase-auth.ts - should look like this:
+export const trackSectionVisit = async (userEmail: string, sectionId: string, timeSpent: number = 30): Promise<void> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) throw new Error('No user logged in');
-
-    // Get current user data
-    const { data: currentUser } = await supabase
-      .from('users')
-      .select('visited_sections')
-      .eq('auth_id', user.id)
-      .single();
-
-    const currentSections = currentUser?.visited_sections || [];
-    const updatedSections = Array.from(new Set([...currentSections, sectionId]));
-
-    // Update users table
-    const { error } = await supabase
-      .from('users')
-      .update({
-        visited_sections: updatedSections,
-        last_active: new Date().toISOString()
-      })
-      .eq('auth_id', user.id);
-
-    if (error) throw error;
+    // This should use the new progress system with user_progress table
+    const { trackSectionVisit: trackProgress } = await import('./progress');
+    await trackProgress(userEmail, sectionId, timeSpent);
   } catch (error) {
     console.error('Error tracking section visit:', error);
     throw error;

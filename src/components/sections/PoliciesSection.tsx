@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/progress';
+import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 
 // Define unique coral color for policies
@@ -95,9 +95,9 @@ export default function PoliciesSection() {
 
   // Wait 30 seconds then mark as complete
   timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'policies', 30);
-    console.log('Section auto-completed after 30 seconds');
-  }, 30000);
+    trackSectionVisit(currentUser.email, 'policies', 60);
+    console.log('Section auto-completed after 60 seconds');
+  }, 60000);
 
   return () => {
     if (timerRef.current) {

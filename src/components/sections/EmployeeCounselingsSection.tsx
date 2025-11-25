@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { trackSectionVisit } from '@/lib/progress';
 import { CardProps } from '@/types';
 import { supabase } from '@/lib/supabase';
-import { getAllUsers } from '@/lib/auth';
+import { getAllUsers } from '@/lib/supabase-auth';
 
 // Define the section color for employee counseling - teal blue theme
 const SECTION_COLOR = '#0D9488'; // Teal color for counseling
@@ -226,13 +225,6 @@ export default function EmployeeCounselingSection() {
     managerName: currentUser?.name || '',
     employeeSignature: ''
   });
-
-  useEffect(() => {
-    if (currentUser) {
-      trackSectionVisit(currentUser.email, 'counseling');
-    }
-    loadData();
-  }, [currentUser]);
 
   const loadData = async () => {
     try {
