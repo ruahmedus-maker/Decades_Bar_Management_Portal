@@ -34,26 +34,24 @@ export default function LoginBarrier() {
   const [setupMessage, setSetupMessage] = useState('');
 
   const handleQuickSetup = async () => {
-    setIsSettingUp(true);
-    setSetupMessage('Setting up test users...');
+  setIsSettingUp(true);
+  setSetupMessage('Setting up test users...');
+  
+  try {
+    const { success, message } = await setupTestUsers();
+    setSetupMessage(message);
     
-    try {
-      const { success, message } = await setupTestUsers();
-      setSetupMessage(message);
-      
-      if (success) {
-        setTimeout(() => {
-          setSetupMessage('');
-          // Auto-login with bartender after successful setup
-          handleQuickLogin('bartender@decadesbar.com', 'password123');
-        }, 1500);
-      }
-    } catch (error) {
-      setSetupMessage('Setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    } finally {
-      setIsSettingUp(false);
+    if (success) {
+      setTimeout(() => {
+        setSetupMessage('✅ Test users ready! Click any credential button above.');
+      }, 1500);
     }
-  };
+  } catch (error) {
+    setSetupMessage('Setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+  } finally {
+    setIsSettingUp(false);
+  }
+};
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
