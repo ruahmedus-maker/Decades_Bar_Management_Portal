@@ -2,9 +2,21 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { submitAcknowledgement, getProgressBreakdown, subscribeToProgress, isSectionCompleted } from '@/lib/progress';
 
-// Define proper TypeScript interfaces
+// REMOVE these unused imports:
+// import { submitAcknowledgement, getProgressBreakdown, subscribeToProgress, isSectionCompleted } from '@/lib/progress';
+
+// Add only the imports you actually use:
+import { submitAcknowledgement, subscribeToProgress } from '@/lib/progress';
+
+// REMOVE the unused interface (if not used anywhere):
+// interface ProgressBreakdown {
+//   progress: number;
+//   canAcknowledge: boolean;
+//   sectionDetails: SectionDetail[];
+// }
+
+// Define only the interfaces you actually use
 interface SectionDetail {
   id: string;
   label: string;
@@ -13,19 +25,13 @@ interface SectionDetail {
   timeRequired: number;
 }
 
-interface ProgressBreakdown {
-  progress: number;
-  canAcknowledge: boolean;
-  sectionDetails: SectionDetail[];
-}
-
 const PRIMARY_COLOR = '#7FB685';
 const LIGHT_COLOR = '#9DCC9A';
 const DARK_COLOR = '#5A9E6B';
 const PRIMARY_COLOR_RGB = '127, 182, 133';
 
 export default function ProgressSection() {
-  const { currentUser, userProgress, refreshProgress } = useApp();
+  const { currentUser, userProgress, refreshProgress, trackVisit } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -91,7 +97,9 @@ export default function ProgressSection() {
     console.log('=== DEBUG INFO ===');
     console.log('Current User:', currentUser);
     console.log('User Progress from Context:', userProgress);
-    console.log('Progress Breakdown:', userProgress);
+    console.log('Progress:', progress);
+    console.log('Can Acknowledge:', canAcknowledge);
+    console.log('Section Details:', sectionDetails);
     
     alert('Check console for debug info!');
   };
@@ -100,10 +108,8 @@ export default function ProgressSection() {
     console.log('⚡ Force completing:', sectionId);
     if (currentUser) {
       try {
-        // Use the new progress system to mark section as completed
-        // This would track 30 seconds (minimum time) to force completion
-        const { trackSectionVisit } = await import('@/lib/progress');
-        await trackSectionVisit(currentUser.email, sectionId, 30);
+        // Track the section with enough time to complete it
+        await trackVisit(sectionId);
         
         // Refresh to show changes
         setTimeout(loadProgress, 100);
@@ -362,7 +368,7 @@ export default function ProgressSection() {
                 </span>
               </div>
               
-              {/* Force Complete Button - Always show for debugging */}
+              {/* Force Complete Button */}
               <button
                 onClick={() => handleForceComplete(detail.id)}
                 style={{

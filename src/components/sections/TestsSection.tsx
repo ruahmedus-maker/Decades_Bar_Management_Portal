@@ -6,6 +6,8 @@ import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
 
+const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
+
 // Coral color scheme
 const CORAL_COLOR = '#FF7F7F';
 const CORAL_COLOR_RGB = '255, 127, 127';
@@ -129,6 +131,11 @@ export default function TestsSection() {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [userTests, setUserTests] = useState<TestConfig[]>([]);
+
+  if (!ENABLE_TESTS) {
+    return null; // Or a message saying tests are disabled
+  }
+
 
   // Load user's available tests
   useEffect(() => {
