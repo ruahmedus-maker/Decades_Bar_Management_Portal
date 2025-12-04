@@ -3,13 +3,13 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
-import { 
-  initializeAuth, 
-  signInWithEmail, 
-  signUpWithEmail, 
-  signOut, 
-  getCurrentSession, 
-  onAuthStateChange 
+import {
+  initializeAuth,
+  signInWithEmail,
+  signUpWithEmail,
+  signOut,
+  getCurrentSession,
+  onAuthStateChange
 } from '@/lib/supabase-auth';
 import { trackSectionVisit, submitAcknowledgement, getProgressBreakdown } from '@/lib/progress';
 
@@ -56,7 +56,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       await initializeAuth();
-      
+
       // Check for existing session
       const user = await getCurrentSession();
       setCurrentUser(user);
@@ -103,25 +103,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const { user, error } = await signInWithEmail(email, password);
     if (error) throw new Error(error);
     if (!user) throw new Error('Login failed');
-    
+
     setCurrentUser(user);
     showToast(`Welcome back, ${user.name}!`);
   };
 
   const register = async (userData: RegistrationData) => {
     const { user, error } = await signUpWithEmail(
-      userData.email, 
-      userData.password, 
+      userData.email,
+      userData.password,
       {
         name: userData.name,
         position: userData.position,
         code: userData.code
       }
     );
-    
+
     if (error) throw new Error(error);
     if (!user) throw new Error('Registration failed');
-    
+
     setCurrentUser(user);
     showToast(`Welcome to Decades Bar, ${user.name}!`);
   };
@@ -140,7 +140,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const trackVisit = async (sectionId: string) => {
     if (currentUser) {
       try {
-        await trackSectionVisit(currentUser.email, sectionId);
+        // Pass 30 seconds per visit - sections complete after 2 visits (60s total)
+        await trackSectionVisit(currentUser.email, sectionId, 30);
         await refreshProgress();
       } catch (error) {
         console.error('Error tracking visit:', error);

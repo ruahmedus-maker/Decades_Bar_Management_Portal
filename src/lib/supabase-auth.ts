@@ -1,6 +1,8 @@
 // lib/supabase-auth.ts - SIMPLIFIED VERSION
 import { supabase } from './supabase';
 import { User } from '@/types';
+import { APPROVED_CODES, ADMIN_CODES } from './constants';
+export { APPROVED_CODES, ADMIN_CODES };
 
 export interface AuthUser extends User {
   id: string;
@@ -11,8 +13,7 @@ interface AuthResponse {
   error: string | null;
 }
 
-export const APPROVED_CODES = ["BARSTAFF2025", "DECADESADMIN"];
-export const ADMIN_CODES = ["DECADESADMIN"];
+
 
 export const validatePasswordStrength = (password: string): string | null => {
   if (password.length < 6) return 'Password must be at least 6 characters';
@@ -65,7 +66,7 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
     for (const user of testUsers) {
       try {
         console.log(`🔄 Setting up user: ${user.email}`);
-        
+
         // Step 1: Try to sign in first (to check if auth user exists)
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: user.email,
@@ -75,7 +76,7 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
         if (signInError) {
           // Auth user doesn't exist or password is wrong, so create it
           console.log(`Creating auth user for: ${user.email}`);
-          
+
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: user.email,
             password: user.password,
@@ -129,9 +130,9 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
       }
     }
 
-    return { 
-      success: createdCount > 0, 
-      message: `Setup complete: ${createdCount}/3 users ready\n${results.join('\n')}` 
+    return {
+      success: createdCount > 0,
+      message: `Setup complete: ${createdCount}/3 users ready\n${results.join('\n')}`
     };
 
   } catch (error) {
@@ -143,7 +144,7 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
 export const signInWithEmail = async (email: string, password: string): Promise<AuthResponse> => {
   try {
     console.log(`🔐 Signing in: ${email}`);
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -154,7 +155,7 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 
     const authUser = convertToAuthUser(data.user, data.user.user_metadata);
     console.log(`✅ Signed in: ${authUser.name}`);
-    
+
     return { user: authUser, error: null };
 
   } catch (error: any) {
@@ -165,8 +166,8 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 
 // In lib/supabase-auth.ts - UPDATED with delay
 export const signUpWithEmail = async (
-  email: string, 
-  password: string, 
+  email: string,
+  password: string,
   userData: {
     name: string;
     position: 'Bartender' | 'Admin' | 'Trainee';
@@ -178,8 +179,8 @@ export const signUpWithEmail = async (
 
     // Validation
     if (!userData.code) throw new Error('Registration code is required');
-    if (!APPROVED_CODES.includes(userData.code)) throw new Error('Invalid registration code');
-    if (userData.position === 'Admin' && !ADMIN_CODES.includes(userData.code)) {
+    if (!(APPROVED_CODES as readonly string[]).includes(userData.code)) throw new Error('Invalid registration code');
+    if (userData.position === 'Admin' && !(ADMIN_CODES as readonly string[]).includes(userData.code)) {
       throw new Error('Administrative positions require manager authorization codes');
     }
 
@@ -208,9 +209,9 @@ export const signUpWithEmail = async (
       throw new Error('No user data returned');
     }
 
-    console.log('✅ [STEP 1 COMPLETE] Auth user created:', { 
-      id: data.user.id, 
-      email: data.user.email 
+    console.log('✅ [STEP 1 COMPLETE] Auth user created:', {
+      id: data.user.id,
+      email: data.user.email
     });
 
     // 🔄 ADDED DELAY HERE - Wait for auth user to be fully created
@@ -255,7 +256,7 @@ export const signUpWithEmail = async (
         hint: profileError.hint,
         code: profileError.code
       });
-      
+
       // Try to delete the auth user if profile creation fails
       try {
         await supabase.auth.admin.deleteUser(data.user.id);
@@ -263,7 +264,7 @@ export const signUpWithEmail = async (
       } catch (deleteError) {
         console.error('❌ [ROLLBACK ERROR] Failed to delete auth user:', deleteError);
       }
-      
+
       throw new Error(`Failed to create user profile: ${profileError.message}`);
     }
 
@@ -290,12 +291,12 @@ export const signUpWithEmail = async (
     console.log('✅ [STEP 3 COMPLETE] User data verified:', userDataFromTable);
 
     const authUser = convertToAuthUser(data.user, userDataFromTable);
-    console.log('🎉 [REGISTRATION COMPLETE]', { 
-      name: authUser.name, 
+    console.log('🎉 [REGISTRATION COMPLETE]', {
+      name: authUser.name,
       email: authUser.email,
-      id: authUser.id 
+      id: authUser.id
     });
-    
+
     return { user: authUser, error: null };
 
   } catch (error: any) {
@@ -318,7 +319,7 @@ export const signOut = async (): Promise<{ error: string | null }> => {
 export const getCurrentSession = async (): Promise<AuthUser | null> => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (!session?.user) {
       return null;
     }
@@ -346,7 +347,7 @@ export const getCurrentSession = async (): Promise<AuthUser | null> => {
 export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => {
   return supabase.auth.onAuthStateChange(async (event, session) => {
     console.log(`🔄 Auth state: ${event}`);
-    
+
     if (event === 'SIGNED_IN' && session?.user) {
       // ✅ Get user data from users table
       const { data: userData, error } = await supabase
@@ -419,7 +420,7 @@ export const getAllUsers = async (): Promise<AuthUser[]> => {
 export const updateUser = async (email: string, updates: Partial<AuthUser>): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user || user.email !== email) {
       throw new Error('Unauthorized to update this user');
     }
@@ -451,7 +452,7 @@ export const updateUser = async (email: string, updates: Partial<AuthUser>): Pro
 export const deleteUser = async (email: string): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user || user.email !== email) {
       throw new Error('Unauthorized to delete this user');
     }
@@ -465,10 +466,10 @@ export const deleteUser = async (email: string): Promise<void> => {
     });
 
     if (error) throw error;
-    
+
     // Sign out after account deletion
     await supabase.auth.signOut();
-    
+
   } catch (error) {
     console.error('Error deleting user:', error);
     throw error;
@@ -479,7 +480,7 @@ export const deleteUser = async (email: string): Promise<void> => {
 export const updateUserProgress = async (progress: number): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) throw new Error('No user logged in');
 
     const { error } = await supabase.auth.updateUser({
@@ -502,7 +503,7 @@ export const updateUserProgress = async (progress: number): Promise<void> => {
 export const submitAcknowledgement = async (): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) throw new Error('No user logged in');
 
     const { error } = await supabase.auth.updateUser({
@@ -525,7 +526,7 @@ export const submitAcknowledgement = async (): Promise<void> => {
 export const getUserByEmail = async (email: string): Promise<AuthUser | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     // Users can only get their own data in this simplified version
     if (!user || user.email !== email) {
       return null;
@@ -543,7 +544,7 @@ export const getUserByEmail = async (email: string): Promise<AuthUser | null> =>
 export const getCurrentUser = async (): Promise<AuthUser | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) return null;
 
     // ✅ Get user data from users table
@@ -598,7 +599,7 @@ export const updateUserProfile = async (updates: {
 }): Promise<{ error: string | null }> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       return { error: 'No user logged in' };
     }
@@ -643,7 +644,7 @@ export const updateUserStats = async (stats: {
 }): Promise<{ error: string | null }> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       return { error: 'No user logged in' };
     }
@@ -666,7 +667,7 @@ export const updateUserStats = async (stats: {
 export const refreshUserData = async (): Promise<AuthUser | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) return null;
 
     return convertToAuthUser(user, user.user_metadata);

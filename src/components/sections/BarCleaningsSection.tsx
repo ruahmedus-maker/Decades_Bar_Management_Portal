@@ -2,7 +2,6 @@
 
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { trackSectionVisit } from '@/lib/supabase-auth';
 import { useState, useEffect, useRef } from 'react';
 import { CardProps } from '@/types';
 
@@ -13,7 +12,7 @@ const SECTION_COLOR_RGB = '56, 178, 172';
 // Simplified Card Component - NO HOVER EFFECTS
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '12px',
         margin: '12px 0',
@@ -44,7 +43,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
-              <ul style={{paddingLeft: '18px', marginBottom: '0', marginTop: '12px'}}>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
                 ))}
@@ -92,8 +91,8 @@ function ChecklistItem({ children, index }: any) {
         marginTop: '2px',
         cursor: 'pointer'
       }} />
-      <span style={{ 
-        color: 'rgba(255, 255, 255, 0.9)', 
+      <span style={{
+        color: 'rgba(255, 255, 255, 0.9)',
         lineHeight: 1.4,
         fontSize: '0.9rem',
         flex: 1
@@ -105,9 +104,9 @@ function ChecklistItem({ children, index }: any) {
 }
 
 // YouTube Video Player - SIMPLIFIED
-function YouTubeVideo({ videoId, title, description, duration }: { 
-  videoId: string; 
-  title: string; 
+function YouTubeVideo({ videoId, title, description, duration }: {
+  videoId: string;
+  title: string;
   description: string;
   duration: string;
 }) {
@@ -143,7 +142,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
   return (
     <AnimatedCard title={title} index={0}>
       <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
-      
+
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
@@ -167,9 +166,9 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           allowFullScreen
           title={title}
         />
-        
+
         {showOverlay && (
-          <div 
+          <div
             style={{
               position: 'absolute',
               top: 0,
@@ -196,19 +195,19 @@ function YouTubeVideo({ videoId, title, description, duration }: {
         )}
       </div>
 
-      <div style={{ 
-        marginTop: '8px', 
-        fontSize: '0.85rem', 
+      <div style={{
+        marginTop: '8px',
+        fontSize: '0.85rem',
         color: 'rgba(255, 255, 255, 0.7)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <span>🔗 <a 
-          href={`https://youtu.be/${videoId}`} 
-          target="_blank" 
+        <span>🔗 <a
+          href={`https://youtu.be/${videoId}`}
+          target="_blank"
           rel="noopener noreferrer"
-          style={{ 
+          style={{
             color: SECTION_COLOR,
             textDecoration: 'none',
             fontWeight: '500'
@@ -232,7 +231,7 @@ const BAR_CLEANING_VIDEOS = [
 ];
 
 export default function BarCleaningsSection() {
-  const { currentUser } = useApp();
+  const { currentUser, trackVisit } = useApp();
   const [cleaningDays, setCleaningDays] = useState<string[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -240,33 +239,34 @@ export default function BarCleaningsSection() {
 
 
   useEffect(() => {
-  // Load cleaning days first
-  const saved = localStorage.getItem('decadesCleaningDays');
-  if (saved) {
-    setCleaningDays(JSON.parse(saved));
-  }
-
-  if (!currentUser) return;
-
-  // Wait 60 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'bar-cleanings', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
-
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
+    // Load cleaning days first
+    const saved = localStorage.getItem('decadesCleaningDays');
+    if (saved) {
+      setCleaningDays(JSON.parse(saved));
     }
-  };
-}, [currentUser]); // ✅ FIXED: Code reorganized and properly closed
+
+    if (!currentUser) return;
+
+    // Wait 60 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackVisit('bar-cleanings');
+      trackVisit('bar-cleanings'); // Call twice to reach 60 seconds (30s + 30s)
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]); // ✅ FIXED: Code reorganized and properly closed
 
   const toggleCleaningDay = (year: number, month: number, day: number) => {
     const dateStr = `${year}-${month + 1}-${day}`;
     const newCleaningDays = cleaningDays.includes(dateStr)
       ? cleaningDays.filter(d => d !== dateStr)
       : [...cleaningDays, dateStr];
-    
+
     setCleaningDays(newCleaningDays);
     localStorage.setItem('decadesCleaningDays', JSON.stringify(newCleaningDays));
   };
@@ -277,7 +277,7 @@ export default function BarCleaningsSection() {
     const today = new Date();
 
     const calendar = [];
-    
+
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
       calendar.push(
         <div key={`header-${day}`} style={{
@@ -294,7 +294,7 @@ export default function BarCleaningsSection() {
     });
 
     for (let i = 0; i < firstDay; i++) {
-      calendar.push(<div key={`empty-${i}`} style={{padding: '8px'}}></div>);
+      calendar.push(<div key={`empty-${i}`} style={{ padding: '8px' }}></div>);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -304,17 +304,17 @@ export default function BarCleaningsSection() {
 
       const dayStyle = {
         padding: '8px',
-        background: isCleaningDay 
-          ? `rgba(${SECTION_COLOR_RGB}, 0.25)` 
+        background: isCleaningDay
+          ? `rgba(${SECTION_COLOR_RGB}, 0.25)`
           : isToday
-          ? 'rgba(212, 175, 55, 0.15)'
-          : 'rgba(255, 255, 255, 0.06)',
+            ? 'rgba(212, 175, 55, 0.15)'
+            : 'rgba(255, 255, 255, 0.06)',
         border: '1px solid',
-        borderColor: isCleaningDay 
-          ? `rgba(${SECTION_COLOR_RGB}, 0.4)` 
+        borderColor: isCleaningDay
+          ? `rgba(${SECTION_COLOR_RGB}, 0.4)`
           : isToday
-          ? 'rgba(212, 175, 55, 0.3)'
-          : 'rgba(255, 255, 255, 0.12)',
+            ? 'rgba(212, 175, 55, 0.3)'
+            : 'rgba(255, 255, 255, 0.12)',
         borderRadius: '6px',
         textAlign: 'center' as const,
         cursor: 'pointer',
@@ -327,7 +327,7 @@ export default function BarCleaningsSection() {
           style={dayStyle}
           onClick={() => toggleCleaningDay(currentYear, currentMonth, day)}
         >
-          <div style={{ 
+          <div style={{
             fontWeight: isToday ? 'bold' : 'normal',
             color: 'white'
           }}>
@@ -378,7 +378,7 @@ export default function BarCleaningsSection() {
   };
 
   return (
-    <div 
+    <div
       id="bar-cleanings"
       style={{
         marginBottom: '25px',
@@ -391,7 +391,7 @@ export default function BarCleaningsSection() {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
@@ -509,8 +509,8 @@ export default function BarCleaningsSection() {
             }} onClick={() => changeMonth(-1)}>
               ← Previous
             </button>
-            <h4 style={{ 
-              color: 'white', 
+            <h4 style={{
+              color: 'white',
               margin: 0,
               fontSize: '1rem'
             }}>

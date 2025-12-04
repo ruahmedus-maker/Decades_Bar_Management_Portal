@@ -1,7 +1,8 @@
 'use client';
 
 import { useApp } from '@/contexts/AppContext';
-import { NAV_ITEMS, ENABLE_TESTS } from '@/lib/constants';
+import { NAV_ITEMS } from '@/lib/constants';
+import { ENABLE_TESTS } from '@/lib/test-utils';
 
 // Create a type for the valid section IDs for better type safety
 type SectionId = typeof NAV_ITEMS[number]['id'];
@@ -26,12 +27,12 @@ export default function Sidebar() {
   const filteredNavItems = NAV_ITEMS.filter(item => {
     // Hide tests if disabled
     if (item.id === 'tests' && !ENABLE_TESTS) return false;
-    
+
     // Hide admin sections for non-admins using the predefined array
     if (ADMIN_SECTIONS.includes(item.id as SectionId) && !isAdmin) {
       return false;
     }
-    
+
     return true;
   });
 
@@ -130,7 +131,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div 
+    <div
       className="sidebar"
       style={sidebarStyle}
       onMouseEnter={(e) => {
@@ -147,7 +148,7 @@ export default function Sidebar() {
       <ul style={navLinksStyle}>
         {filteredNavItems.map((item) => {
           const isActive = activeSection === item.id;
-          
+
           return (
             <li
               key={item.id}

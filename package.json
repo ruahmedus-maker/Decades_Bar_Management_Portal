@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "update-memory": "node update-memory.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
