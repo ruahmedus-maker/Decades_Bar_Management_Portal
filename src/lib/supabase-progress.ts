@@ -41,10 +41,10 @@ export const supabaseProgress = {
         .select('*')
         .eq('user_id', userData.id)
         .eq('section_id', sectionId)
-        .single();
+        .maybeSingle();
 
       const newTimeSpent = (existingProgress?.time_spent || 0) + timeSpent;
-      
+
       // Get time required from SECTION_CONFIG
       const sectionConfig = SECTION_CONFIG.find(s => s.id === sectionId);
       const timeRequired = sectionConfig?.timeRequired || 60;
@@ -63,7 +63,7 @@ export const supabaseProgress = {
         });
 
       if (error) throw error;
-      
+
       console.log(`📊 Progress tracked: ${sectionId} - ${newTimeSpent}s/${timeRequired}s`);
     } catch (error) {
       console.error('Error tracking section visit:', error);
@@ -97,7 +97,7 @@ export const supabaseProgress = {
         const timeSpent = userSection?.time_spent || 0;
         const completed = timeSpent >= section.timeRequired;
         const progress = Math.min(100, Math.round((timeSpent / section.timeRequired) * 100));
-        
+
         return {
           id: section.id,
           label: section.label,
@@ -111,7 +111,7 @@ export const supabaseProgress = {
       const completedSections = sectionDetails.filter(s => s.completed).length;
       const totalSections = sectionDetails.length;
       const overallProgress = totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0;
-      
+
       // User can acknowledge if all sections are completed AND they haven't already acknowledged
       const canAcknowledge = overallProgress === 100 && !userData.acknowledged;
 
@@ -144,14 +144,14 @@ export const supabaseProgress = {
     try {
       const { error } = await supabase
         .from('users')
-        .update({ 
+        .update({
           acknowledged: true,
           acknowledgement_date: new Date().toISOString()
         })
         .eq('email', userEmail);
 
       if (error) throw error;
-      
+
       console.log(`✅ Acknowledgement submitted for: ${userEmail}`);
     } catch (error) {
       console.error('Error submitting acknowledgement:', error);
@@ -161,50 +161,50 @@ export const supabaseProgress = {
 
   // Real-time subscription for progress updates - USES user_progress TABLE
   // lib/supabase-progress.ts - CORRECTED real-time subscription
-subscribeToUserProgress(userEmail: string, callback: (progress: any) => void) {
-  console.log(`🔔 Setting up real-time subscription for: ${userEmail}`);
-  
-  const subscription = supabase
-    .channel('progress-changes')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'user_progress'
-      },
-      async (payload) => {
-        try {
-          // Safe access to payload.new with type checking
-          if (payload.new && typeof payload.new === 'object' && 'id' in payload.new) {
-            const progressRecord = payload.new as { id: string; user_id: string };
-            
-            const { data: user } = await supabase
-              .from('users')
-              .select('email')
-              .eq('id', progressRecord.user_id)
-              .single();
+  subscribeToUserProgress(userEmail: string, callback: (progress: any) => void) {
+    console.log(`🔔 Setting up real-time subscription for: ${userEmail}`);
 
-            if (user && user.email === userEmail) {
-              console.log('🔄 Real-time progress update for current user');
-              const progress = await this.getProgressBreakdown(userEmail);
-              callback(progress);
+    const subscription = supabase
+      .channel('progress-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_progress'
+        },
+        async (payload) => {
+          try {
+            // Safe access to payload.new with type checking
+            if (payload.new && typeof payload.new === 'object' && 'id' in payload.new) {
+              const progressRecord = payload.new as { id: string; user_id: string };
+
+              const { data: user } = await supabase
+                .from('users')
+                .select('email')
+                .eq('id', progressRecord.user_id)
+                .single();
+
+              if (user && user.email === userEmail) {
+                console.log('🔄 Real-time progress update for current user');
+                const progress = await this.getProgressBreakdown(userEmail);
+                callback(progress);
+              }
             }
+          } catch (error) {
+            console.error('Error processing real-time update:', error);
           }
-        } catch (error) {
-          console.error('Error processing real-time update:', error);
         }
-      }
-    )
-    .subscribe();
+      )
+      .subscribe();
 
-  return {
-    unsubscribe: () => {
-      console.log('🔕 Unsubscribing from progress updates');
-      supabase.removeChannel(subscription);
-    }
-  };
-},
+    return {
+      unsubscribe: () => {
+        console.log('🔕 Unsubscribing from progress updates');
+        supabase.removeChannel(subscription);
+      }
+    };
+  },
 
   // Force complete a section (for debugging) - USES user_progress TABLE
   async forceCompleteSection(userEmail: string, sectionId: string): Promise<void> {
@@ -232,7 +232,7 @@ subscribeToUserProgress(userEmail: string, callback: (progress: any) => void) {
         });
 
       if (error) throw error;
-      
+
       console.log(`⚡ Section force completed: ${sectionId}`);
     } catch (error) {
       console.error('Error forcing section completion:', error);
