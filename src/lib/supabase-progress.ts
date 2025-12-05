@@ -35,6 +35,16 @@ export const supabaseProgress = {
       if (userError) throw userError;
       if (!userData) throw new Error('User not found');
 
+      // DEBUG LOGGING
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔍 [DEBUG] trackSectionVisit:', {
+        email: userEmail,
+        dbUserId: userData.id,
+        dbAuthId: userData.auth_id,
+        sessionAuthId: session?.user?.id,
+        match: userData.auth_id === session?.user?.id
+      });
+
       // Get existing progress for this section from user_progress table
       const { data: existingProgress } = await supabase
         .from('user_progress')
