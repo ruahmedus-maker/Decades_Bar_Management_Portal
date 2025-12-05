@@ -36,13 +36,13 @@ export default function ProgressSection() {
   const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const mountedRef = useRef(false);
 
   // Load progress data
   const loadProgress = useCallback(async () => {
     if (!currentUser) return;
-    
+
     try {
       setLoading(true);
       await refreshProgress();
@@ -54,10 +54,10 @@ export default function ProgressSection() {
   }, [currentUser, refreshProgress]);
 
   // Initialize and set up real-time subscription
+  // Initialize and set up real-time subscription
   useEffect(() => {
-    if (currentUser && !mountedRef.current) {
+    if (currentUser) {
       console.log('🚀 ProgressSection initializing for Supabase');
-      mountedRef.current = true;
       loadProgress();
 
       // Set up real-time subscription for progress updates
@@ -100,7 +100,7 @@ export default function ProgressSection() {
     console.log('Progress:', progress);
     console.log('Can Acknowledge:', canAcknowledge);
     console.log('Section Details:', sectionDetails);
-    
+
     alert('Check console for debug info!');
   };
 
@@ -110,7 +110,7 @@ export default function ProgressSection() {
       try {
         // Track the section with enough time to complete it
         await trackVisit(sectionId);
-        
+
         // Refresh to show changes
         setTimeout(loadProgress, 100);
       } catch (error) {
@@ -120,7 +120,7 @@ export default function ProgressSection() {
   };
 
   // Don't show progress section for managers, admins, or owners
-  const shouldShowProgress = currentUser && 
+  const shouldShowProgress = currentUser &&
     (currentUser.position === 'Bartender' || currentUser.position === 'Trainee');
 
   if (!shouldShowProgress) {
@@ -140,11 +140,11 @@ export default function ProgressSection() {
   // Success message view
   if (showSuccess && currentUser?.acknowledged) {
     return (
-      <div style={{ 
+      <div style={{
         ...glassStyle,
         background: `linear-gradient(135deg, rgba(${PRIMARY_COLOR_RGB}, 0.15), rgba(${PRIMARY_COLOR_RGB}, 0.25))`,
         border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.4)`,
-        padding: '20px', 
+        padding: '20px',
         marginTop: '16px',
         textAlign: 'center' as const
       }}>
@@ -155,10 +155,10 @@ export default function ProgressSection() {
         <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9, marginBottom: '16px' }}>
           Thank you for completing the training and submitting your acknowledgement.
         </p>
-        <div style={{ 
-          marginTop: '12px', 
-          padding: '10px 16px', 
-          background: 'rgba(255,255,255,0.12)', 
+        <div style={{
+          marginTop: '12px',
+          padding: '10px 16px',
+          background: 'rgba(255,255,255,0.12)',
           borderRadius: '8px',
           fontSize: '0.95rem',
           display: 'inline-block',
@@ -173,10 +173,10 @@ export default function ProgressSection() {
   // Collapsed view
   if (isCollapsed) {
     return (
-      <div 
-        style={{ 
+      <div
+        style={{
           ...glassStyle,
-          padding: '14px 16px', 
+          padding: '14px 16px',
           marginTop: '16px',
           cursor: 'pointer'
         }}
@@ -184,27 +184,27 @@ export default function ProgressSection() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ 
-              width: '60px', 
-              height: '8px', 
-              background: 'rgba(255,255,255,0.15)', 
+            <div style={{
+              width: '60px',
+              height: '8px',
+              background: 'rgba(255,255,255,0.15)',
               borderRadius: '4px',
               overflow: 'hidden',
             }}>
-              <div style={{ 
-                width: `${progress}%`, 
-                height: '100%', 
+              <div style={{
+                width: `${progress}%`,
+                height: '100%',
                 background: `linear-gradient(90deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})`,
                 borderRadius: '4px',
                 transition: 'width 0.3s ease'
-              }}/>
+              }} />
             </div>
             <span style={{ fontWeight: 600, fontSize: '1rem' }}>
               Progress: {progress}%
             </span>
           </div>
-          <span style={{ 
-            color: 'rgba(255,255,255,0.7)', 
+          <span style={{
+            color: 'rgba(255,255,255,0.7)',
             fontSize: '0.85rem'
           }}>
             ▼ Click to expand
@@ -216,39 +216,39 @@ export default function ProgressSection() {
 
   // Expanded view
   return (
-    <div 
-      style={{ 
+    <div
+      style={{
         ...glassStyle,
-        padding: '20px', 
+        padding: '20px',
         marginTop: '16px'
       }}
     >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ 
-          margin: 0, 
-          fontSize: '1.3rem', 
+        <h3 style={{
+          margin: 0,
+          fontSize: '1.3rem',
           fontWeight: 600,
           color: PRIMARY_COLOR,
         }}>
           Your Training Progress
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ 
-            fontWeight: 'bold', 
+          <span style={{
+            fontWeight: 'bold',
             fontSize: '1.2rem',
             color: PRIMARY_COLOR,
           }}>
             {progress}% Complete
           </span>
-          
+
           {/* Debug Button */}
-          <button 
+          <button
             onClick={handleDebug}
-            style={{ 
-              background: `rgba(255, 0, 0, 0.3)`, 
-              border: `2px solid rgba(255, 0, 0, 0.6)`, 
-              cursor: 'pointer', 
+            style={{
+              background: `rgba(255, 0, 0, 0.3)`,
+              border: `2px solid rgba(255, 0, 0, 0.6)`,
+              cursor: 'pointer',
               fontSize: '0.8rem',
               color: 'white',
               padding: '8px 12px',
@@ -260,17 +260,17 @@ export default function ProgressSection() {
           </button>
 
           {/* Refresh Button */}
-          <button 
+          <button
             onClick={handleRefresh}
             disabled={loading}
-            style={{ 
-              background: loading 
-                ? 'rgba(255,255,255,0.2)' 
-                : `rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
-              border: loading 
-                ? '2px solid rgba(255,255,255,0.4)' 
-                : `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`, 
-              cursor: loading ? 'not-allowed' : 'pointer', 
+            style={{
+              background: loading
+                ? 'rgba(255,255,255,0.2)'
+                : `rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
+              border: loading
+                ? '2px solid rgba(255,255,255,0.4)'
+                : `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`,
+              cursor: loading ? 'not-allowed' : 'pointer',
               fontSize: '0.8rem',
               color: loading ? 'rgba(255,255,255,0.5)' : 'white',
               padding: '8px 12px',
@@ -281,12 +281,12 @@ export default function ProgressSection() {
             {loading ? '⏳' : '🔄'} Refresh
           </button>
 
-          <button 
+          <button
             onClick={() => setIsCollapsed(true)}
-            style={{ 
-              background: `rgba(${PRIMARY_COLOR_RGB}, 0.15)`, 
-              border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`, 
-              cursor: 'pointer', 
+            style={{
+              background: `rgba(${PRIMARY_COLOR_RGB}, 0.15)`,
+              border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
+              cursor: 'pointer',
               fontSize: '1.1rem',
               color: PRIMARY_COLOR,
               padding: '6px 10px',
@@ -297,12 +297,12 @@ export default function ProgressSection() {
           </button>
         </div>
       </div>
-      
+
       {/* Progress Bar */}
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
           marginBottom: '6px',
           fontSize: '0.9rem',
           color: 'rgba(255,255,255,0.8)'
@@ -310,42 +310,42 @@ export default function ProgressSection() {
           <span>Training Completion</span>
           <span>{progress}%</span>
         </div>
-        <div style={{ 
-          width: '100%', 
-          height: '10px', 
-          background: 'rgba(255,255,255,0.12)', 
+        <div style={{
+          width: '100%',
+          height: '10px',
+          background: 'rgba(255,255,255,0.12)',
           borderRadius: '5px',
           overflow: 'hidden',
         }}>
-          <div style={{ 
-            width: `${progress}%`, 
-            height: '100%', 
+          <div style={{
+            width: `${progress}%`,
+            height: '100%',
             background: `linear-gradient(90deg, ${PRIMARY_COLOR}, ${LIGHT_COLOR})`,
             borderRadius: '5px',
             transition: 'width 0.5s ease'
-          }}/>
+          }} />
         </div>
       </div>
-      
+
       {/* Progress Details */}
-      <div style={{ 
+      <div style={{
         background: 'rgba(255,255,255,0.06)',
         padding: '16px',
         borderRadius: '10px',
         border: '1px solid rgba(255,255,255,0.12)',
         marginBottom: '20px',
       }}>
-        <h4 style={{ 
-          margin: '0 0 10px 0', 
+        <h4 style={{
+          margin: '0 0 10px 0',
           fontSize: '1rem',
           color: LIGHT_COLOR
         }}>
           Progress Breakdown
         </h4>
         {sectionDetails.map((detail: SectionDetail) => (
-          <div key={detail.id} style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <div key={detail.id} style={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             padding: '8px 0',
             borderBottom: '1px solid rgba(255,255,255,0.08)'
@@ -353,21 +353,21 @@ export default function ProgressSection() {
             <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{detail.label}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                <span style={{ 
-                  fontSize: '0.85rem', 
+                <span style={{
+                  fontSize: '0.85rem',
                   color: detail.completed ? '#90EE90' : '#FF6B6B',
                   fontWeight: 'bold'
                 }}>
                   {detail.completed ? '✅ Completed' : '❌ Incomplete'}
                 </span>
-                <span style={{ 
-                  fontSize: '0.7rem', 
+                <span style={{
+                  fontSize: '0.7rem',
                   color: 'rgba(255,255,255,0.6)',
                 }}>
                   {detail.timeSpent}s / {detail.timeRequired}s
                 </span>
               </div>
-              
+
               {/* Force Complete Button */}
               <button
                 onClick={() => handleForceComplete(detail.id)}
@@ -388,10 +388,10 @@ export default function ProgressSection() {
           </div>
         ))}
       </div>
-      
+
       {/* Cloud Status */}
-      <div style={{ 
-        background: 'rgba(45, 212, 191, 0.1)', 
+      <div style={{
+        background: 'rgba(45, 212, 191, 0.1)',
         padding: '12px',
         borderRadius: '8px',
         marginBottom: '16px',
@@ -407,10 +407,10 @@ export default function ProgressSection() {
           <div style={{ color: 'rgba(255,255,255,0.7)' }}>Progress syncs across all devices in real-time</div>
         </div>
       </div>
-      
+
       {/* Acknowledgement Section */}
       {canAcknowledge && !currentUser?.acknowledged && (
-        <div style={{ 
+        <div style={{
           background: `rgba(${PRIMARY_COLOR_RGB}, 0.08)`,
           padding: '16px',
           borderRadius: '10px',
@@ -430,9 +430,9 @@ export default function ProgressSection() {
                 marginTop: '2px'
               }}
             />
-            <label 
-              htmlFor="acknowledgement" 
-              style={{ 
+            <label
+              htmlFor="acknowledgement"
+              style={{
                 cursor: 'pointer',
                 fontSize: '0.95rem',
                 lineHeight: 1.4
@@ -441,7 +441,7 @@ export default function ProgressSection() {
               I acknowledge that I have completed all required training sections and understand the material presented.
             </label>
           </div>
-          
+
           <button
             onClick={async () => {
               if (currentUser && canAcknowledge && !currentUser.acknowledged && isChecked) {
@@ -460,12 +460,12 @@ export default function ProgressSection() {
             style={{
               width: '100%',
               padding: '12px',
-              background: isChecked 
-                ? `linear-gradient(135deg, ${PRIMARY_COLOR}, ${DARK_COLOR})` 
+              background: isChecked
+                ? `linear-gradient(135deg, ${PRIMARY_COLOR}, ${DARK_COLOR})`
                 : 'rgba(255,255,255,0.08)',
               color: isChecked ? 'white' : 'rgba(255,255,255,0.5)',
-              border: isChecked 
-                ? `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.4)` 
+              border: isChecked
+                ? `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.4)`
                 : '1px solid rgba(255,255,255,0.15)',
               borderRadius: '8px',
               fontSize: '0.95rem',
@@ -477,9 +477,9 @@ export default function ProgressSection() {
           </button>
         </div>
       )}
-      
+
       {currentUser?.acknowledged && (
-        <div style={{ 
+        <div style={{
           textAlign: 'center' as const,
           padding: '12px',
           background: `rgba(${PRIMARY_COLOR_RGB}, 0.12)`,
