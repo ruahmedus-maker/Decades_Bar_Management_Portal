@@ -329,10 +329,15 @@ export const getCurrentSession = async (): Promise<AuthUser | null> => {
       .from('users')
       .select('*')
       .eq('auth_id', session.user.id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching user data in getCurrentSession:', error);
+      return null;
+    }
+
+    // If no user data found in table, return null (or handle as needed)
+    if (!userData) {
       return null;
     }
 
@@ -354,11 +359,19 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
         .from('users')
         .select('*')
         .eq('auth_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user data in auth state change:', error);
         callback(null);
+        return;
+      }
+
+      // If no user data found, we might be in the middle of registration
+      if (!userData) {
+        // Don't callback with null yet, wait for the profile to be created
+        // or just return the auth user with default values if appropriate
+        // For now, we'll return null to avoid the error
         return;
       }
 
