@@ -54,7 +54,6 @@ export default function ProgressSection() {
   }, [currentUser, refreshProgress]);
 
   // Initialize and set up real-time subscription
-  // Initialize and set up real-time subscription
   useEffect(() => {
     if (currentUser) {
       console.log('🚀 ProgressSection initializing for Supabase');
@@ -70,7 +69,8 @@ export default function ProgressSection() {
         subscription.unsubscribe();
       };
     }
-  }, [currentUser, loadProgress, refreshProgress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.email]); // Only re-subscribe when user email changes
 
   // Update UI states when userProgress changes
   useEffect(() => {
