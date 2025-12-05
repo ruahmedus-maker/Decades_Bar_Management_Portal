@@ -70,6 +70,8 @@ export const supabaseProgress = {
           completed: completed,
           last_visit: new Date().toISOString(),
           first_visit: existingProgress?.first_visit || new Date().toISOString()
+        }, {
+          onConflict: 'user_id, section_id'
         });
 
       if (error) throw error;
