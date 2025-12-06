@@ -86,10 +86,10 @@ export const supabaseProgress = {
   // Get progress breakdown for a user - USES user_progress TABLE
   async getProgressBreakdown(userEmail: string) {
     try {
-      // Get user's data including position
+      // Get user's data including position and legacy progress field
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id, position, acknowledged, acknowledgement_date')
+        .select('id, position, acknowledged, acknowledgement_date, progress')
         .eq('email', userEmail)
         .single();
 
@@ -102,6 +102,30 @@ export const supabaseProgress = {
         .eq('user_id', userData.id);
 
       if (progressError) throw progressError;
+
+      // FALLBACK: If no user_progress records exist, use legacy progress field
+      if (!userProgress || userProgress.length === 0) {
+        const legacyProgress = userData.progress || 0;
+        console.log(`⚠️ Using legacy progress for ${userEmail}: ${legacyProgress}%`);
+
+        return {
+          progress: legacyProgress,
+          canAcknowledge: legacyProgress === 100 && !userData.acknowledged,
+          sectionDetails: SECTION_CONFIG.map(section => ({
+            id: section.id,
+            label: section.label,
+            completed: false,  // Can't determine individual sections from legacy data
+            timeSpent: 0,
+            timeRequired: section.timeRequired,
+            progress: 0
+          })),
+          sectionsVisited: 0,
+          totalSections: SECTION_CONFIG.length,
+          isTracked: TRACKED_POSITIONS.includes(userData.position),
+          acknowledged: userData.acknowledged || false,
+          acknowledgementDate: userData.acknowledgement_date || null
+        };
+      }
 
       // Calculate progress details based on SECTION_CONFIG
       const sectionDetails = SECTION_CONFIG.map(section => {
