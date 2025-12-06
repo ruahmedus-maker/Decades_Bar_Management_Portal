@@ -104,21 +104,6 @@ export default function ProgressSection() {
     alert('Check console for debug info!');
   };
 
-  const handleForceComplete = async (sectionId: string) => {
-    console.log('⚡ Force completing:', sectionId);
-    if (currentUser) {
-      try {
-        // Track the section with enough time to complete it
-        await trackVisit(sectionId);
-
-        // Refresh to show changes
-        setTimeout(loadProgress, 100);
-      } catch (error) {
-        console.error('Error forcing section completion:', error);
-      }
-    }
-  };
-
   // Don't show progress section for managers, admins, or owners
   const shouldShowProgress = currentUser &&
     (currentUser.position === 'Bartender' || currentUser.position === 'Trainee');
@@ -367,23 +352,6 @@ export default function ProgressSection() {
                   {detail.timeSpent}s / {detail.timeRequired}s
                 </span>
               </div>
-
-              {/* Force Complete Button */}
-              <button
-                onClick={() => handleForceComplete(detail.id)}
-                style={{
-                  background: detail.completed ? 'rgba(144, 238, 144, 0.3)' : 'rgba(255, 107, 107, 0.3)',
-                  border: `2px solid ${detail.completed ? '#90EE90' : '#FF6B6B'}`,
-                  color: 'white',
-                  fontSize: '0.7rem',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                {detail.completed ? '✓ Done' : 'Force Complete'}
-              </button>
             </div>
           </div>
         ))}

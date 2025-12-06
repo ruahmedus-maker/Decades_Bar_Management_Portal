@@ -1,7 +1,7 @@
 // contexts/AppContext.tsx - RESTORED SIMPLE VERSION
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User } from '@/types';
 import {
   initializeAuth,
@@ -137,7 +137,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast('Logged out successfully');
   };
 
-  const trackVisit = async (sectionId: string) => {
+  // MEMOIZED trackVisit to prevent infinite loops
+  const trackVisit = useCallback(async (sectionId: string) => {
     if (currentUser) {
       try {
         // Pass 30 seconds per visit - sections complete after 2 visits (60s total)
@@ -148,7 +149,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         showToast('Error tracking progress');
       }
     }
-  };
+  }, [currentUser]); // Only recreate if currentUser changes
 
   const submitAck = async () => {
     if (currentUser) {
