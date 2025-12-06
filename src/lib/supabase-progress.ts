@@ -45,6 +45,12 @@ export const supabaseProgress = {
         match: userData.auth_id === session?.user?.id
       });
 
+      // Update user's lastActive timestamp
+      await supabase
+        .from('users')
+        .update({ lastActive: new Date().toISOString() })
+        .eq('id', userData.id);
+
       // Get existing progress for this section from user_progress table
       const { data: existingProgress } = await supabase
         .from('user_progress')

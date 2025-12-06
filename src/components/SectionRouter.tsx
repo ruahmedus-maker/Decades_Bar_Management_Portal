@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import WelcomeSection from '@/components/sections/WelcomeSection';
 import TrainingSection from '@/components/sections/TrainingSection';
@@ -23,7 +24,27 @@ import PerformanceReportsSection from '@/components/sections/PerformanceReportsS
 import MaintenanceSection from './sections/MaintenanceSection';
 
 export default function SectionRouter() {
-  const { activeSection } = useApp();
+  const { activeSection, trackVisit, currentUser } = useApp();
+
+  // Track section visits automatically
+  useEffect(() => {
+    if (currentUser && activeSection) {
+      // Only track training sections, not admin sections
+      const excludedSections = [
+        'admin-panel',
+        'employee-counselings',
+        'performance-report',
+        'special-events',
+        'maintenance',
+        'tests'  // Tests track their own progress
+      ];
+
+      if (!excludedSections.includes(activeSection)) {
+        console.log(`📊 Tracking visit to: ${activeSection}`);
+        trackVisit(activeSection);
+      }
+    }
+  }, [activeSection, currentUser, trackVisit]);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -65,7 +86,7 @@ export default function SectionRouter() {
         return <EmployeeCounselingsSection />;
       case 'performance-report':
         return <PerformanceReportsSection />;
-        case 'maintenance':
+      case 'maintenance':
         return <MaintenanceSection />;
       default:
         return <WelcomeSection />;
