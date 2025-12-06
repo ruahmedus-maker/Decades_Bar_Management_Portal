@@ -89,7 +89,7 @@ export const supabaseProgress = {
       // Get user's data including position
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id, position, acknowledged')
+        .select('id, position, acknowledged, acknowledgement_date')
         .eq('email', userEmail)
         .single();
 
@@ -135,7 +135,9 @@ export const supabaseProgress = {
         sectionDetails,
         sectionsVisited: userProgress?.length || 0,
         totalSections: SECTION_CONFIG.length,
-        isTracked: TRACKED_POSITIONS.includes(userData.position)
+        isTracked: TRACKED_POSITIONS.includes(userData.position),
+        acknowledged: userData.acknowledged || false,
+        acknowledgementDate: userData.acknowledgement_date || null
       };
     } catch (error) {
       console.error('Error getting progress breakdown:', error);

@@ -26,6 +26,8 @@ interface UserProgress {
   lastActive: string;
   timeSinceLastActive: string;
   completionStatus: 'excellent' | 'good' | 'poor' | 'inactive';
+  acknowledged?: boolean;
+  acknowledgementDate?: string | null;
 }
 
 interface TestResult {
@@ -49,7 +51,7 @@ interface QuickStats {
 // Enhanced Card Component
 function AdminCard({ title, value, icon, color, onClick }: any) {
   return (
-    <div 
+    <div
       style={{
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
@@ -62,17 +64,17 @@ function AdminCard({ title, value, icon, color, onClick }: any) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <p style={{ 
-            margin: 0, 
-            color: 'rgba(255, 255, 255, 0.7)', 
+          <p style={{
+            margin: 0,
+            color: 'rgba(255, 255, 255, 0.7)',
             fontSize: '0.9rem',
             marginBottom: '8px'
           }}>
             {title}
           </p>
-          <h3 style={{ 
-            margin: 0, 
-            color: 'white', 
+          <h3 style={{
+            margin: 0,
+            color: 'white',
             fontSize: '1.8rem',
             fontWeight: 'bold'
           }}>
@@ -101,7 +103,7 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
   const { showToast } = useApp();
 
   // Filter to show only Bartenders and Trainees (no Admins)
-  const teamUsers = users.filter(user => 
+  const teamUsers = users.filter(user =>
     user.position === 'Bartender' || user.position === 'Trainee'
   );
 
@@ -141,8 +143,8 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
         padding: '25px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
       }}>
-        <h4 style={{ 
-          color: 'white', 
+        <h4 style={{
+          color: 'white',
           margin: '0 0 20px 0',
           fontSize: '1.2rem'
         }}>
@@ -150,8 +152,8 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
         </h4>
 
         {teamUsers.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
+          <div style={{
+            textAlign: 'center',
             padding: '40px',
             color: 'rgba(255, 255, 255, 0.7)',
             fontStyle: 'italic'
@@ -161,7 +163,7 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {teamUsers.map((user, index) => (
-              <div 
+              <div
                 key={user.email}
                 style={{
                   padding: '20px',
@@ -172,15 +174,15 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                   <div style={{ flex: 1 }}>
-                    <h5 style={{ 
-                      color: SECTION_COLOR, 
+                    <h5 style={{
+                      color: SECTION_COLOR,
                       margin: '0 0 8px 0',
                       fontSize: '1.1rem',
                       fontWeight: 600
                     }}>
                       {user.name}
                       {user.email === currentUser?.email && (
-                        <span style={{ 
+                        <span style={{
                           marginLeft: '10px',
                           fontSize: '0.7rem',
                           background: 'rgba(37, 99, 235, 0.3)',
@@ -192,22 +194,22 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                         </span>
                       )}
                     </h5>
-                    <p style={{ 
-                      color: 'rgba(255, 255, 255, 0.7)', 
+                    <p style={{
+                      color: 'rgba(255, 255, 255, 0.7)',
                       margin: 0,
                       fontSize: '0.9rem'
                     }}>
                       {user.email}
                     </p>
-                    <div style={{ 
-                      display: 'flex', 
-                      gap: '10px', 
+                    <div style={{
+                      display: 'flex',
+                      gap: '10px',
                       marginTop: '10px',
                       flexWrap: 'wrap'
                     }}>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '6px', 
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
                         fontSize: '0.7rem',
                         fontWeight: 'bold',
                         background: user.position === 'Bartender' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(245, 158, 11, 0.2)',
@@ -215,9 +217,9 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                       }}>
                         {user.position}
                       </span>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '6px', 
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
                         fontSize: '0.7rem',
                         fontWeight: 'bold',
                         background: user.status === 'active' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
@@ -225,9 +227,9 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                       }}>
                         {user.status === 'active' ? 'Active' : 'Blocked'}
                       </span>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '6px', 
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
                         fontSize: '0.7rem',
                         fontWeight: 'bold',
                         background: 'rgba(255, 255, 255, 0.1)',
@@ -237,14 +239,14 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                       </span>
                     </div>
                   </div>
-                  
+
                   <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', alignItems: 'flex-end' }}>
                     {/* Role Dropdown */}
                     <select
                       value={user.position}
                       onChange={(e) => handleUpdateUserRole(user.email, e.target.value as 'Bartender' | 'Trainee')}
                       disabled={user.email === currentUser?.email}
-                      style={{ 
+                      style={{
                         padding: '6px 10px',
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -257,9 +259,9 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                       <option value="Bartender">Bartender</option>
                       <option value="Trainee">Trainee</option>
                     </select>
-                    
+
                     {/* Status Toggle */}
-                    <button 
+                    <button
                       onClick={() => handleToggleUserStatus(user)}
                       disabled={user.email === currentUser?.email}
                       style={{
@@ -278,10 +280,10 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                     </button>
                   </div>
                 </div>
-                
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
+
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   fontSize: '0.8rem',
                   color: 'rgba(255, 255, 255, 0.6)',
                   marginTop: '10px',
@@ -339,7 +341,7 @@ function MaintenanceTicketsManagement() {
     try {
       const allUsers = await getAllUsers();
       // Filter to only show bartenders and trainees for assignment
-      const teamUsers = allUsers.filter(user => 
+      const teamUsers = allUsers.filter(user =>
         user.position === 'Bartender' || user.position === 'Trainee'
       );
       console.log('Loaded users for assignment:', teamUsers);
@@ -353,10 +355,10 @@ function MaintenanceTicketsManagement() {
     try {
       setIsSubmitting(true);
       console.log('Updating ticket:', ticketId, 'with updates:', updates);
-      
+
       await supabaseMaintenance.updateTicket(ticketId, updates);
       showToast('Ticket updated successfully!');
-      
+
       // Refresh the tickets list
       await loadTickets();
       setSelectedTicket(null);
@@ -374,10 +376,10 @@ function MaintenanceTicketsManagement() {
     try {
       setIsSubmitting(true);
       console.log('Deleting ticket:', ticketId);
-      
+
       await supabaseMaintenance.deleteTicket(ticketId);
       showToast('Ticket deleted successfully!');
-      
+
       // Refresh the tickets list
       await loadTickets();
       setSelectedTicket(null);
@@ -395,7 +397,7 @@ function MaintenanceTicketsManagement() {
 
     try {
       setIsSubmitting(true);
-      
+
       const updates: Partial<MaintenanceTicket> = {
         status: assignmentForm.status,
         notes: assignmentForm.notes || undefined
@@ -410,7 +412,7 @@ function MaintenanceTicketsManagement() {
       }
 
       console.log('Assigning ticket with updates:', updates);
-      
+
       await handleUpdateTicket(selectedTicket.id, updates);
       setAssignmentForm({ assignedTo: '', notes: '', status: 'open' });
     } catch (error) {
@@ -451,7 +453,7 @@ function MaintenanceTicketsManagement() {
     }
   };
 
-  const filteredTickets = tickets.filter(ticket => 
+  const filteredTickets = tickets.filter(ticket =>
     filter === 'all' || ticket.status === filter
   );
 
@@ -467,9 +469,9 @@ function MaintenanceTicketsManagement() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Quick Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
         gap: '15px',
         marginBottom: '20px'
       }}>
@@ -532,7 +534,7 @@ function MaintenanceTicketsManagement() {
           <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>
             Filter by Status:
           </label>
-          <select 
+          <select
             value={filter}
             onChange={(e) => setFilter(e.target.value as any)}
             style={{
@@ -551,10 +553,10 @@ function MaintenanceTicketsManagement() {
             <option value="completed">Completed</option>
             <option value="closed">Closed</option>
           </select>
-          <button 
+          <button
             onClick={loadTickets}
             disabled={loading}
-            style={{ 
+            style={{
               background: '#3B82F6',
               color: 'white',
               border: 'none',
@@ -580,10 +582,10 @@ function MaintenanceTicketsManagement() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h4 style={{ color: 'white', margin: 0 }}>Manage Ticket: {selectedTicket.title}</h4>
-            <button 
+            <button
               onClick={() => setSelectedTicket(null)}
               disabled={isSubmitting}
-              style={{ 
+              style={{
                 background: 'none',
                 border: 'none',
                 color: 'rgba(255, 255, 255, 0.7)',
@@ -675,10 +677,10 @@ function MaintenanceTicketsManagement() {
               />
             </div>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button 
+              <button
                 type="submit"
                 disabled={isSubmitting}
-                style={{ 
+                style={{
                   background: '#3182ce',
                   color: 'white',
                   border: 'none',
@@ -691,11 +693,11 @@ function MaintenanceTicketsManagement() {
               >
                 {isSubmitting ? 'Updating...' : 'Update Ticket'}
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={() => handleDeleteTicket(selectedTicket.id)}
                 disabled={isSubmitting}
-                style={{ 
+                style={{
                   background: '#e53e3e',
                   color: 'white',
                   border: 'none',
@@ -710,11 +712,11 @@ function MaintenanceTicketsManagement() {
               </button>
               {/* Quick Action Buttons */}
               <div style={{ display: 'flex', gap: '5px', marginLeft: 'auto' }}>
-                <button 
+                <button
                   type="button"
                   onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'in-progress')}
                   disabled={isSubmitting}
-                  style={{ 
+                  style={{
                     background: '#d69e2e',
                     color: 'white',
                     border: 'none',
@@ -727,11 +729,11 @@ function MaintenanceTicketsManagement() {
                 >
                   Mark In Progress
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'completed')}
                   disabled={isSubmitting}
-                  style={{ 
+                  style={{
                     background: '#38a169',
                     color: 'white',
                     border: 'none',
@@ -762,10 +764,10 @@ function MaintenanceTicketsManagement() {
             Maintenance Tickets ({filteredTickets.length} tickets)
           </h4>
         </div>
-        
+
         {filteredTickets.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
+          <div style={{
+            textAlign: 'center',
             padding: '40px',
             color: 'rgba(255, 255, 255, 0.7)',
             background: 'rgba(255, 255, 255, 0.05)',
@@ -804,8 +806,8 @@ function MaintenanceTicketsManagement() {
                         <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.7)' }}>{ticket.location}</div>
                         {ticket.description && (
                           <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.6)', marginTop: '4px' }}>
-                            {ticket.description.length > 100 
-                              ? `${ticket.description.substring(0, 100)}...` 
+                            {ticket.description.length > 100
+                              ? `${ticket.description.substring(0, 100)}...`
                               : ticket.description}
                           </div>
                         )}
@@ -813,9 +815,9 @@ function MaintenanceTicketsManagement() {
                     </td>
                     <td style={{ padding: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{ticket.floor}</td>
                     <td style={{ padding: '12px' }}>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '12px', 
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '12px',
                         fontSize: '0.8rem',
                         background: `${getPriorityColor(ticket.priority)}20`,
                         color: getPriorityColor(ticket.priority),
@@ -825,9 +827,9 @@ function MaintenanceTicketsManagement() {
                       </span>
                     </td>
                     <td style={{ padding: '12px' }}>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '12px', 
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '12px',
                         fontSize: '0.8rem',
                         background: `${getStatusColor(ticket.status)}20`,
                         color: getStatusColor(ticket.status),
@@ -855,98 +857,98 @@ function MaintenanceTicketsManagement() {
                       {new Date(ticket.created_at).toLocaleDateString()}
                     </td>
                     <td style={{ padding: '12px', minWidth: '150px' }}>
-  <div style={{ display: 'flex', gap: '8px', flexDirection: 'column', alignItems: 'flex-start' }}>
-    {/* Manage Button */}
-    <button 
-      onClick={() => {
-        setSelectedTicket(ticket);
-        setAssignmentForm({
-          assignedTo: ticket.assigned_to || '',
-          notes: ticket.notes || '',
-          status: ticket.status
-        });
-      }}
-      style={{ 
-        background: '#d4af37', 
-        color: 'white', 
-        border: 'none', 
-        padding: '8px 16px', 
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '0.9rem',
-        fontWeight: '600',
-        width: '100%',
-        textAlign: 'center'
-      }}
-    >
-      🛠️ Manage
-    </button>
-    
-    {/* Quick Action Buttons */}
-    <div style={{ display: 'flex', gap: '6px', width: '100%', flexWrap: 'wrap' }}>
-      {ticket.status !== 'in-progress' && ticket.status !== 'completed' && ticket.status !== 'closed' && (
-        <button 
-          onClick={() => handleQuickStatusUpdate(ticket.id, 'in-progress')}
-          disabled={isSubmitting}
-          style={{ 
-            background: '#d69e2e',
-            color: 'white',
-            border: 'none',
-            padding: '6px 12px',
-            borderRadius: '6px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: '600',
-            flex: 1,
-            opacity: isSubmitting ? 0.6 : 1
-          }}
-        >
-          🔄 Progress
-        </button>
-      )}
-      {ticket.status !== 'completed' && ticket.status !== 'closed' && (
-        <button 
-          onClick={() => handleQuickStatusUpdate(ticket.id, 'completed')}
-          disabled={isSubmitting}
-          style={{ 
-            background: '#38a169',
-            color: 'white',
-            border: 'none',
-            padding: '6px 12px',
-            borderRadius: '6px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: '600',
-            flex: 1,
-            opacity: isSubmitting ? 0.6 : 1
-          }}
-        >
-          ✅ Complete
-        </button>
-      )}
-      {ticket.status === 'completed' && (
-        <button 
-          onClick={() => handleQuickStatusUpdate(ticket.id, 'closed')}
-          disabled={isSubmitting}
-          style={{ 
-            background: '#718096',
-            color: 'white',
-            border: 'none',
-            padding: '6px 12px',
-            borderRadius: '6px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: '600',
-            flex: 1,
-            opacity: isSubmitting ? 0.6 : 1
-          }}
-        >
-          🔒 Close
-        </button>
-      )}
-    </div>
-  </div>
-</td>
+                      <div style={{ display: 'flex', gap: '8px', flexDirection: 'column', alignItems: 'flex-start' }}>
+                        {/* Manage Button */}
+                        <button
+                          onClick={() => {
+                            setSelectedTicket(ticket);
+                            setAssignmentForm({
+                              assignedTo: ticket.assigned_to || '',
+                              notes: ticket.notes || '',
+                              status: ticket.status
+                            });
+                          }}
+                          style={{
+                            background: '#d4af37',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            width: '100%',
+                            textAlign: 'center'
+                          }}
+                        >
+                          🛠️ Manage
+                        </button>
+
+                        {/* Quick Action Buttons */}
+                        <div style={{ display: 'flex', gap: '6px', width: '100%', flexWrap: 'wrap' }}>
+                          {ticket.status !== 'in-progress' && ticket.status !== 'completed' && ticket.status !== 'closed' && (
+                            <button
+                              onClick={() => handleQuickStatusUpdate(ticket.id, 'in-progress')}
+                              disabled={isSubmitting}
+                              style={{
+                                background: '#d69e2e',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: '600',
+                                flex: 1,
+                                opacity: isSubmitting ? 0.6 : 1
+                              }}
+                            >
+                              🔄 Progress
+                            </button>
+                          )}
+                          {ticket.status !== 'completed' && ticket.status !== 'closed' && (
+                            <button
+                              onClick={() => handleQuickStatusUpdate(ticket.id, 'completed')}
+                              disabled={isSubmitting}
+                              style={{
+                                background: '#38a169',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: '600',
+                                flex: 1,
+                                opacity: isSubmitting ? 0.6 : 1
+                              }}
+                            >
+                              ✅ Complete
+                            </button>
+                          )}
+                          {ticket.status === 'completed' && (
+                            <button
+                              onClick={() => handleQuickStatusUpdate(ticket.id, 'closed')}
+                              disabled={isSubmitting}
+                              style={{
+                                background: '#718096',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: '600',
+                                flex: 1,
+                                opacity: isSubmitting ? 0.6 : 1
+                              }}
+                            >
+                              🔒 Close
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -962,7 +964,7 @@ export default function AdminPanelSection() {
   const { isAdmin: userIsAdmin, showToast, currentUser } = useApp();
   const [users, setUsers] = useState<User[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
-  const [testResults, setTestResults] = useState<{email: string, user: User, results: Record<string, TestResult>}[]>([]);
+  const [testResults, setTestResults] = useState<{ email: string, user: User, results: Record<string, TestResult> }[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events' | 'tasks'>('overview');
   const [quickStats, setQuickStats] = useState<QuickStats>({
     totalUsers: 0,
@@ -989,20 +991,20 @@ export default function AdminPanelSection() {
     try {
       setLoading(true);
       console.log('Loading admin data...');
-      
+
       // Load users
       const allUsers = await getAllUsers();
       console.log('All users loaded:', allUsers);
-      
+
       setUsers(allUsers);
 
       // Filter to only show bartenders and trainees (not admins) in progress/management
-      const bartendersAndTrainees = allUsers.filter(user => 
+      const bartendersAndTrainees = allUsers.filter(user =>
         user.position === 'Bartender' || user.position === 'Trainee'
       );
-      
+
       console.log('Bartenders and trainees:', bartendersAndTrainees);
-      
+
       // Load user progress for bartenders and trainees only
       const progressData: UserProgress[] = await Promise.all(
         bartendersAndTrainees.map(async (user) => {
@@ -1015,7 +1017,9 @@ export default function AdminPanelSection() {
               progressPercentage: progress.progress,
               lastActive: user.lastActive || 'Never',
               timeSinceLastActive: getTimeSince(user.lastActive),
-              completionStatus: getCompletionStatus(progress.progress)
+              completionStatus: getCompletionStatus(progress.progress),
+              acknowledged: progress.acknowledged || false,
+              acknowledgementDate: progress.acknowledgementDate || null
             };
           } catch (error) {
             console.error(`Error loading progress for ${user.email}:`, error);
@@ -1049,7 +1053,7 @@ export default function AdminPanelSection() {
         .from('tasks')
         .select('completed');
 
-      const pendingTickets = (maintenanceTickets || []).filter((t: any) => 
+      const pendingTickets = (maintenanceTickets || []).filter((t: any) =>
         t.status === 'open' || t.status === 'assigned'
       ).length;
 
@@ -1137,7 +1141,7 @@ export default function AdminPanelSection() {
   }
 
   return (
-    <div 
+    <div
       id="admin-panel"
       style={{
         marginBottom: '30px',
@@ -1148,7 +1152,7 @@ export default function AdminPanelSection() {
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -1241,34 +1245,34 @@ export default function AdminPanelSection() {
         {activeTab === 'overview' && (
           <div>
             {/* Quick Stats */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '20px',
               marginBottom: '30px'
             }}>
-              <AdminCard 
+              <AdminCard
                 title="Total Employees"
                 value={quickStats.totalUsers}
                 icon="👥"
                 color={SECTION_COLOR_RGB}
                 onClick={() => setActiveTab('management')}
               />
-              <AdminCard 
+              <AdminCard
                 title="Active Users"
                 value={quickStats.activeUsers}
                 icon="🟢"
                 color="16, 185, 129"
                 onClick={() => setActiveTab('progress')}
               />
-              <AdminCard 
+              <AdminCard
                 title="Pending Tickets"
                 value={quickStats.pendingTickets}
                 icon="🔧"
                 color="239, 68, 68"
                 onClick={() => setActiveTab('maintenance')}
               />
-              <AdminCard 
+              <AdminCard
                 title="Tasks Completed"
                 value={`${quickStats.completedTasks}/${quickStats.totalTasks}`}
                 icon="✅"
@@ -1285,19 +1289,19 @@ export default function AdminPanelSection() {
               border: '1px solid rgba(255, 255, 255, 0.15)',
               marginBottom: '30px',
             }}>
-              <h4 style={{ 
-                color: 'white', 
+              <h4 style={{
+                color: 'white',
                 margin: '0 0 20px 0',
                 fontSize: '1.2rem'
               }}>
                 ⚡ Quick Actions
               </h4>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                gap: '15px' 
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '15px'
               }}>
-                <button 
+                <button
                   onClick={() => setActiveTab('management')}
                   style={{
                     background: 'rgba(37, 99, 235, 0.2)',
@@ -1315,7 +1319,7 @@ export default function AdminPanelSection() {
                 >
                   <span>👥</span> Manage Team
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('events')}
                   style={{
                     background: 'rgba(245, 158, 11, 0.2)',
@@ -1333,25 +1337,25 @@ export default function AdminPanelSection() {
                 >
                   <span>🎉</span> Plan Event
                 </button>
-                <button 
-                      onClick={() => setActiveTab('tasks')}
-                      style={{
-                        background: 'rgba(139, 92, 246, 0.2)',
-                        color: 'white',
-                        border: '1px solid rgba(139, 92, 246, 0.4)',
-                        padding: '15px',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        fontWeight: '600',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        justifyContent: 'center'
-                      }}
-                  >
+                <button
+                  onClick={() => setActiveTab('tasks')}
+                  style={{
+                    background: 'rgba(139, 92, 246, 0.2)',
+                    color: 'white',
+                    border: '1px solid rgba(139, 92, 246, 0.4)',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    justifyContent: 'center'
+                  }}
+                >
                   <span>✅</span> Manage Tasks
                 </button>
-                <button 
+                <button
                   onClick={loadAllData}
                   style={{
                     background: 'rgba(16, 185, 129, 0.2)',
@@ -1379,8 +1383,8 @@ export default function AdminPanelSection() {
               padding: '25px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
             }}>
-              <h4 style={{ 
-                color: 'white', 
+              <h4 style={{
+                color: 'white',
                 margin: '0 0 20px 0',
                 fontSize: '1.2rem'
               }}>
@@ -1392,7 +1396,7 @@ export default function AdminPanelSection() {
                   .sort((a, b) => b.progressPercentage - a.progressPercentage)
                   .slice(0, 5)
                   .map((progress, index) => (
-                    <div 
+                    <div
                       key={progress.user.email}
                       style={{
                         display: 'flex',
@@ -1428,21 +1432,21 @@ export default function AdminPanelSection() {
                           </div>
                         </div>
                       </div>
-                      <div style={{ 
-                        padding: '6px 12px', 
-                        borderRadius: '12px', 
+                      <div style={{
+                        padding: '6px 12px',
+                        borderRadius: '12px',
                         fontSize: '0.9rem',
                         fontWeight: 'bold',
-                        background: 
+                        background:
                           progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
-                          progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
-                          progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
-                          'rgba(113, 128, 150, 0.2)',
-                        color: 
+                            progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                              progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
+                                'rgba(113, 128, 150, 0.2)',
+                        color:
                           progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                          progress.completionStatus === 'good' ? WARNING_COLOR :
-                          progress.completionStatus === 'poor' ? DANGER_COLOR :
-                          '#718096'
+                            progress.completionStatus === 'good' ? WARNING_COLOR :
+                              progress.completionStatus === 'poor' ? DANGER_COLOR :
+                                '#718096'
                       }}>
                         {progress.progressPercentage}%
                       </div>
@@ -1462,17 +1466,17 @@ export default function AdminPanelSection() {
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={{ 
-                color: 'white', 
+              <h4 style={{
+                color: 'white',
                 margin: 0,
                 fontSize: '1.2rem'
               }}>
                 📈 Employee Progress Tracking
               </h4>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
+                <button
                   onClick={loadAllData}
-                  style={{ 
+                  style={{
                     background: SECTION_COLOR,
                     color: 'white',
                     border: 'none',
@@ -1491,8 +1495,8 @@ export default function AdminPanelSection() {
             </div>
 
             {userProgress.length === 0 ? (
-              <div style={{ 
-                textAlign: 'center', 
+              <div style={{
+                textAlign: 'center',
                 padding: '40px',
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontStyle: 'italic'
@@ -1502,7 +1506,7 @@ export default function AdminPanelSection() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {userProgress.map((progress, index) => (
-                  <div 
+                  <div
                     key={progress.user.email}
                     style={{
                       padding: '20px',
@@ -1521,21 +1525,21 @@ export default function AdminPanelSection() {
                         </p>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ 
-                          padding: '6px 12px', 
-                          borderRadius: '12px', 
+                        <div style={{
+                          padding: '6px 12px',
+                          borderRadius: '12px',
                           fontSize: '0.9rem',
                           fontWeight: 'bold',
-                          background: 
+                          background:
                             progress.completionStatus === 'excellent' ? 'rgba(16, 185, 129, 0.2)' :
-                            progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
-                            progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
-                            'rgba(113, 128, 150, 0.2)',
-                          color: 
+                              progress.completionStatus === 'good' ? 'rgba(245, 158, 11, 0.2)' :
+                                progress.completionStatus === 'poor' ? 'rgba(239, 68, 68, 0.2)' :
+                                  'rgba(113, 128, 150, 0.2)',
+                          color:
                             progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                            progress.completionStatus === 'good' ? WARNING_COLOR :
-                            progress.completionStatus === 'poor' ? DANGER_COLOR :
-                            '#718096'
+                              progress.completionStatus === 'good' ? WARNING_COLOR :
+                                progress.completionStatus === 'poor' ? DANGER_COLOR :
+                                  '#718096'
                         }}>
                           {progress.progressPercentage}% Complete
                         </div>
@@ -1544,35 +1548,64 @@ export default function AdminPanelSection() {
                         </p>
                       </div>
                     </div>
-                    
-                    <div style={{ 
-                      height: '8px', 
-                      background: 'rgba(255, 255, 255, 0.1)', 
+
+                    <div style={{
+                      height: '8px',
+                      background: 'rgba(255, 255, 255, 0.1)',
                       borderRadius: '4px',
                       overflow: 'hidden',
                       marginBottom: '10px'
                     }}>
-                      <div 
-                        style={{ 
-                          height: '100%', 
-                          background: 
+                      <div
+                        style={{
+                          height: '100%',
+                          background:
                             progress.completionStatus === 'excellent' ? SUCCESS_COLOR :
-                            progress.completionStatus === 'good' ? WARNING_COLOR :
-                            progress.completionStatus === 'poor' ? DANGER_COLOR :
-                            '#718096',
+                              progress.completionStatus === 'good' ? WARNING_COLOR :
+                                progress.completionStatus === 'poor' ? DANGER_COLOR :
+                                  '#718096',
                           width: `${progress.progressPercentage}%`,
-                        }} 
+                        }}
                       />
                     </div>
-                    
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
+
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       fontSize: '0.85rem',
                       color: 'rgba(255, 255, 255, 0.7)'
                     }}>
                       <span>{progress.sectionsCompleted} of {progress.totalSections} sections completed</span>
                       <span>{Math.round(progress.progressPercentage)}% overall</span>
+                    </div>
+
+                    {/* Acknowledgement Status */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '12px' }}>
+                      <span style={{
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontSize: '0.85rem',
+                        background: progress.acknowledged
+                          ? 'rgba(16, 185, 129, 0.2)'
+                          : 'rgba(255, 255, 255, 0.1)',
+                        color: progress.acknowledged ? SUCCESS_COLOR : 'rgba(255, 255, 255, 0.7)',
+                        fontWeight: 'bold',
+                        border: progress.acknowledged
+                          ? `1px solid ${SUCCESS_COLOR}`
+                          : '1px solid rgba(255, 255, 255, 0.2)'
+                      }}>
+                        {progress.acknowledged ? '✅ Acknowledged' : '⏳ Pending'}
+                      </span>
+
+                      {progress.acknowledged && progress.acknowledgementDate && (
+                        <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                          {new Date(progress.acknowledgementDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1586,45 +1619,45 @@ export default function AdminPanelSection() {
           <TeamManagementContent users={users} currentUser={currentUser} />
         )}
 
-        
-{activeTab === 'maintenance' && (
-  <div style={{
-    background: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: '16px',
-    padding: '25px',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-  }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-      <h4 style={{ 
-        color: 'white', 
-        margin: 0,
-        fontSize: '1.2rem'
-      }}>
-        🔧 Maintenance Tickets Management
-      </h4>
-      <button 
-        onClick={loadAllData}
-        style={{ 
-          background: SECTION_COLOR,
-          color: 'white',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontWeight: '600',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}
-      >
-        🔄 Refresh
-      </button>
-    </div>
 
-    {/* Maintenance Tickets Management Component */}
-    <MaintenanceTicketsManagement />
-  </div>
-)}
+        {activeTab === 'maintenance' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h4 style={{
+                color: 'white',
+                margin: 0,
+                fontSize: '1.2rem'
+              }}>
+                🔧 Maintenance Tickets Management
+              </h4>
+              <button
+                onClick={loadAllData}
+                style={{
+                  background: SECTION_COLOR,
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                🔄 Refresh
+              </button>
+            </div>
+
+            {/* Maintenance Tickets Management Component */}
+            <MaintenanceTicketsManagement />
+          </div>
+        )}
 
         {activeTab === 'events' && (
           <div style={{
@@ -1639,13 +1672,13 @@ export default function AdminPanelSection() {
 
         {activeTab === 'tasks' && (
           <div style={{
-          background: 'transparent',
-          borderRadius: '0',
-          padding: '0',
-          border: 'none'
-        }}>
-       <TasksSection />
-      </div>
+            background: 'transparent',
+            borderRadius: '0',
+            padding: '0',
+            border: 'none'
+          }}>
+            <TasksSection />
+          </div>
         )}
       </div>
     </div>

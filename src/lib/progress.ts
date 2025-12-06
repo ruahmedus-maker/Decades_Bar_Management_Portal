@@ -23,7 +23,7 @@ const ALL_SECTIONS = [
 // Sections that should NOT be tracked for progress
 const EXCLUDED_SECTIONS = [
   'admin-panel',
-  'employee-counselings', 
+  'employee-counselings',
   'schedule-report',
   'special-events'
 ];
@@ -78,6 +78,8 @@ export const getProgressBreakdown = async (userEmail: string): Promise<{
   sectionsVisited: number;
   totalSections: number;
   isTracked?: boolean;
+  acknowledged?: boolean;
+  acknowledgementDate?: string | null;
 }> => {
   try {
     return await supabaseProgress.getProgressBreakdown(userEmail);
@@ -114,7 +116,7 @@ export const getSectionCompletionDetails = async (userEmail: string, sectionId: 
   try {
     const progress = await getProgressBreakdown(userEmail);
     const sectionDetail = progress.sectionDetails.find(s => s.id === sectionId);
-    
+
     if (sectionDetail) {
       return {
         completed: sectionDetail.completed,
@@ -123,7 +125,7 @@ export const getSectionCompletionDetails = async (userEmail: string, sectionId: 
         progress: sectionDetail.progress
       };
     }
-    
+
     return {
       completed: false,
       timeSpent: 0,
