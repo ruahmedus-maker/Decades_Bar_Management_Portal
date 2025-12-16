@@ -254,8 +254,10 @@ export default function EmployeeCounselingSection() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
