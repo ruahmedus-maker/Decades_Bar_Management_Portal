@@ -245,9 +245,9 @@ export default function EmployeeCounselingSection() {
 
       if (error) throw error;
       setCounselingRecords(records || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading counseling data:', error);
-      showToast('Error loading counseling records');
+      showToast(error.message || 'Error loading counseling records');
     } finally {
       setLoading(false);
     }
