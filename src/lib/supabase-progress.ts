@@ -46,10 +46,16 @@ export const supabaseProgress = {
       });
 
       // Update user's lastActive timestamp
-      await supabase
+      const { error: updateError } = await supabase
         .from('users')
         .update({ last_active: new Date().toISOString() })
         .eq('id', userData.id);
+
+      if (updateError) {
+        console.error('❌ Error updating last_active:', updateError);
+      } else {
+        console.log('✅ Updated last_active for user:', userData.id);
+      }
 
       // Get existing progress for this section from user_progress table
       const { data: existingProgress } = await supabase
