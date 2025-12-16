@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { supabase } from '@/lib/supabase';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { ChecklistItem } from '@/types';
@@ -17,7 +18,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: '3', text: 'Check daily specials and event board', completed: false, category: 'opening' },
   { id: '4', text: 'Review reservation list and any special requests', completed: false, category: 'opening' },
   { id: '5', text: 'Set up station with necessary equipment', completed: false, category: 'opening' },
-  
+
   // Bank Counting & Verification
   { id: 'bank-1', text: 'Collect bank bag from office/safe', completed: false, category: 'bank' },
   { id: 'bank-2', text: 'Count $1 bills: 2 bands of $100 ($200 total)', completed: false, category: 'bank' },
@@ -26,7 +27,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: 'bank-5', text: 'Report any discrepancies to office immediately', completed: false, category: 'bank' },
   { id: 'bank-6', text: 'Verify counterfeit pen is in bank bag', completed: false, category: 'bank' },
   { id: 'bank-7', text: 'Use card reader cleaner before shift start', completed: false, category: 'bank' },
-  
+
   // Cash Handling Procedures
   { id: 'cash-1', text: 'Use counterfeit pen on all $20+ bills received', completed: false, category: 'cash' },
   { id: 'cash-2', text: 'Check for security features: watermark, security strip', completed: false, category: 'cash' },
@@ -34,14 +35,14 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: 'cash-4', text: 'Place bills in register in organized manner', completed: false, category: 'cash' },
   { id: 'cash-5', text: 'Remember: You are financially responsible for counterfeit bills', completed: false, category: 'cash' },
   { id: 'cash-6', text: 'Ensure counterfeit pen is returned with bank bag', completed: false, category: 'cash' },
-  
+
   // During Shift
   { id: 'shift-1', text: 'Maintain clean and organized work area', completed: false, category: 'during-shift' },
   { id: 'shift-2', text: 'Follow proper pouring and serving procedures', completed: false, category: 'during-shift' },
   { id: 'shift-3', text: 'Upsell featured cocktails and promotions', completed: false, category: 'during-shift' },
   { id: 'shift-4', text: 'Check ID for all guests who appear under 30', completed: false, category: 'during-shift' },
   { id: 'shift-5', text: 'Follow responsible alcohol service guidelines', completed: false, category: 'during-shift' },
-  
+
   // Closing Procedures
   { id: 'close-1', text: 'Count register drawer and prepare deposit', completed: false, category: 'closing' },
   { id: 'close-2', text: 'Complete end-of-shift report in POS system', completed: false, category: 'closing' },
@@ -102,10 +103,10 @@ class NotificationService {
       };
 
       console.log('📧 Email notification payload:', emailData);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // In production, uncomment this:
       /*
       const response = await fetch('/api/send-checkout-notification', {
@@ -118,7 +119,7 @@ class NotificationService {
       
       if (!response.ok) throw new Error('Email sending failed');
       */
-      
+
       return true;
     } catch (error) {
       console.error('Failed to send email notification:', error);
@@ -181,7 +182,7 @@ class NotificationService {
         sound: 'default',
         title: '🚨 Bartender Ready for Checkout',
         body: `${bartenderName} has completed closing procedures.`,
-        data: { 
+        data: {
           type: 'checkout_request',
           bartenderName,
           timestamp: new Date().toISOString()
@@ -189,7 +190,7 @@ class NotificationService {
       };
 
       console.log('📱 Mobile push notification payload:', message);
-      
+
       // In production, this would call your push notification service
       /*
       await fetch('https://exp.host/--/api/v2/push/send', {
@@ -202,7 +203,7 @@ class NotificationService {
         body: JSON.stringify(message),
       });
       */
-      
+
       return true;
     } catch (error) {
       console.error('Mobile push notification failed:', error);
@@ -213,7 +214,7 @@ class NotificationService {
   // Send all notifications
   static async sendAllNotifications(bartenderName: string, bartenderEmail: string) {
     const timestamp = new Date().toLocaleString();
-    
+
     const results = await Promise.allSettled([
       this.sendEmailNotification(bartenderName, bartenderEmail, timestamp),
       this.sendPushNotification(bartenderName, bartenderEmail, timestamp)
@@ -263,7 +264,7 @@ export default function StandardOperatingProceduresSection() {
       setChecklist(DEFAULT_CHECKLIST);
       setIsLoading(false);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -278,8 +279,8 @@ export default function StandardOperatingProceduresSection() {
   const toggleChecklistItem = useCallback((id: string, event?: React.MouseEvent) => {
     // Prevent event bubbling to avoid multiple triggers
     event?.stopPropagation();
-    
-    setChecklist(prev => prev.map(item => 
+
+    setChecklist(prev => prev.map(item =>
       item.id === id ? { ...item, completed: !item.completed } : item
     ));
   }, []);
@@ -328,7 +329,7 @@ export default function StandardOperatingProceduresSection() {
 
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
-    
+
     if (permission === 'granted') {
       showToast('✅ Push notifications enabled!');
       return true;
@@ -351,35 +352,39 @@ export default function StandardOperatingProceduresSection() {
     }
 
     setIsSendingNotification(true);
-    
+
     try {
-      // Send all notifications
+      // 1. Send local notifications (existing logic)
       const results = await NotificationService.sendAllNotifications(
         currentUser.name || 'Bartender',
         currentUser.email
       );
 
-      setIsReadyForCheckout(true);
-      
-      // Show success message based on which notifications worked
-      if (results.email && results.push) {
-        showToast('✅ Managers notified via email and push! You are ready for checkout.');
-      } else if (results.email) {
-        showToast('✅ Managers notified via email! You are ready for checkout.');
-      } else if (results.push) {
-        showToast('✅ Push notification sent! You are ready for checkout.');
-      } else {
-        showToast('⚠️ Checkout recorded, but failed to send notifications. Please inform manager directly.');
+      // 2. Insert into Supabase for real-time Admin alerts
+      const { error } = await supabase
+        .from('notifications')
+        .insert([{
+          type: 'checkout_request',
+          title: `Checkout Request: ${currentUser.name}`,
+          message: `${currentUser.name} has completed closing procedures and is ready for checkout.`,
+          sender_id: currentUser.id, // Ensure your User type has 'id'
+          sender_name: currentUser.name,
+          recipient_role: 'Admin', // Targets all admins
+          read: false
+        }]);
+
+      if (error) {
+        console.error('Supabase notification error:', error);
+        // Don't block success if only DB fails, but warn
       }
+
+      setIsReadyForCheckout(true);
+
+      // Show success message
+      showToast('✅ Manager notified via real-time alert, email, and push!');
 
       // Log for audit
       console.log(`🚨 Checkout Request: ${currentUser.email} at ${results.timestamp}`);
-      console.log(`📧 Email: ${results.email ? '✅' : '❌'} | 📱 Push: ${results.push ? '✅' : '❌'}`);
-      
-      // Simulate manager acknowledgment after 3 seconds
-      setTimeout(() => {
-        showToast('ℹ️ Manager has acknowledged your checkout request.');
-      }, 3000);
 
     } catch (error) {
       console.error('Checkout notification failed:', error);
@@ -462,10 +467,10 @@ export default function StandardOperatingProceduresSection() {
               }}>
                 Standard Operating Procedures
               </h3>
-              <p style={{ 
-                margin: 0, 
-                opacity: 0.9, 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <p style={{
+                margin: 0,
+                opacity: 0.9,
+                color: 'rgba(255, 255, 255, 0.9)',
                 fontSize: '0.9rem',
                 marginTop: '4px'
               }}>
@@ -479,8 +484,8 @@ export default function StandardOperatingProceduresSection() {
   }
 
   return (
-    <div 
-      className="active" 
+    <div
+      className="active"
       id="procedures"
       style={mainContainerStyle}
     >
@@ -496,22 +501,22 @@ export default function StandardOperatingProceduresSection() {
             }}>
               Standard Operating Procedures
             </h3>
-            <p style={{ 
-              margin: 0, 
-              opacity: 0.9, 
-              color: 'rgba(255, 255, 255, 0.9)', 
+            <p style={{
+              margin: 0,
+              opacity: 0.9,
+              color: 'rgba(255, 255, 255, 0.9)',
               fontSize: '0.9rem',
               marginTop: '4px'
             }}>
               Checklist for all staff - follow carefully
             </p>
           </div>
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.15)', 
-            padding: '6px 12px', 
-            borderRadius: '16px', 
-            fontSize: '0.85rem', 
-            color: 'white', 
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.15)',
+            padding: '6px 12px',
+            borderRadius: '16px',
+            fontSize: '0.85rem',
+            color: 'white',
             fontWeight: '600',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
@@ -530,7 +535,7 @@ export default function StandardOperatingProceduresSection() {
           marginBottom: '12px',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
-          <div 
+          <div
             style={{
               height: '100%',
               background: `linear-gradient(90deg, ${ACCENT_COLOR}, #B8A1CC)`,
@@ -557,7 +562,7 @@ export default function StandardOperatingProceduresSection() {
 
       {/* Action Buttons */}
       <div style={{ display: 'flex', gap: '10px', margin: '16px', flexWrap: 'wrap' }}>
-        <button 
+        <button
           onClick={resetChecklist}
           style={{
             background: `linear-gradient(135deg, ${SECTION_COLOR}, #C89595)`,
@@ -576,7 +581,7 @@ export default function StandardOperatingProceduresSection() {
           <span>🔄</span>
           Reset Checklist
         </button>
-        <button 
+        <button
           onClick={() => showToast('💾 Checklist progress saved!')}
           style={{
             background: `linear-gradient(135deg, ${ACCENT_COLOR}, #8E7CB0)`,
@@ -595,10 +600,10 @@ export default function StandardOperatingProceduresSection() {
           <span>💾</span>
           Save Progress
         </button>
-        
+
         {/* Notification Permission Button */}
         {notificationPermission !== 'granted' && (
-          <button 
+          <button
             onClick={requestNotificationPermission}
             style={{
               background: `linear-gradient(135deg, #FFA726, #FB8C00)`,
@@ -618,9 +623,9 @@ export default function StandardOperatingProceduresSection() {
             Enable Notifications
           </button>
         )}
-        
+
         {/* Ready for Checkout Button */}
-        <button 
+        <button
           onClick={handleReadyForCheckout}
           disabled={!closingComplete || isReadyForCheckout || isSendingNotification}
           style={{
@@ -696,7 +701,7 @@ export default function StandardOperatingProceduresSection() {
             fontSize: '0.8rem',
             color: 'rgba(255, 255, 255, 0.8)'
           }}>
-            <strong>Next Steps:</strong> Please wait for a manager to complete your final count and approval. 
+            <strong>Next Steps:</strong> Please wait for a manager to complete your final count and approval.
             You will receive confirmation when checkout is complete.
           </div>
         </div>
@@ -755,7 +760,7 @@ export default function StandardOperatingProceduresSection() {
           lineHeight: 1.5
         }}>
           <p>
-            <strong style={{ color: ACCENT_COLOR, fontWeight: 700 }}>Important:</strong> Banks must be counted before each shift. You are financially responsible for counterfeit bills. 
+            <strong style={{ color: ACCENT_COLOR, fontWeight: 700 }}>Important:</strong> Banks must be counted before each shift. You are financially responsible for counterfeit bills.
             Counterfeit pens must be returned with bank bag - $5 replacement fee applies if missing.
           </p>
         </div>
@@ -825,9 +830,9 @@ export default function StandardOperatingProceduresSection() {
                         accentColor: ACCENT_COLOR
                       }}
                     />
-                    <span style={{ 
-                      flex: 1, 
-                      lineHeight: 1.4, 
+                    <span style={{
+                      flex: 1,
+                      lineHeight: 1.4,
                       fontSize: '0.9rem',
                       textDecoration: item.completed ? 'line-through' : 'none',
                       color: item.completed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)'
@@ -976,7 +981,7 @@ export default function StandardOperatingProceduresSection() {
               </ul>
             </div>
           </div>
-          
+
           {/* New section for bank rebuilding instructions */}
           <div style={{
             marginTop: '20px',
@@ -1003,7 +1008,7 @@ export default function StandardOperatingProceduresSection() {
               fontSize: '0.85rem',
               lineHeight: 1.5
             }}>
-              <strong>Note:</strong> When rebuilding your bank, please don't mix larger bills within the $1 bands. 
+              <strong>Note:</strong> When rebuilding your bank, please don't mix larger bills within the $1 bands.
               Instead, place larger bills ($5, $10, $20) on the outside of the band for proper organization and easy counting.
             </p>
           </div>

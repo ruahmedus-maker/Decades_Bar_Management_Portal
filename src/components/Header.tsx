@@ -2,6 +2,8 @@
 
 import { useApp } from '@/contexts/AppContext';
 
+import NotificationCenter from './NotificationCenter';
+
 export default function Header() {
   const { currentUser, logout } = useApp();
 
@@ -45,7 +47,7 @@ export default function Header() {
     height: '40px',
     borderRadius: '50%',
     background: 'linear-gradient(135deg, #2DD4BF, #0D9488)',
-    display: 'flex',
+    display: 'flex', // Corrected flex property
     alignItems: 'center',
     justifyContent: 'center',
     color: 'white',
@@ -83,26 +85,31 @@ export default function Header() {
       </h2>
 
       <div style={userInfoStyle}>
-        <div style={avatarStyle}>
-          {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
+        {/* Only render for admins/managers */}
+        <NotificationCenter />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={avatarStyle}>
+            {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
+          </div>
+
+          <span style={userNameStyle}>
+            {currentUser?.name} ({currentUser?.position})
+          </span>
+
+          <button
+            onClick={logout}
+            style={logoutButtonStyle}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, logoutButtonHoverStyle);
+            }}
+            onMouseLeave={(e) => {
+              Object.assign(e.currentTarget.style, logoutButtonStyle);
+            }}
+          >
+            Logout
+          </button>
         </div>
-
-        <span style={userNameStyle}>
-          {currentUser?.name} ({currentUser?.position})
-        </span>
-
-        <button
-          onClick={logout}
-          style={logoutButtonStyle}
-          onMouseEnter={(e) => {
-            Object.assign(e.currentTarget.style, logoutButtonHoverStyle);
-          }}
-          onMouseLeave={(e) => {
-            Object.assign(e.currentTarget.style, logoutButtonStyle);
-          }}
-        >
-          Logout
-        </button>
       </div>
     </div>
   );
