@@ -33,7 +33,7 @@ export const NAV_ITEMS = [
   { id: 'resources', icon: '📚', label: 'Additional Resources' },
   // Add the missing admin-only items
   { id: 'employee-counselings', icon: '📝', label: 'Employee Counselings' },
-  { id: 'performance-report', icon: '📋', label: 'Performance Report' },
+  { id: 'performance-report', icon: '📊', label: 'Key Performance Indicators' },
   { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
 ] as const;
 

@@ -20,7 +20,7 @@ import AdminPanelSection from '@/components/sections/AdminPanelSection';
 import FAQSection from '@/components/sections/FAQSection';
 import ResourcesSection from '@/components/sections/ResourcesSection';
 import EmployeeCounselingsSection from '@/components/sections/EmployeeCounselingsSection';
-import PerformanceReportsSection from '@/components/sections/PerformanceReportsSection';
+import KeyPerformanceIndicatorsSection from '@/components/sections/KeyPerformanceIndicatorsSection';
 import MaintenanceSection from './sections/MaintenanceSection';
 
 export default function SectionRouter() {
@@ -86,7 +86,7 @@ export default function SectionRouter() {
       case 'employee-counselings':
         return <EmployeeCounselingsSection />;
       case 'performance-report':
-        return <PerformanceReportsSection />;
+        return <KeyPerformanceIndicatorsSection />;
       case 'maintenance':
         return <MaintenanceSection />;
       default:
