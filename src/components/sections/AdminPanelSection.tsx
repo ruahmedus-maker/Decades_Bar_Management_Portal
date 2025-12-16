@@ -99,7 +99,15 @@ function AdminCard({ title, value, icon, color, onClick }: any) {
 }
 
 // Team Management Component
-function TeamManagementContent({ users, currentUser }: { users: User[], currentUser: User | null }) {
+function TeamManagementContent({
+  users,
+  currentUser,
+  userProgress
+}: {
+  users: User[],
+  currentUser: User | null,
+  userProgress?: UserProgress[]
+}) {
   const { showToast } = useApp();
 
   // Filter to show only Bartenders and Trainees (no Admins)
@@ -235,7 +243,7 @@ function TeamManagementContent({ users, currentUser }: { users: User[], currentU
                         background: 'rgba(255, 255, 255, 0.1)',
                         color: 'rgba(255, 255, 255, 0.7)'
                       }}>
-                        Progress: {user.progress || 0}%
+                        Progress: {userProgress?.find(p => p.user.email === user.email)?.progressPercentage || user.progress || 0}%
                       </span>
                     </div>
                   </div>
@@ -1616,7 +1624,7 @@ export default function AdminPanelSection() {
 
         {/* Management Tab */}
         {activeTab === 'management' && (
-          <TeamManagementContent users={users} currentUser={currentUser} />
+          <TeamManagementContent users={users} currentUser={currentUser} userProgress={userProgress} />
         )}
 
 
