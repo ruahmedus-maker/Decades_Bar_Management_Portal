@@ -18,8 +18,8 @@ export default function NotificationCenter() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Only show for Admins
-    const isAdmin = currentUser?.position === 'Admin';
+    // Only show for Admins and Managers
+    const isAdmin = currentUser?.position === 'Admin' || currentUser?.position === 'Manager';
 
     const fetchNotifications = async () => {
         if (!currentUser) return;
@@ -27,7 +27,7 @@ export default function NotificationCenter() {
         const { data } = await supabase
             .from('notifications')
             .select('*')
-            .eq('recipient_role', 'Admin')
+            .or(`recipient_role.eq.Admin,recipient_role.eq.Manager`)
             .order('created_at', { ascending: false })
             .limit(20);
 
@@ -76,7 +76,7 @@ export default function NotificationCenter() {
                     event: 'INSERT',
                     schema: 'public',
                     table: 'notifications',
-                    filter: `recipient_role=eq.Admin`
+                    filter: `recipient_role=in.(Admin,Manager)`
                 },
                 (payload) => {
                     const newNotification = payload.new as Notification;
