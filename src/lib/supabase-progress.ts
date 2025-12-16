@@ -72,34 +72,24 @@ export const supabaseProgress = {
       const timeRequired = sectionConfig?.timeRequired || 60;
       const completed = newTimeSpent >= timeRequired;
 
-      // Use explicit insert or update instead of upsert to avoid RLS issues
-      if (existingProgress) {
-        // Update existing record
-        const { error } = await supabase
-          .from('user_progress')
-          .update({
-            time_spent: newTimeSpent,
-            completed: completed,
-            last_visit: new Date().toISOString()
-          })
-          .eq('user_id', userData.id)
-          .eq('section_id', sectionId);
+      // Use upsert with ignoreDuplicates to handle race conditions
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert({
+          user_id: userData.id,
+          section_id: sectionId,
+          time_spent: newTimeSpent,
+          completed: completed,
+          last_visit: new Date().toISOString(),
+          first_visit: existingProgress?.first_visit || new Date().toISOString()
+        }, {
+          onConflict: 'user_id,section_id',
+          ignoreDuplicates: false
+        });
 
-        if (error) throw error;
-      } else {
-        // Insert new record
-        const { error } = await supabase
-          .from('user_progress')
-          .insert({
-            user_id: userData.id,
-            section_id: sectionId,
-            time_spent: newTimeSpent,
-            completed: completed,
-            last_visit: new Date().toISOString(),
-            first_visit: new Date().toISOString()
-          });
-
-        if (error) throw error;
+      if (error) {
+        console.error('❌ Error upserting progress:', error);
+        throw error;
       }
 
       console.log(`📊 Progress tracked: ${sectionId} - ${newTimeSpent}s/${timeRequired}s`);
