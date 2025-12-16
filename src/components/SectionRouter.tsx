@@ -44,7 +44,8 @@ export default function SectionRouter() {
         trackVisit(activeSection);
       }
     }
-  }, [activeSection, currentUser, trackVisit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection, currentUser]); // trackVisit is memoized, don't include it
 
   const renderSection = () => {
     switch (activeSection) {
