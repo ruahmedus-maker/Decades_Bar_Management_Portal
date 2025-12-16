@@ -36,7 +36,7 @@ interface Employee {
 // Animated Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -100,7 +100,7 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
   };
 
   return (
-    <div 
+    <div
       style={{
         padding: '20px',
         background: 'rgba(255, 255, 255, 0.08)',
@@ -127,17 +127,17 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
           }}>
             {record.type.replace('_', ' ')}
           </span>
-          <span style={{ 
-            color: 'rgba(255, 255, 255, 0.7)', 
+          <span style={{
+            color: 'rgba(255, 255, 255, 0.7)',
             fontSize: '0.8rem',
             fontWeight: '500'
           }}>
             {new Date(record.date).toLocaleDateString()}
           </span>
         </div>
-        
-        <h5 style={{ 
-          color: 'white', 
+
+        <h5 style={{
+          color: 'white',
           margin: '0 0 8px 0',
           fontSize: '1rem',
           fontWeight: 600,
@@ -145,9 +145,9 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
         }}>
           {record.employee_name}
         </h5>
-        
-        <p style={{ 
-          color: 'rgba(255, 255, 255, 0.7)', 
+
+        <p style={{
+          color: 'rgba(255, 255, 255, 0.7)',
           margin: '0 0 12px 0',
           fontSize: '0.9rem',
           lineHeight: 1.5
@@ -163,9 +163,9 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
           }}>
             {record.acknowledged ? '✅ Acknowledged' : '⏳ Pending'}
           </span>
-          
+
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button 
+            <button
               style={{
                 padding: '6px 12px',
                 background: 'rgba(255, 255, 255, 0.1)',
@@ -182,9 +182,9 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
             >
               Export
             </button>
-            
+
             {!record.acknowledged && (
-              <button 
+              <button
                 style={{
                   padding: '6px 12px',
                   background: 'rgba(13, 148, 136, 0.3)',
@@ -229,10 +229,10 @@ export default function EmployeeCounselingSection() {
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // Load employees (bartenders and trainees only)
       const allUsers = await getAllUsers();
-      const bartendersAndTrainees = allUsers.filter(user => 
+      const bartendersAndTrainees = allUsers.filter(user =>
         user.position === 'Bartender' || user.position === 'Trainee'
       );
       setEmployees(bartendersAndTrainees);
@@ -273,9 +273,8 @@ export default function EmployeeCounselingSection() {
     }
 
     try {
-      const recordId = `counseling-${Date.now()}`;
-      const record: CounselingRecord = {
-        id: recordId,
+      // Create record payload (let Supabase generate ID)
+      const recordPayload = {
         employee_email: selectedEmployee,
         employee_name: selectedEmployeeData.name,
         type: formData.type,
@@ -285,12 +284,12 @@ export default function EmployeeCounselingSection() {
         recorded_by: formData.managerName,
         recorded_date: new Date().toISOString(),
         acknowledged: false,
-        employee_signature: formData.employeeSignature || undefined
+        employee_signature: formData.employeeSignature || null
       };
 
       const { error } = await supabase
         .from('counseling_records')
-        .insert([record]);
+        .insert([recordPayload]);
 
       if (error) throw error;
 
@@ -346,10 +345,10 @@ export default function EmployeeCounselingSection() {
           <div class="section-title">EMPLOYEE INFORMATION</div>
           <div class="content">
             <p><strong>Name:</strong> ${record.employee_name}</p>
-            <p><strong>Position:</strong> ${record.type === 'observation' ? 'Observation Note' : 
-              record.type === 'verbal' ? 'Verbal Warning' :
-              record.type === 'written' ? 'Written Warning' :
-              record.type === 'suspension' ? 'Suspension Notice' : 'Termination Notice'}</p>
+            <p><strong>Position:</strong> ${record.type === 'observation' ? 'Observation Note' :
+        record.type === 'verbal' ? 'Verbal Warning' :
+          record.type === 'written' ? 'Written Warning' :
+            record.type === 'suspension' ? 'Suspension Notice' : 'Termination Notice'}</p>
           </div>
         </div>
 
@@ -486,7 +485,7 @@ export default function EmployeeCounselingSection() {
     try {
       const { error } = await supabase
         .from('counseling_records')
-        .update({ 
+        .update({
           acknowledged: true,
           updated_at: new Date().toISOString()
         })
@@ -513,7 +512,7 @@ export default function EmployeeCounselingSection() {
 
   if (!currentUser || currentUser.position !== 'Admin') {
     return (
-      <div 
+      <div
         id="employee-counseling-section"
         style={{
           marginBottom: '30px',
@@ -566,7 +565,7 @@ export default function EmployeeCounselingSection() {
 
   if (loading) {
     return (
-      <div 
+      <div
         id="employee-counseling-section"
         style={{
           marginBottom: '30px',
@@ -590,7 +589,7 @@ export default function EmployeeCounselingSection() {
   }
 
   return (
-    <div 
+    <div
       id="employee-counseling-section"
       style={{
         marginBottom: '30px',
@@ -607,7 +606,7 @@ export default function EmployeeCounselingSection() {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -658,8 +657,8 @@ export default function EmployeeCounselingSection() {
           <button
             style={{
               padding: '12px 24px',
-              background: activeTab === 'violation' 
-                ? `rgba(${SECTION_COLOR_RGB}, 0.3)` 
+              background: activeTab === 'violation'
+                ? `rgba(${SECTION_COLOR_RGB}, 0.3)`
                 : 'rgba(255, 255, 255, 0.1)',
               border: activeTab === 'violation'
                 ? `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`
@@ -679,8 +678,8 @@ export default function EmployeeCounselingSection() {
           <button
             style={{
               padding: '12px 24px',
-              background: activeTab === 'writeup' 
-                ? `rgba(${SECTION_COLOR_RGB}, 0.3)` 
+              background: activeTab === 'writeup'
+                ? `rgba(${SECTION_COLOR_RGB}, 0.3)`
                 : 'rgba(255, 255, 255, 0.1)',
               border: activeTab === 'writeup'
                 ? `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`
@@ -710,7 +709,7 @@ export default function EmployeeCounselingSection() {
               <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
                 Employee *
               </label>
-              <select 
+              <select
                 value={selectedEmployee}
                 onChange={(e) => setSelectedEmployee(e.target.value)}
                 style={{
@@ -736,7 +735,7 @@ export default function EmployeeCounselingSection() {
               <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
                 Type *
               </label>
-              <select 
+              <select
                 value={formData.type}
                 onChange={(e) => handleInputChange('type', e.target.value)}
                 style={{
@@ -817,8 +816,8 @@ export default function EmployeeCounselingSection() {
                 minHeight: '80px',
                 resize: 'vertical'
               }}
-              placeholder={activeTab === 'violation' 
-                ? 'Describe the violation or performance issue...' 
+              placeholder={activeTab === 'violation'
+                ? 'Describe the violation or performance issue...'
                 : 'Provide detailed description of the policy violation or incident...'
               }
             />
@@ -894,7 +893,7 @@ export default function EmployeeCounselingSection() {
             />
           </div>
 
-          <button 
+          <button
             style={{
               marginTop: '20px',
               padding: '12px 24px',
@@ -956,7 +955,7 @@ export default function EmployeeCounselingSection() {
                         {employee.position}
                       </span>
                     </div>
-                    
+
                     <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem', marginBottom: '10px' }}>
                       <div>Email: {employee.email}</div>
                       <div>Total Records: {employeeRecords.length}</div>
