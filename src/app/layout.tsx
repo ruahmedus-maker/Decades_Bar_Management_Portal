@@ -17,13 +17,13 @@ const inter = Inter({
 const buildInfo = getBuildInfo();
 
 export const metadata: Metadata = {
-  title: "Decades Bar Training Portal",
-  description: "Training & Procedures Portal for Decades Bar Staff",
+  title: "Decades Bar Management System",
+  description: "Management System for Decades Bar Staff",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Decades Bar",
+    title: "Bar Manager",
   },
   formatDetection: {
     telephone: false,
@@ -53,7 +53,7 @@ export default function RootLayout({
         {/* Enhanced Safari PWA Support */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Decades Bar" />
+        <meta name="apple-mobile-web-app-title" content="Bar Manager" />
 
         {/* Safari Splash Screens */}
         <link rel="apple-touch-startup-image" href="/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
@@ -65,7 +65,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
 
         {/* Additional PWA Tags */}
-        <meta name="application-name" content="Decades Bar" />
+        <meta name="application-name" content="Bar Manager" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-TileColor" content="#2DD4BF" />
         <meta name="msapplication-tap-highlight" content="no" />

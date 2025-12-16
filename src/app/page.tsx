@@ -7,7 +7,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import SectionRouter from '@/components/SectionRouter';
 import Toast from '@/components/Toast';
-import ErrorBoundary from '@/components/ErrorBoundary'; 
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { ENABLE_TESTS } from '@/lib/test-utils';
 import FullScreenTest from '@/components/FullScreenTest';
 import SafariLoader from '@/components/SafariLoader'; // Add this
@@ -19,7 +19,7 @@ function MainApp() {
   console.log('MainApp - Is Loading:', isLoading);
 
   // Check if we should show only the test
-  const shouldShowOnlyTest = ENABLE_TESTS && currentUser && 
+  const shouldShowOnlyTest = ENABLE_TESTS && currentUser &&
     (currentUser.position === 'Bartender' || currentUser.position === 'Trainee');
 
   if (isLoading) {
@@ -40,7 +40,7 @@ function MainApp() {
           color: 'white'
         }}>
           <div style={{ textAlign: 'center' }}>
-            <h3>Loading Decades Bar Training Portal...</h3>
+            <h3>Loading Decades Bar Management System...</h3>
             <div style={{ marginTop: '20px' }}>Please wait</div>
           </div>
         </div>
@@ -53,10 +53,10 @@ function MainApp() {
       <>
         <SafariLoader />
         <LoginBarrier />
-        <Toast 
-          message={toast.message} 
-          show={toast.show} 
-          onHide={hideToast} 
+        <Toast
+          message={toast.message}
+          show={toast.show}
+          onHide={hideToast}
         />
       </>
     );
@@ -68,10 +68,10 @@ function MainApp() {
       <>
         <SafariLoader />
         <FullScreenTest />
-        <Toast 
-          message={toast.message} 
-          show={toast.show} 
-          onHide={hideToast} 
+        <Toast
+          message={toast.message}
+          show={toast.show}
+          onHide={hideToast}
         />
       </>
     );
@@ -92,10 +92,10 @@ function MainApp() {
           </div>
         </div>
       </div>
-      <Toast 
-        message={toast.message} 
-        show={toast.show} 
-        onHide={hideToast} 
+      <Toast
+        message={toast.message}
+        show={toast.show}
+        onHide={hideToast}
       />
     </>
   );

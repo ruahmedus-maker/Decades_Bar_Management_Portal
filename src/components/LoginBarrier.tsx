@@ -47,12 +47,12 @@ export default function LoginBarrier() {
     setIsLoading(true);
     try {
       // Validate registration code before attempting registration
-      if (!APPROVED_CODES.includes(formData.code)) {
+      if (!APPROVED_CODES.includes(formData.code as any)) {
         throw new Error('Invalid registration code. Please contact your manager.');
       }
 
       // Admin registration safeguards
-      if (formData.position === 'Admin' && !ADMIN_CODES.includes(formData.code)) {
+      if (formData.position === 'Admin' && !ADMIN_CODES.includes(formData.code as any)) {
         throw new Error('Administrative positions require manager authorization codes.');
       }
 
@@ -80,12 +80,12 @@ export default function LoginBarrier() {
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => {
       const newFormData = { ...prev, [field]: value };
-      
+
       // Validate password strength and matching
       if (field === 'password' || field === 'confirmPassword') {
         validatePasswords(newFormData.password, newFormData.confirmPassword);
       }
-      
+
       return newFormData;
     });
   };
@@ -293,24 +293,24 @@ export default function LoginBarrier() {
     <div id="login-barrier" style={loginBarrierStyle}>
       <div style={loginContainerStyle}>
         <div style={loginHeaderStyle}>
-          <h2 style={titleStyle}>🔐 Decades Bar Management Portal</h2>
+          <h2 style={titleStyle}>🔐 Decades Bar Management System</h2>
           <p style={subtitleStyle}>Please log in to access the training materials</p>
         </div>
 
         {/* Test Credentials Section */}
         {!isRegistering && (
           <div style={{ marginBottom: '25px' }}>
-            <div style={{ 
-              textAlign: 'center', 
+            <div style={{
+              textAlign: 'center',
               marginBottom: '15px',
               padding: '10px',
               background: 'rgba(255, 255, 255, 0.1)',
               borderRadius: '8px',
               border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
-              <p style={{ 
-                margin: '0 0 10px 0', 
-                fontSize: '0.9rem', 
+              <p style={{
+                margin: '0 0 10px 0',
+                fontSize: '0.9rem',
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontWeight: 600
               }}>
@@ -329,8 +329,8 @@ export default function LoginBarrier() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span>{cred.role}</span>
-                      <span style={{ 
-                        fontSize: '0.75rem', 
+                      <span style={{
+                        fontSize: '0.75rem',
                         opacity: 0.7,
                         background: 'rgba(255, 255, 255, 0.1)',
                         padding: '2px 6px',
@@ -378,8 +378,8 @@ export default function LoginBarrier() {
                 onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
               />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               style={loginButtonStyle}
               onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
@@ -486,8 +486,8 @@ export default function LoginBarrier() {
                 onBlur={(e) => Object.assign(e.currentTarget.style, inputStyle)}
               />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               style={loginButtonStyle}
               onMouseEnter={(e) => !isLoading && Object.assign(e.currentTarget.style, loginButtonHoverStyle)}
@@ -499,8 +499,8 @@ export default function LoginBarrier() {
         )}
 
         <div style={{ textAlign: 'center' as const }}>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setIsRegistering(!isRegistering)}
             disabled={isLoading}
             style={toggleButtonStyle}
@@ -512,16 +512,16 @@ export default function LoginBarrier() {
         </div>
 
         {/* Quick Access Info */}
-        <div style={{ 
+        <div style={{
           marginTop: '20px',
           padding: '10px',
           background: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '8px',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
-          <p style={{ 
-            margin: 0, 
-            fontSize: '0.75rem', 
+          <p style={{
+            margin: 0,
+            fontSize: '0.75rem',
             color: 'rgba(255, 255, 255, 0.5)',
             textAlign: 'center'
           }}>

@@ -79,19 +79,19 @@ export default function Header() {
   return (
     <div style={headerStyle}>
       <h2 style={titleStyle}>
-        Decades Bar Management Center
+        Decades Bar Management System
       </h2>
-      
+
       <div style={userInfoStyle}>
         <div style={avatarStyle}>
           {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
         </div>
-        
+
         <span style={userNameStyle}>
           {currentUser?.name} ({currentUser?.position})
         </span>
-        
-        <button 
+
+        <button
           onClick={logout}
           style={logoutButtonStyle}
           onMouseEnter={(e) => {

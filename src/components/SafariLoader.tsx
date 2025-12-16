@@ -45,8 +45,8 @@ export default function SafariLoader() {
       gap: '20px'
     }}>
       <div style={{ textAlign: 'center' }}>
-        <h2>🎭 Decades Bar</h2>
-        <p>Loading Training Portal...</p>
+        <h2>🎭 Bar Manager</h2>
+        <p>Loading Management System...</p>
       </div>
       <div style={{
         width: '40px',
@@ -56,7 +56,7 @@ export default function SafariLoader() {
         borderRadius: '50%',
         animation: 'spin 1s linear infinite'
       }}></div>
-      
+
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }

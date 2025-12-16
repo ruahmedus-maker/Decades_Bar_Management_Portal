@@ -11,18 +11,18 @@ function DecadesIntroduction() {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)' 
+        boxShadow: isHovered
+          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
         WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
+        border: isHovered
+          ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
@@ -48,11 +48,11 @@ function DecadesIntroduction() {
           animation: 'pulse 2s infinite'
         }} />
       )}
-      
+
       <div style={{ padding: '20px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
-            color: 'white', 
+            color: 'white',
             textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
             fontSize: '2.5rem',
             marginBottom: '10px',
@@ -69,16 +69,16 @@ function DecadesIntroduction() {
             Where Every Floor is a Different Era
           </p>
         </div>
-        
-        <div style={{textAlign: 'center', marginBottom: '20px'}}>
+
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <p style={{
-            fontSize: '1.1rem', 
-            color: 'rgba(255, 255, 255, 0.9)', 
+            fontSize: '1.1rem',
+            color: 'rgba(255, 255, 255, 0.9)',
             lineHeight: '1.6',
             textShadow: '0 1px 1px rgba(0, 0, 0, 0.1)'
           }}>
-            Your journey to becoming an exceptional Decades bartender starts here. 
-            This comprehensive training portal will guide you through everything you need to know 
+            Your journey to becoming an exceptional Decades bartender starts here.
+            This comprehensive training portal will guide you through everything you need to know
             to excel in our high-volume, multi-floor nightclub environment.
           </p>
         </div>
@@ -104,18 +104,18 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
   const glowColor = glowColors[index] || 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)';
 
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)' 
+        boxShadow: isHovered
+          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
         WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        border: isHovered 
-          ? '1px solid rgba(255, 255, 255, 0.3)' 
+        border: isHovered
+          ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
@@ -141,7 +141,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           animation: 'pulse 2s infinite'
         }} />
       )}
-      
+
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
@@ -160,7 +160,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
         </div>
         <div style={{ padding: '20px' }}>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-          <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+          <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
             {items.map((item: string, i: number) => (
               <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
             ))}
@@ -199,7 +199,7 @@ function WeekDay({ icon, day, title, desc, index }: any) {
   const dayColor = dayColors[index] || 'linear-gradient(45deg, var(--accent), transparent)';
 
   return (
-    <div 
+    <div
       style={{
         textAlign: 'left',
         padding: '20px',
@@ -231,7 +231,7 @@ function WeekDay({ icon, day, title, desc, index }: any) {
           opacity: 0.6
         }} />
       )}
-      
+
       <div style={{ position: 'relative', zIndex: 1 }}>
         <span style={{ fontSize: '2.5rem', marginBottom: '15px', display: 'block' }}>{icon}</span>
         <h5 style={{
@@ -247,7 +247,7 @@ function WeekDay({ icon, day, title, desc, index }: any) {
           margin: 0,
           lineHeight: '1.5'
         }}>
-          <strong>{title}</strong><br/>{desc}
+          <strong>{title}</strong><br />{desc}
         </p>
       </div>
     </div>
@@ -257,16 +257,16 @@ function WeekDay({ icon, day, title, desc, index }: any) {
 export default function WelcomeSection() {
   const { currentUser } = useApp();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   useEffect(() => {
     if (!currentUser) return;
-  
+
     // Wait 60 seconds then mark as complete
     timerRef.current = setTimeout(() => {
       trackSectionVisit(currentUser.email, 'welcome', 60);
       console.log('Section auto-completed after 60 seconds');
     }, 60000);
-  
+
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -282,7 +282,7 @@ export default function WelcomeSection() {
       footer: { left: 'Estimated: 2-3 days', right: '⭐ Essential' }
     },
     {
-      title: '🎬 Video Training Library', 
+      title: '🎬 Video Training Library',
       description: 'Watch our comprehensive training videos covering everything from Aloha POS operations to advanced mixology.',
       items: ['POS system tutorials', 'Pouring technique demonstrations', 'Cocktail preparation videos', 'Customer service scenarios'],
       footer: { left: '20+ training videos', right: '📺 Visual Learning' }
@@ -332,7 +332,7 @@ export default function WelcomeSection() {
       boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       animation: 'fadeIn 0.5s ease'
     }} className="active" id="welcome">
-      
+
       {/* Section Header */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
@@ -369,15 +369,15 @@ export default function WelcomeSection() {
         <DecadesIntroduction />
 
         <p style={{
-          fontSize: '1.1rem', 
-          lineHeight: '1.6', 
+          fontSize: '1.1rem',
+          lineHeight: '1.6',
           marginBottom: '25px',
           color: 'rgba(255, 255, 255, 0.9)'
         }}>
-          Welcome to the Decades Bar Resource Center, your comprehensive guide to excellence in high-volume nightclub bartending. 
+          Welcome to the Decades Bar Management System, your comprehensive guide to excellence in high-volume nightclub bartending.
           This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.
         </p>
-        
+
         {/* Card Grid */}
         <div style={{
           display: 'grid',
@@ -416,7 +416,7 @@ export default function WelcomeSection() {
             opacity: 0,
             transition: 'opacity 0.3s ease'
           }} className="quick-start-glow" />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
