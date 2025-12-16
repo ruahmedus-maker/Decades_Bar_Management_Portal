@@ -4,7 +4,7 @@ export interface User {
   auth_id?: string;
   name: string;
   email: string;
-  position: 'Bartender' | 'Admin' | 'Trainee' | 'Manager';
+  position: 'Bartender' | 'Admin' | 'Trainee';
   status: 'active' | 'blocked';
   progress: number;
   acknowledged: boolean;

@@ -12,14 +12,14 @@ interface Notification {
 }
 
 export default function NotificationCenter() {
-    const { currentUser } = useApp();
+    const { currentUser, showToast } = useApp();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Only show for Admins and Managers
-    const isAdmin = currentUser?.position === 'Admin' || currentUser?.position === 'Manager';
+    // Only show for Admins
+    const isAdmin = currentUser?.position === 'Admin';
 
     const fetchNotifications = async () => {
         if (!currentUser) return;
@@ -27,7 +27,7 @@ export default function NotificationCenter() {
         const { data } = await supabase
             .from('notifications')
             .select('*')
-            .or(`recipient_role.eq.Admin,recipient_role.eq.Manager`)
+            .eq('recipient_role', 'Admin')
             .order('created_at', { ascending: false })
             .limit(20);
 
@@ -76,12 +76,15 @@ export default function NotificationCenter() {
                     event: 'INSERT',
                     schema: 'public',
                     table: 'notifications',
-                    filter: `recipient_role=in.(Admin,Manager)`
+                    filter: `recipient_role=eq.Admin`
                 },
                 (payload) => {
                     const newNotification = payload.new as Notification;
                     setNotifications(prev => [newNotification, ...prev]);
                     setUnreadCount(prev => prev + 1);
+
+                    // SHOW VISUAL ALERT (Toast)
+                    showToast(`🔔 ${newNotification.title}: ${newNotification.message}`);
 
                     // Play sound
                     // Assuming we have a sound effect in public/notification.mp3 or similar
@@ -95,7 +98,7 @@ export default function NotificationCenter() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [currentUser, isAdmin]);
+    }, [currentUser, isAdmin, showToast]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
