@@ -80,7 +80,7 @@ const optionLabelStyle = {
   borderRadius: '8px',
   border: '1px solid rgba(255, 255, 255, 0.1)',
   cursor: 'pointer',
-  transition: 'all 0.3s ease',
+  transition: 'none', // Removed - caused scroll crashes
   color: '#ffffff',
 };
 
@@ -98,7 +98,7 @@ const buttonStyle = {
   cursor: 'pointer',
   fontWeight: 600,
   fontSize: '1rem',
-  transition: 'all 0.3s ease',
+  transition: 'none', // Removed - caused scroll crashes
   boxShadow: `0 4px 15px rgba(${CORAL_COLOR_RGB}, 0.3)`,
   display: 'inline-flex',
   alignItems: 'center',

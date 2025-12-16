@@ -133,23 +133,19 @@ body {
   bottom: 20px;
   right: 20px;
   background: var(--success);
-  /* Remove gradient for performance */
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  /* Reduced shadow */
-  transform: translateY(100px);
   opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  /* Faster transition */
+  transition: opacity 0.2s ease;
+  /* Simplified - removed transform */
   z-index: 1000;
   border: 1px solid rgba(255, 255, 255, 0.1);
   max-width: 350px;
 }
 
 .toast.show {
-  transform: translateY(0);
   opacity: 1;
 }
 
@@ -337,11 +333,7 @@ div {
   text-rendering: optimizeLegibility;
 }
 
-/* Reduce repaints on scroll */
-.main-content {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
+/* Reduce repaints on scroll - REMOVED translateZ as it causes crashes */
 
 /* Optimize images to not cause layout shifts */
 img,
@@ -351,8 +343,4 @@ video {
   vertical-align: middle;
 }
 
-/* Improve scrolling performance */
-.main-content {
-  -webkit-overflow-scrolling: touch;
-  overflow-scrolling: touch;
-}
+/* Scrolling optimizations removed - caused browser crashes */

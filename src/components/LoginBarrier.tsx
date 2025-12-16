@@ -197,7 +197,7 @@ export default function LoginBarrier() {
     color: '#ffffff',
     fontSize: '1rem',
     backdropFilter: 'blur(2px)',
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
     outline: 'none',
     transform: 'translateZ(0)',
   };
@@ -227,7 +227,7 @@ export default function LoginBarrier() {
     cursor: 'pointer',
     fontWeight: 600,
     fontSize: '1rem',
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
     boxShadow: `0 4px 15px rgba(${SIDEBAR_COLOR_RGB}, 0.3)`,
     backdropFilter: 'blur(2px)',
     transform: 'translateZ(0)',
@@ -247,7 +247,7 @@ export default function LoginBarrier() {
     fontSize: '0.9rem',
     fontWeight: 500,
     textDecoration: 'underline',
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
     transform: 'translateZ(0)',
   };
 
@@ -264,7 +264,7 @@ export default function LoginBarrier() {
     cursor: 'pointer',
     fontSize: '0.85rem',
     fontWeight: 500,
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
     backdropFilter: 'blur(2px)',
     width: '100%',
     transform: 'translateZ(0)',

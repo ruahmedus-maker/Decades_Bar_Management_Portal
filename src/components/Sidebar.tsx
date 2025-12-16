@@ -55,7 +55,7 @@ export default function Sidebar() {
       0 8px 32px rgba(45, 212, 191, 0.1)
     `,
     borderRadius: '20px',
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
   };
 
   const sidebarHoverStyle = {
@@ -97,7 +97,7 @@ export default function Sidebar() {
     textDecoration: 'none',
     padding: '14px 16px',
     borderRadius: '12px',
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
     display: 'flex',
     alignItems: 'center',
     gap: '12px',

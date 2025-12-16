@@ -24,7 +24,7 @@ function DecadesIntroduction() {
         border: isHovered 
           ? '1px solid rgba(255, 255, 255, 0.3)' 
           : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -117,7 +117,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
         border: isHovered 
           ? '1px solid rgba(255, 255, 255, 0.3)' 
           : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -206,7 +206,7 @@ function WeekDay({ icon, day, title, desc, index }: any) {
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'all 0.3s ease',
+        transition: 'none', // Removed - caused scroll crashes
         transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
         backdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
         WebkitBackdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',

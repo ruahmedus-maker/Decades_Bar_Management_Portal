@@ -68,7 +68,7 @@ export default function Header() {
     cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 600,
-    transition: 'all 0.3s ease',
+    transition: 'none', // Removed - caused scroll crashes
   };
 
   const logoutButtonHoverStyle = {

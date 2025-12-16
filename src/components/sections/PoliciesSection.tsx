@@ -31,7 +31,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         backdropFilter: 'blur(12px) saturate(160%)',
         WebkitBackdropFilter: 'blur(12px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -118,7 +118,7 @@ export default function PoliciesSection() {
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0)',
         animation: 'fadeIn 0.5s ease'
       }}

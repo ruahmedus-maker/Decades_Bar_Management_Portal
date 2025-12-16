@@ -24,7 +24,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         backdropFilter: 'blur(12px) saturate(160%)',
         WebkitBackdropFilter: 'blur(12px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -117,7 +117,7 @@ function EventCard({
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
         padding: '20px',
-        transition: 'all 0.3s ease',
+        transition: 'none', // Removed - caused scroll crashes
         transform: 'translateY(0)',
         backdropFilter: 'blur(8px)',
         cursor: 'pointer',
@@ -634,7 +634,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontWeight: '600',
-                  transition: 'all 0.3s ease',
+                  transition: 'none', // Removed - caused scroll crashes
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'
@@ -652,7 +652,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontWeight: '600',
-                  transition: 'all 0.3s ease',
+                  transition: 'none', // Removed - caused scroll crashes
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'

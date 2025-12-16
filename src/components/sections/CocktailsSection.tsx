@@ -208,7 +208,7 @@ function CategoryTab({ category, isActive, onClick, index }: {
         cursor: 'pointer',
         fontWeight: '600',
         fontSize: '0.9rem',
-        transition: 'all 0.3s ease',
+        transition: 'none', // Removed - caused scroll crashes
         transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
         backdropFilter: 'blur(10px)',
         position: 'relative',

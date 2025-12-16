@@ -45,7 +45,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         backdropFilter: 'blur(12px) saturate(160%)',
         WebkitBackdropFilter: 'blur(12px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -106,7 +106,7 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'all 0.3s ease',
+        transition: 'none', // Removed - caused scroll crashes
         transform: 'translateY(0)',
         backdropFilter: 'blur(10px)',
         cursor: 'pointer',
@@ -173,7 +173,7 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
                 borderRadius: '6px',
                 color: 'white',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
+                transition: 'none', // Removed - caused scroll crashes
                 fontSize: '0.8rem',
                 fontWeight: '500',
                 backdropFilter: 'blur(10px)'
@@ -192,7 +192,7 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
                   borderRadius: '6px',
                   color: 'white',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease',
+                  transition: 'none', // Removed - caused scroll crashes
                   fontSize: '0.8rem',
                   fontWeight: '500',
                   backdropFilter: 'blur(10px)'
@@ -601,7 +601,7 @@ export default function EmployeeCounselingSection() {
         WebkitBackdropFilter: 'blur(15px) saturate(170%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0)',
         animation: 'fadeIn 0.5s ease'
       }}
@@ -667,7 +667,7 @@ export default function EmployeeCounselingSection() {
               borderRadius: '8px',
               color: 'white',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'none', // Removed - caused scroll crashes
               fontSize: '0.9rem',
               fontWeight: '600',
               backdropFilter: 'blur(10px)'
@@ -688,7 +688,7 @@ export default function EmployeeCounselingSection() {
               borderRadius: '8px',
               color: 'white',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'none', // Removed - caused scroll crashes
               fontSize: '0.9rem',
               fontWeight: '600',
               backdropFilter: 'blur(10px)'
@@ -903,7 +903,7 @@ export default function EmployeeCounselingSection() {
               borderRadius: '8px',
               color: 'white',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'none', // Removed - caused scroll crashes
               fontSize: '0.9rem',
               fontWeight: '600',
               backdropFilter: 'blur(10px)'
