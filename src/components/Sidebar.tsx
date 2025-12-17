@@ -10,9 +10,9 @@ type SectionId = typeof NAV_ITEMS[number]['id'];
 // Admin-only sections that should be hidden from regular users
 const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'performance-report'];
 
-// Tropical Teal/Blue color scheme
-const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
-const SIDEBAR_COLOR_RGB = '45, 212, 191';
+// Gold color scheme
+const SIDEBAR_COLOR = '#FFD700'; // Gold
+const SIDEBAR_COLOR_RGB = '255, 215, 0';
 
 
 export default function Sidebar() {
@@ -52,7 +52,7 @@ export default function Sidebar() {
     border: '1px solid rgba(255, 255, 255, 0.25)',
     boxShadow: `
       0 20px 40px rgba(0, 0, 0, 0.3),
-      0 8px 32px rgba(45, 212, 191, 0.1)
+      0 8px 32px rgba(${SIDEBAR_COLOR_RGB}, 0.1)
     `,
     borderRadius: '20px',
     transition: 'none', // Removed - caused scroll crashes
@@ -62,7 +62,7 @@ export default function Sidebar() {
     background: 'rgba(255, 255, 255, 0.15)',
     boxShadow: `
       0 25px 50px rgba(0, 0, 0, 0.4),
-      0 12px 40px rgba(45, 212, 191, 0.15)
+      0 12px 40px rgba(${SIDEBAR_COLOR_RGB}, 0.15)
     `,
     transform: 'translateY(-2px)',
   };
