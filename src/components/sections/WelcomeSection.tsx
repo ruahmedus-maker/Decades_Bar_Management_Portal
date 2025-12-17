@@ -10,6 +10,15 @@ import { trackSectionVisit } from '@/lib/supabase-auth';
 function DecadesIntroduction() {
   const [isHovered, setIsHovered] = useState(false);
 
+  // Cinematic Gold Text Effect
+  const goldTextStyle = {
+    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
+    textTransform: 'uppercase' as const,
+  };
+
   return (
     <div
       style={{
@@ -52,11 +61,11 @@ function DecadesIntroduction() {
       <div style={{ padding: '20px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
-            color: 'white',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-            fontSize: '2.5rem',
+            ...goldTextStyle,
+            fontSize: '2.8rem',
             marginBottom: '10px',
-            fontWeight: 700
+            fontWeight: 800,
+            letterSpacing: '2px', // Tracking for premium feel
           }}>
             🎵 Welcome to Decades 🎵
           </h1>

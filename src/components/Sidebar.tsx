@@ -74,17 +74,29 @@ export default function Sidebar() {
     borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
   };
 
+  // Cinematic Gold Text Effect (Matching Header)
+  const goldTextStyle = {
+    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
+  };
+
   const logoTitleStyle = {
-    color: SIDEBAR_COLOR, // Gold Title
-    fontSize: '1.8rem',
-    fontWeight: 700,
+    ...goldTextStyle,
+    fontSize: '2rem', // Slightly larger for impact
+    fontWeight: 800,
     marginBottom: '5px',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '1px',
   };
 
   const logoSubtitleStyle = {
-    color: SIDEBAR_COLOR, // Gold Subtitle
+    ...goldTextStyle,
     fontSize: '0.9rem',
-    opacity: 0.8,
+    fontWeight: 700,
+    opacity: 0.9,
+    letterSpacing: '2px', // Tracking spacing for subtitle
   };
 
   const navLinksStyle = {

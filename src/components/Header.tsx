@@ -32,12 +32,21 @@ export default function Header() {
     alignItems: 'center',
   };
 
+  // Cinematic Gold Text Effect
+  const goldTextStyle = {
+    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
+  };
+
   const titleStyle = {
-    color: THEME_COLOR, // Gold Title
+    ...goldTextStyle,
     fontSize: '1.5rem',
-    fontWeight: 700,
+    fontWeight: 800, // Extra bold for effect
     margin: 0,
-    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)', // Added shadow for contrast
+    textTransform: 'uppercase' as const, // Enhances the metallic look
+    letterSpacing: '1px',
   };
 
   const userInfoStyle = {
@@ -61,8 +70,8 @@ export default function Header() {
   };
 
   const userNameStyle = {
-    color: THEME_COLOR, // Gold Name
-    fontWeight: 600,
+    ...goldTextStyle,
+    fontWeight: 700,
     fontSize: '1rem',
   };
 
