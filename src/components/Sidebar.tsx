@@ -10,9 +10,9 @@ type SectionId = typeof NAV_ITEMS[number]['id'];
 // Admin-only sections that should be hidden from regular users
 const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'performance-report'];
 
-// Gold color scheme
-const SIDEBAR_COLOR = '#FFD700'; // Gold
-const SIDEBAR_COLOR_RGB = '255, 215, 0';
+// Gold/Bronze color scheme
+const SIDEBAR_COLOR = '#B8860B'; // Dark Goldenrod (Bronze-like Gold)
+const SIDEBAR_COLOR_RGB = '184, 134, 11';
 
 
 export default function Sidebar() {
