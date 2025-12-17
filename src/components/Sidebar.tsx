@@ -11,8 +11,8 @@ type SectionId = typeof NAV_ITEMS[number]['id'];
 const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'performance-report'];
 
 // Gold/Bronze color scheme
-const SIDEBAR_COLOR = '#B8860B'; // Dark Goldenrod (Bronze-like Gold)
-const SIDEBAR_COLOR_RGB = '184, 134, 11';
+const SIDEBAR_COLOR = '#D4AF37'; // Metallic Gold (Matches generic gold icons better)
+const SIDEBAR_COLOR_RGB = '212, 175, 55';
 
 
 export default function Sidebar() {
