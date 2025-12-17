@@ -26,7 +26,12 @@ async function generateIcons() {
 
         try {
             await sharp(SOURCE_ICON)
-                .resize(size, size)
+                .resize({
+                    width: size,
+                    height: size,
+                    fit: 'contain',
+                    background: { r: 26, g: 54, b: 93, alpha: 1 } // #1A365D - App background color
+                })
                 .toFile(outputPath);
             console.log(`Generated ${fileName}`);
         } catch (error) {
