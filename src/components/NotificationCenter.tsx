@@ -67,7 +67,37 @@ export default function NotificationCenter() {
 
         fetchNotifications();
 
-        // Subscribe to real-time changes
+        // Update App Badge when unread count changes
+        if ('setAppBadge' in navigator) {
+            if (unreadCount > 0) {
+                navigator.setAppBadge(unreadCount).catch(e => console.error('Error setting badge:', e));
+            } else {
+                navigator.clearAppBadge().catch(e => console.error('Error clearing badge:', e));
+            }
+        }
+    }, [unreadCount]);
+
+    const dropdownStyle = {
+        position: 'absolute' as const,
+        top: '100%',
+        right: '-10px', // Shifted slightly right to align better on mobile
+        marginTop: '15px',
+        width: '320px', // Slightly wider
+        maxWidth: '90vw', // Responsive width
+        background: 'rgba(26, 54, 93, 0.95)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(45, 212, 191, 0.3)',
+        borderRadius: '16px',
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+        zIndex: 9999, // Ensure it's above Sidebar (z-index 100)
+        overflow: 'hidden',
+        // animation: 'slideDown 0.2s ease-out', // This would require global CSS or styled-components
+    };
+
+    // Subscribe to real-time changes
+    useEffect(() => {
+        if (!isAdmin) return;
+
         const channel = supabase
             .channel('public:notifications')
             .on(
