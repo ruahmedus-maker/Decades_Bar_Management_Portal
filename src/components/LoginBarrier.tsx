@@ -144,7 +144,7 @@ export default function LoginBarrier() {
     backdropFilter: 'blur(6px) saturate(160%)',
     WebkitBackdropFilter: 'blur(6px) saturate(160%)',
     border: '1px solid rgba(255, 255, 255, 0.25)',
-    padding: '40px',
+    padding: '24px', // Reduced base padding for mobile
     borderRadius: '20px',
     boxShadow: `
       0 20px 60px rgba(0, 0, 0, 0.3),
@@ -152,7 +152,8 @@ export default function LoginBarrier() {
     `,
     textAlign: 'center' as const,
     maxWidth: '450px',
-    width: '100%',
+    width: '90%', // Use strictly percentage width for mobile safety
+    margin: '0 auto', // Center it
     transform: 'translateZ(0)',
     WebkitTransform: 'translateZ(0)',
   };
