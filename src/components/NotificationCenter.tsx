@@ -62,12 +62,14 @@ export default function NotificationCenter() {
         }
     };
 
+    // Initial fetch
     useEffect(() => {
         if (!isAdmin) return;
-
         fetchNotifications();
+    }, [currentUser, isAdmin]);
 
-        // Update App Badge when unread count changes
+    // Update App Badge when unread count changes
+    useEffect(() => {
         if ('setAppBadge' in navigator) {
             if (unreadCount > 0) {
                 navigator.setAppBadge(unreadCount).catch(e => console.error('Error setting badge:', e));
@@ -76,23 +78,6 @@ export default function NotificationCenter() {
             }
         }
     }, [unreadCount]);
-
-    const dropdownStyle = {
-        position: 'absolute' as const,
-        top: '100%',
-        right: '-10px', // Shifted slightly right to align better on mobile
-        marginTop: '15px',
-        width: '320px', // Slightly wider
-        maxWidth: '90vw', // Responsive width
-        background: 'rgba(26, 54, 93, 0.95)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(45, 212, 191, 0.3)',
-        borderRadius: '16px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-        zIndex: 9999, // Ensure it's above Sidebar (z-index 100)
-        overflow: 'hidden',
-        // animation: 'slideDown 0.2s ease-out', // This would require global CSS or styled-components
-    };
 
     // Subscribe to real-time changes
     useEffect(() => {
@@ -117,8 +102,6 @@ export default function NotificationCenter() {
                     showToast(`🔔 ${newNotification.title}: ${newNotification.message}`);
 
                     // Play sound
-                    // Assuming we have a sound effect in public/notification.mp3 or similar
-                    // This uses the AppContext helper if available, or basic Audio
                     const audio = new Audio('/sounds/notification.mp3');
                     audio.play().catch(e => console.log('Audio play failed', e));
                 }
@@ -159,7 +142,7 @@ export default function NotificationCenter() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-white/20 rounded-xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl">
+                <div className="absolute right-0 mt-2 w-[320px] max-w-[90vw] bg-slate-900 border border-white/20 rounded-xl shadow-2xl overflow-hidden z-[9999] backdrop-blur-xl">
                     <div className="p-3 border-b border-white/10 flex justify-between items-center bg-white/5">
                         <h3 className="font-semibold text-white text-sm">Notifications</h3>
                         {unreadCount > 0 && (
