@@ -19,8 +19,8 @@ export default function Header() {
     zIndex: 999,
     padding: '0 30px',
     background: 'rgba(255, 255, 255, 0.12)',
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+    backdropFilter: 'blur(12px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
     border: '1px solid rgba(255, 255, 255, 0.25)',
     boxShadow: `
       0 20px 40px rgba(0, 0, 0, 0.3),
