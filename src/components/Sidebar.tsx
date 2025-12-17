@@ -75,15 +75,16 @@ export default function Sidebar() {
   };
 
   const logoTitleStyle = {
-    color: '#ffffff',
+    color: SIDEBAR_COLOR, // Gold Title
     fontSize: '1.8rem',
     fontWeight: 700,
     marginBottom: '5px',
   };
 
   const logoSubtitleStyle = {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: SIDEBAR_COLOR, // Gold Subtitle
     fontSize: '0.9rem',
+    opacity: 0.8,
   };
 
   const navLinksStyle = {

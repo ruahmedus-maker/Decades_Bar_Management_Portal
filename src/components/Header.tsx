@@ -1,17 +1,20 @@
 'use client';
 
 import { useApp } from '@/contexts/AppContext';
-
 import NotificationCenter from './NotificationCenter';
+
+// Gold theme to match Sidebar
+const THEME_COLOR = '#D4AF37';
+const THEME_COLOR_RGB = '212, 175, 55';
 
 export default function Header() {
   const { currentUser, logout } = useApp();
 
   const headerStyle = {
     position: 'fixed' as const,
-    top: '0', // Changed to top of page
-    left: '0', // Span full width from left
-    right: '0', // Span full width to right
+    top: '0',
+    left: '0',
+    right: '0',
     height: '80px',
     zIndex: 999,
     padding: '0 30px',
@@ -21,19 +24,20 @@ export default function Header() {
     border: '1px solid rgba(255, 255, 255, 0.25)',
     boxShadow: `
       0 20px 40px rgba(0, 0, 0, 0.3),
-      0 8px 32px rgba(45, 212, 191, 0.1)
+      0 8px 32px rgba(${THEME_COLOR_RGB}, 0.1)
     `,
-    borderRadius: '0 0 20px 20px', // Rounded bottom corners only
+    borderRadius: '0 0 20px 20px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
   };
 
   const titleStyle = {
-    color: '#ffffff',
+    color: THEME_COLOR, // Gold Title
     fontSize: '1.5rem',
     fontWeight: 700,
     margin: 0,
+    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)', // Added shadow for contrast
   };
 
   const userInfoStyle = {
@@ -46,36 +50,37 @@ export default function Header() {
     width: '40px',
     height: '40px',
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #2DD4BF, #0D9488)',
-    display: 'flex', // Corrected flex property
+    background: `linear-gradient(135deg, ${THEME_COLOR}, #B8860B)`, // Gold gradient
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: 'white',
+    color: 'black', // Black text on gold is readable
     fontWeight: 'bold',
     fontSize: '1.1rem',
+    boxShadow: `0 4px 10px rgba(${THEME_COLOR_RGB}, 0.3)`,
   };
 
   const userNameStyle = {
-    color: '#ffffff',
+    color: THEME_COLOR, // Gold Name
     fontWeight: 600,
     fontSize: '1rem',
   };
 
   const logoutButtonStyle = {
     background: 'transparent',
-    border: '1px solid #2DD4BF',
-    color: '#2DD4BF',
+    border: `1px solid ${THEME_COLOR}`, // Gold Border
+    color: THEME_COLOR, // Gold Text
     padding: '8px 16px',
     borderRadius: '8px',
     cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 600,
-    transition: 'none', // Removed - caused scroll crashes
+    transition: 'none',
   };
 
   const logoutButtonHoverStyle = {
-    background: '#2DD4BF',
-    color: 'white',
+    background: THEME_COLOR, // Gold Background
+    color: 'black', // Black text on hover
   };
 
   return (
