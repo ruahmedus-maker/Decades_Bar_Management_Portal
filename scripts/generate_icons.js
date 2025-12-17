@@ -30,7 +30,7 @@ async function generateIcons() {
                     width: size,
                     height: size,
                     fit: 'contain',
-                    background: { r: 26, g: 54, b: 93, alpha: 1 } // #1A365D - App background color
+                    background: { r: 0, g: 0, b: 0, alpha: 1 } // #000000 - Black background
                 })
                 .toFile(outputPath);
             console.log(`Generated ${fileName}`);
