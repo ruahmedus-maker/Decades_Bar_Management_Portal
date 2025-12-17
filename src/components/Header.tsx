@@ -13,7 +13,7 @@ export default function Header() {
     left: '0', // Span full width from left
     right: '0', // Span full width to right
     height: '80px',
-    zIndex: 90,
+    zIndex: 999,
     padding: '0 30px',
     background: 'rgba(255, 255, 255, 0.12)',
     backdropFilter: 'blur(20px) saturate(180%)',
