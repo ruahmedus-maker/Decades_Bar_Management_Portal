@@ -1,67 +1,71 @@
 // update-memory.js
 const fs = require('fs');
 const readline = require('readline');
+const path = require('path');
 
-async function updateMemory() {
-  console.log('📝 UPDATING CHAT MEMORY...\n');
-  
-  const memoryFile = 'CHAT_MEMORY.md';
-  const quickStartFile = 'QUICK_START.txt';
-  
+const CONTEXT_FILE = path.join(__dirname, 'CURRENT_CONTEXT.md');
+
+async function updateContext() {
+  console.log('📝 UPDATING PROJECT CONTEXT...\n');
+
+  if (!fs.existsSync(CONTEXT_FILE)) {
+    console.error('❌ CURRENT_CONTEXT.md not found!');
+    process.exit(1);
+  }
+
+  let content = fs.readFileSync(CONTEXT_FILE, 'utf8');
+
   // Update timestamp
-  let content = fs.readFileSync(memoryFile, 'utf8');
   const currentDate = new Date().toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   });
-  
-  content = content.replace(/Last Updated: .*/, `Last Updated: ${currentDate}`);
-  
-  console.log('What did we work on? (2-3 bullet points, press Enter twice when done):');
-  console.log('Example: "Fixed progress tracking, added debug logs"');
-  console.log('');
-  
+  content = content.replace(/\*Last Updated: .*\*/, `*Last Updated: ${currentDate}*`);
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
-  
-  let notes = [];
-  let lineCount = 0;
-  
-  for await (const line of rl) {
-    if (line.trim() === '') {
-      lineCount++;
-      if (lineCount >= 2) break;
-    } else {
-      lineCount = 0;
-      notes.push(`- ${line}`);
-    }
-  }
-  
+
+  const askQuestion = (query) => new Promise((resolve) => rl.question(query, resolve));
+
+  console.log('--- SESSION UPDATES ---');
+
+  const focus = await askQuestion('1. Current Focus (What is the main goal right now?): ');
+  const changes = await askQuestion('2. Recent Changes (Comma-separated list of achievements): ');
+  const roadblocks = await askQuestion('3. Active Roadblocks (Any issues or blockers?): ');
+
   rl.close();
-  
-  if (notes.length > 0) {
-    // Insert notes under RECENT FIXES
-    const newSection = `\n### ${currentDate}\n\n${notes.join('\n')}\n`;
-    content = content.replace(/(### RECENT FIXES:.*?\n)/, `$1${newSection}`);
-    
-    fs.writeFileSync(memoryFile, content);
-    console.log('\n✅ Memory updated!');
-  } else {
-    fs.writeFileSync(memoryFile, content);
-    console.log('\n⚠️  No notes, just updated timestamp.');
+
+  // Update Focus Section
+  if (focus.trim()) {
+    content = content.replace(/(## 🎯 Current Focus\n)([\s\S]*?)(?=\n##|$)/, `$1- ${focus}\n`);
   }
-  
-  // Show QUICK_START for next session
-  console.log('\n📋 Quick Start for next chat (COPY THIS):');
-  console.log('='.repeat(40));
-  console.log(fs.readFileSync(quickStartFile, 'utf8'));
-  console.log('='.repeat(40));
-  console.log('\n🚀 Next session: Paste the above text FIRST!');
+
+  // Update Recent Changes Section
+  if (changes.trim()) {
+    const changesList = changes.split(',').map(s => `- ${s.trim()}`).join('\n');
+    content = content.replace(/(## 🛠 Recent Changes\n)([\s\S]*?)(?=\n##|$)/, `$1${changesList}\n`);
+  }
+
+  // Update Roadblocks Section
+  if (roadblocks.trim()) {
+    content = content.replace(/(## 🚧 Active Roadblocks & Issues\n)([\s\S]*?)(?=\n##|$)/, `$1- ${roadblocks}\n`);
+  } else {
+    content = content.replace(/(## 🚧 Active Roadblocks & Issues\n)([\s\S]*?)(?=\n##|$)/, `$1- None currently reported.\n`);
+  }
+
+  fs.writeFileSync(CONTEXT_FILE, content);
+
+  console.log('\n✅ CURRENT_CONTEXT.md updated successfully!');
+  console.log(`🕒 Timestamp: ${currentDate}`);
 }
 
-updateMemory().catch(console.error);
+updateContext().catch((err) => {
+  console.error('❌ Error updating context:', err);
+  process.exit(1);
+});
