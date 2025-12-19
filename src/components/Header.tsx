@@ -42,11 +42,12 @@ export default function Header() {
 
   const titleStyle = {
     ...goldTextStyle,
-    fontSize: '1.5rem',
-    fontWeight: 800, // Extra bold for effect
+    fontSize: '2rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
+    fontWeight: 200, // Extra thin geometric look
     margin: 0,
-    textTransform: 'uppercase' as const, // Enhances the metallic look
-    letterSpacing: '1px',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '4px', // Wider spacing for premium look
   };
 
   const userInfoStyle = {

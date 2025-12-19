@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
 import PWAInstaller from '@/components/PWAInstaller';
@@ -12,6 +12,12 @@ import { AppProvider } from '@/contexts/AppContext';
 
 const inter = Inter({
   subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400"],
+  variable: "--font-outfit",
 });
 
 const buildInfo = getBuildInfo();
@@ -45,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-build={buildInfo.id}>
+    <html lang="en" data-build={buildInfo.id} className={`${outfit.variable}`}>
       <head>
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />

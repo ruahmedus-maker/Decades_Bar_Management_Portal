@@ -86,6 +86,17 @@ The application features a "Premium/Cinematic" aesthetic.
 
 ---
 
+## 🛠 Tooling & Developer Experience (DX)
+
+To maintain a high-quality development workflow, the following tools and guides are integrated into the project:
+
+- **[MCP Setup Guide](file:///Users/riazahmed/Development/decades-bar-training/MCP_SETUP_GUIDE.md)**: Connect your AI assistant directly to Supabase, Postgres, and Vercel.
+- **[IDE Extensions](file:///Users/riazahmed/Development/decades-bar-training/RECOMMENDED_EXTENSIONS.md)**: Recommended VS Code/Cursor extensions for this stack.
+- **[Automated Testing](file:///Users/riazahmed/Development/decades-bar-training/tests/smoke.spec.ts)**: End-to-end testing powered by **Playwright**.
+- **[Error Tracking](file:///Users/riazahmed/Development/decades-bar-training/SENTRY_INTEGRATION.md)**: Production monitoring and error capturing with **Sentry**.
+
+---
+
 ## 🔄 Development Workflows & Context
 To ensure seamless continuity for developers and AI assistants, this project uses a two-layered context system:
 

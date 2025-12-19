@@ -62,10 +62,11 @@ function DecadesIntroduction() {
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
             ...goldTextStyle,
-            fontSize: '2.8rem',
+            fontSize: '3.2rem',
+            fontFamily: 'var(--font-outfit), sans-serif',
             marginBottom: '10px',
-            fontWeight: 800,
-            letterSpacing: '2px', // Tracking for premium feel
+            fontWeight: 200, // Matching the thin geometric brand Identity
+            letterSpacing: '5px', // Wider tracking for the main welcome heading
           }}>
             🎵 Welcome to Decades 🎵
           </h1>

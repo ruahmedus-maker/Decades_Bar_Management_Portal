@@ -84,19 +84,22 @@ export default function Sidebar() {
 
   const logoTitleStyle = {
     ...goldTextStyle,
-    fontSize: '2rem', // Slightly larger for impact
-    fontWeight: 800,
+    fontSize: '2.2rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
+    fontWeight: 200, // Matching the thin geometric logo
     marginBottom: '5px',
     textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
+    letterSpacing: '4px',
   };
 
   const logoSubtitleStyle = {
     ...goldTextStyle,
-    fontSize: '0.9rem',
-    fontWeight: 700,
+    fontSize: '0.8rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
+    fontWeight: 400,
     opacity: 0.9,
-    letterSpacing: '2px', // Tracking spacing for subtitle
+    letterSpacing: '4px',
+    textTransform: 'uppercase' as const,
   };
 
   const navLinksStyle = {
