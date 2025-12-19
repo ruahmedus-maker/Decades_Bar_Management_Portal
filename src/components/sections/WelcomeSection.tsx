@@ -59,7 +59,7 @@ function DecadesIntroduction() {
             fontFamily: 'var(--font-outfit), sans-serif',
             fontSize: '2.2rem',
             marginBottom: '10px',
-            fontWeight: 200,
+            fontWeight: 150,
             letterSpacing: '4px',
             margin: 0,
             textTransform: 'uppercase'
