@@ -1298,7 +1298,7 @@ export default function AdminPanelSection() {
               marginBottom: '30px',
             }}>
               <h4 style={cardHeaderStyle}>
-                ⚡ Quick Actions
+                <GoldHeading text="⚡ Quick Actions" />
               </h4>
               <div style={{
                 display: 'grid',
@@ -1388,7 +1388,7 @@ export default function AdminPanelSection() {
               border: '1px solid rgba(255, 255, 255, 0.15)',
             }}>
               <h4 style={cardHeaderStyle}>
-                📈 Top Performers
+                <GoldHeading text="📈 Top Performers" />
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {userProgress
@@ -1467,7 +1467,7 @@ export default function AdminPanelSection() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
               <h4 style={cardHeaderStyle}>
-                📈 Employee Progress Tracking
+                <GoldHeading text="📈 Employee Progress Tracking" />
               </h4>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button
@@ -1625,7 +1625,7 @@ export default function AdminPanelSection() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
               <h4 style={cardHeaderStyle}>
-                🔧 Maintenance Tickets Management
+                <GoldHeading text="🔧 Maintenance Tickets Management" />
               </h4>
               <button
                 onClick={loadAllData}

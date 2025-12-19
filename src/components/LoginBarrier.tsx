@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth';
+import { goldTextStyle } from '@/lib/brand-styles';
 
 // Gold theme matching Sidebar
 const THEME_COLOR = '#D4AF37';
@@ -305,7 +306,7 @@ export default function LoginBarrier() {
         <div style={loginHeaderStyle}>
           <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🔐</div>
           <h2 style={titleStyle}>Decades Bar</h2>
-          <p style={subtitleStyle}>Management System</p>
+          <p style={{ ...subtitleStyle, ...goldTextStyle }}>Management System</p>
         </div>
 
         {/* Test Credentials Section */}

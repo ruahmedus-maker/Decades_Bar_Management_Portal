@@ -14,27 +14,40 @@ interface GoldHeadingProps {
  * while preserving the original appearance of leading icons/emojis.
  */
 export default function GoldHeading({ text, style = {}, Component = 'span' }: GoldHeadingProps) {
-    // Regex to match leading emojis or icons (including variation selectors)
-    const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u;
-    const match = text.match(emojiRegex);
+    // Regex to match leading and trailing emojis or icons
+    const leadingEmojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u;
+    const trailingEmojiRegex = /\s*(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
-    if (match) {
-        const emoji = match[0];
-        const remainingText = text.slice(emoji.length);
+    const leadingMatch = text.match(leadingEmojiRegex);
+    const trailingMatch = text.match(trailingEmojiRegex);
 
-        return (
-            <Component style={{ ...style, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ WebkitTextFillColor: 'initial', WebkitBackgroundClip: 'initial', background: 'none', filter: 'none' }}>
-                    {emoji}
-                </span>
-                <span style={goldTextStyle}>{remainingText}</span>
-            </Component>
-        );
+    let cleanText = text;
+    let leadingEmoji = '';
+    let trailingEmoji = '';
+
+    if (leadingMatch) {
+        leadingEmoji = leadingMatch[0];
+        cleanText = cleanText.slice(leadingEmoji.length);
     }
 
+    if (trailingMatch) {
+        trailingEmoji = trailingMatch[0];
+        cleanText = cleanText.slice(0, cleanText.length - trailingEmoji.length);
+    }
+
+    const emojiStyle: React.CSSProperties = {
+        WebkitTextFillColor: 'initial',
+        WebkitBackgroundClip: 'initial',
+        background: 'none',
+        filter: 'none',
+        display: 'inline-block'
+    };
+
     return (
-        <Component style={{ ...style, ...goldTextStyle }}>
-            {text}
+        <Component style={{ ...style, display: 'inline-flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {leadingEmoji && <span style={emojiStyle}>{leadingEmoji}</span>}
+            <span style={goldTextStyle}>{cleanText}</span>
+            {trailingEmoji && <span style={emojiStyle}>{trailingEmoji}</span>}
         </Component>
     );
 }
