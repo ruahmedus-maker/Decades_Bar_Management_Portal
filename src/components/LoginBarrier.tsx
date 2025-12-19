@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth';
 
-// Tropical Teal/Blue color scheme to match sidebar
-const SIDEBAR_COLOR = '#2DD4BF'; // Tropical teal
-const SIDEBAR_COLOR_RGB = '45, 212, 191';
-const SIDEBAR_COLOR_DARK = '#0D9488'; // Darker teal
+// Gold theme matching Sidebar
+const THEME_COLOR = '#D4AF37';
+const THEME_COLOR_RGB = '212, 175, 55';
+const THEME_COLOR_DARK = '#B8860B';
 
 // Test credentials
 const TEST_CREDENTIALS = [
@@ -140,20 +140,20 @@ export default function LoginBarrier() {
   };
 
   const loginContainerStyle = {
-    background: 'rgba(255, 255, 255, 0.2)',
-    backdropFilter: 'blur(6px) saturate(160%)',
-    WebkitBackdropFilter: 'blur(6px) saturate(160%)',
-    border: '1px solid rgba(255, 255, 255, 0.25)',
-    padding: '24px', // Reduced base padding for mobile
-    borderRadius: '20px',
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(15px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(15px) saturate(180%)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    padding: '40px',
+    borderRadius: '24px',
     boxShadow: `
-      0 20px 60px rgba(0, 0, 0, 0.3),
-      0 8px 32px rgba(45, 212, 191, 0.1)
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 8px 32px rgba(${THEME_COLOR_RGB}, 0.1)
     `,
     textAlign: 'center' as const,
-    maxWidth: '450px',
-    width: '90%', // Use strictly percentage width for mobile safety
-    margin: '0 auto', // Center it
+    maxWidth: '500px',
+    width: '90%',
+    margin: '0 auto',
     transform: 'translateZ(0)',
     WebkitTransform: 'translateZ(0)',
   };
@@ -163,18 +163,25 @@ export default function LoginBarrier() {
   };
 
   const titleStyle = {
-    color: '#ffffff',
-    fontSize: '1.8rem',
-    fontWeight: 700,
+    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
+    fontSize: '2.4rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
+    fontWeight: 200,
     marginBottom: '10px',
-    textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '4px',
   };
 
   const subtitleStyle = {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: '1rem',
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: '0.9rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
     margin: 0,
-    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '2px',
   };
 
   const formStyle = {
@@ -209,9 +216,9 @@ export default function LoginBarrier() {
   };
 
   const inputFocusStyle = {
-    border: `1px solid ${SIDEBAR_COLOR}`,
+    border: `1px solid ${THEME_COLOR}`,
     background: 'rgba(255, 255, 255, 0.25)',
-    boxShadow: `0 0 0 2px rgba(${SIDEBAR_COLOR_RGB}, 0.2)`,
+    boxShadow: `0 0 0 2px rgba(${THEME_COLOR_RGB}, 0.2)`,
   };
 
   const selectStyle = {
@@ -220,40 +227,42 @@ export default function LoginBarrier() {
   };
 
   const loginButtonStyle = {
-    background: `linear-gradient(135deg, ${SIDEBAR_COLOR}, ${SIDEBAR_COLOR_DARK})`,
-    color: 'white',
+    background: `linear-gradient(135deg, ${THEME_COLOR}, ${THEME_COLOR_DARK})`,
+    color: 'black',
     border: 'none',
-    padding: '14px 24px',
-    borderRadius: '12px',
+    padding: '16px 32px',
+    borderRadius: '16px',
     cursor: 'pointer',
-    fontWeight: 600,
+    fontWeight: 700,
+    fontFamily: 'var(--font-outfit), sans-serif',
     fontSize: '1rem',
-    transition: 'none', // Removed - caused scroll crashes
-    boxShadow: `0 4px 15px rgba(${SIDEBAR_COLOR_RGB}, 0.3)`,
-    backdropFilter: 'blur(2px)',
-    transform: 'translateZ(0)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '2px',
+    boxShadow: `0 10px 30px rgba(${THEME_COLOR_RGB}, 0.3)`,
+    transition: 'all 0.3s ease',
   };
 
   const loginButtonHoverStyle = {
-    transform: 'translateY(-2px)',
-    boxShadow: `0 6px 20px rgba(${SIDEBAR_COLOR_RGB}, 0.4)`,
-    background: `linear-gradient(135deg, ${SIDEBAR_COLOR_DARK}, ${SIDEBAR_COLOR})`,
+    transform: 'translateY(-3px)',
+    boxShadow: `0 15px 40px rgba(${THEME_COLOR_RGB}, 0.4)`,
+    filter: 'brightness(1.1)',
   };
 
   const toggleButtonStyle = {
     background: 'transparent',
     border: 'none',
-    color: SIDEBAR_COLOR,
+    color: THEME_COLOR,
     cursor: 'pointer',
     fontSize: '0.9rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
     fontWeight: 500,
-    textDecoration: 'underline',
-    transition: 'none', // Removed - caused scroll crashes
-    transform: 'translateZ(0)',
+    textDecoration: 'none',
+    letterSpacing: '1px',
   };
 
   const toggleButtonHoverStyle = {
     color: '#ffffff',
+    textDecoration: 'underline',
   };
 
   const testButtonStyle = {
@@ -294,8 +303,9 @@ export default function LoginBarrier() {
     <div id="login-barrier" style={loginBarrierStyle}>
       <div style={loginContainerStyle}>
         <div style={loginHeaderStyle}>
-          <h2 style={titleStyle}>🔐 Decades Bar Management System</h2>
-          <p style={subtitleStyle}>Please log in to access the training materials</p>
+          <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🔐</div>
+          <h2 style={titleStyle}>Decades Bar</h2>
+          <p style={subtitleStyle}>Management System</p>
         </div>
 
         {/* Test Credentials Section */}

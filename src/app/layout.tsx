@@ -16,7 +16,7 @@ const inter = Inter({
 
 const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400"],
+  weight: ["100", "200", "300", "400", "600", "700"],
   variable: "--font-outfit",
 });
 

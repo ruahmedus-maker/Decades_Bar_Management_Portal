@@ -5,6 +5,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 // Define the section color for resources
 const SECTION_COLOR = '#8B5CF6'; // Purple color for resources
@@ -47,7 +48,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={cardHeaderStyle}>
-            {title}
+            <GoldHeading text={title} />
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -201,7 +202,7 @@ export default function ResourcesSection() {
       }}>
         <div>
           <h3 style={sectionHeaderStyle}>
-            Additional Resources
+            <GoldHeading text="Additional Resources" />
           </h3>
           <p style={{
             margin: 0,

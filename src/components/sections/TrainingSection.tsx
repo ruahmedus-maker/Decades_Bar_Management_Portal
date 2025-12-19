@@ -5,6 +5,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 // Card Component without Hover Effects
 function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: CardProps) {
@@ -32,7 +33,7 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={cardHeaderStyle}>
-            {title}
+            <GoldHeading text={title} />
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -142,7 +143,7 @@ export default function TrainingMaterials() {
         alignItems: 'center'
       }}>
         <h3 style={sectionHeaderStyle}>
-          Training Materials
+          <GoldHeading text="Training Materials" />
         </h3>
         <span style={{
           background: 'linear-gradient(135deg, var(--accent), #c19b2a)',

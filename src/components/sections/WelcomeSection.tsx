@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 
 function DecadesIntroduction() {
@@ -55,14 +56,15 @@ function DecadesIntroduction() {
       <div style={{ padding: '20px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
-            ...goldTextStyle,
-            fontSize: '3.2rem',
             fontFamily: 'var(--font-outfit), sans-serif',
+            fontSize: '3.2rem',
             marginBottom: '10px',
-            fontWeight: 200, // Matching the thin geometric brand Identity
-            letterSpacing: '5px', // Wider tracking for the main welcome heading
+            fontWeight: 200,
+            letterSpacing: '5px',
+            margin: 0,
+            textTransform: 'uppercase'
           }}>
-            🎵 Welcome to Decades 🎵
+            <GoldHeading text="🎵 Welcome to Decades 🎵" />
           </h1>
           <p style={{
             color: 'rgba(255, 255, 255, 0.9)',
@@ -154,7 +156,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={cardHeaderStyle}>
-            {title}
+            <GoldHeading text={title} />
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -343,7 +345,7 @@ export default function WelcomeSection() {
         alignItems: 'center'
       }}>
         <h3 style={sectionHeaderStyle}>
-          Welcome to Your Training Hub
+          <GoldHeading text="Welcome to Your Training Hub" />
         </h3>
         <span style={{
           background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
@@ -418,7 +420,7 @@ export default function WelcomeSection() {
               backdropFilter: 'blur(8px)'
             }}>
               <h4 style={cardHeaderStyle}>
-                🎯 Your First Week at Decades
+                <GoldHeading text="🎯 Your First Week at Decades" />
               </h4>
             </div>
             <div style={{ padding: '20px' }}>

@@ -72,25 +72,29 @@ export default function Header() {
 
   const userNameStyle = {
     ...goldTextStyle,
-    fontWeight: 700,
-    fontSize: '1rem',
-  };
-
-  const logoutButtonStyle = {
-    background: 'transparent',
-    border: `1px solid ${THEME_COLOR}`, // Gold Border
-    color: THEME_COLOR, // Gold Text
-    padding: '8px 16px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
+    fontFamily: 'var(--font-outfit), sans-serif',
     fontWeight: 600,
-    transition: 'none',
+    fontSize: '0.95rem',
+    letterSpacing: '1px',
+  };
+  const logoutButtonStyle = {
+    ...goldTextStyle,
+    fontFamily: 'var(--font-outfit), sans-serif',
+    background: 'rgba(212, 175, 55, 0.1)',
+    border: `1px solid ${THEME_COLOR}`,
+    padding: '8px 16px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontSize: '0.85rem',
+    fontWeight: 700,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '1px',
+    transition: 'all 0.3s ease',
   };
 
   const logoutButtonHoverStyle = {
     background: THEME_COLOR, // Gold Background
-    color: 'black', // Black text on hover
+    WebkitTextFillColor: 'black', // Black text on hover
   };
 
   return (

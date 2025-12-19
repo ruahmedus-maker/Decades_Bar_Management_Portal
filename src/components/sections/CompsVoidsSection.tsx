@@ -3,6 +3,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 // Define unique coral color for comps & voids
 const SECTION_COLOR = '#FF6B6B'; // Bright coral
@@ -42,7 +43,7 @@ function StaticCard({ title, description, items, footer, index, children }: any)
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={cardHeaderStyle}>
-            {title}
+            <GoldHeading text={title} />
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -126,7 +127,7 @@ export default function CompsVoidsSection() {
       }}>
         <div>
           <h3 style={sectionHeaderStyle}>
-            Comps & Voids Procedures
+            <GoldHeading text="Comps & Voids Procedures" />
           </h3>
           <p style={{
             margin: 0,

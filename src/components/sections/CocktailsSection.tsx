@@ -5,6 +5,7 @@ import { trackSectionVisit } from '@/lib/supabase-auth';
 import { getAllCategories, getCocktails, searchCocktails as searchCocktailsAPI } from '@/lib/supabase-cocktails';
 import type { Cocktail, CocktailCategory } from '@/types/cocktails';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 // Define the cocktail section color
 const SECTION_COLOR = '#FF6B6B'; // Coral color for cocktails section
@@ -34,7 +35,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={cardHeaderStyle}>
-            {title}
+            <GoldHeading text={title} />
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -108,7 +109,7 @@ function CocktailCard({ name, ingredients, instructions, index }: {
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           paddingBottom: '8px'
         }}>
-          {name}
+          <GoldHeading text={name} />
         </h5>
 
         <div style={{ marginBottom: '15px' }}>
@@ -482,7 +483,7 @@ export default function CocktailsSection() {
       }}>
         <div>
           <h3 style={sectionHeaderStyle}>
-            Cocktail Recipe Database
+            <GoldHeading text="Cocktail Recipe Database" />
           </h3>
           <p style={{
             margin: 0,
@@ -610,7 +611,9 @@ export default function CocktailsSection() {
               padding: '40px',
               color: 'rgba(255, 255, 255, 0.7)'
             }}>
-              <h4 style={cardHeaderStyle}>No cocktails found</h4>
+              <h4 style={cardHeaderStyle}>
+                <GoldHeading text="No cocktails found" />
+              </h4>
               <p>Try adjusting your search or selecting a different category</p>
             </div>
           )}

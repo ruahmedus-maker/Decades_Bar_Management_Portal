@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { sectionHeaderStyle, cardHeaderStyle, goldTextStyle, brandFont, goldSectionHeaderStyle, goldCardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
 import TasksSection from './TasksSection';
@@ -9,7 +11,6 @@ import { supabase } from '@/lib/supabase';
 import { getAllUsers, updateUser, deleteUser } from '@/lib/supabase-auth';
 import { getProgressBreakdown } from '@/lib/progress';
 import { supabaseMaintenance } from '@/lib/supabase-maintenance';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Modern color theme for admin panel
 const SECTION_COLOR = '#2563eb';
@@ -587,7 +588,9 @@ function MaintenanceTicketsManagement() {
           border: '1px solid rgba(255, 255, 255, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={cardHeaderStyle}>Manage Ticket: {selectedTicket.title}</h4>
+            <h4 style={cardHeaderStyle}>
+              <GoldHeading text={`Manage Ticket: ${selectedTicket.title}`} />
+            </h4>
             <button
               onClick={() => setSelectedTicket(null)}
               disabled={isSubmitting}
@@ -767,7 +770,7 @@ function MaintenanceTicketsManagement() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
           <h4 style={cardHeaderStyle}>
-            Maintenance Tickets ({filteredTickets.length} tickets)
+            <GoldHeading text={`Maintenance Tickets (${filteredTickets.length} tickets)`} />
           </h4>
         </div>
 
@@ -1121,7 +1124,9 @@ export default function AdminPanelSection() {
         textAlign: 'center',
         color: 'white'
       }}>
-        <h3 style={sectionHeaderStyle}>🔒 Admin Access Required</h3>
+        <h3 style={sectionHeaderStyle}>
+          <GoldHeading text="🔒 Admin Access Required" />
+        </h3>
         <p>You need administrator privileges to access this section.</p>
       </div>
     );
@@ -1140,7 +1145,9 @@ export default function AdminPanelSection() {
         color: 'white'
       }}>
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
-        <h3 style={sectionHeaderStyle}>Loading Admin Panel...</h3>
+        <h3 style={sectionHeaderStyle}>
+          <GoldHeading text="Loading Admin Panel..." />
+        </h3>
         <p>Connecting to cloud database</p>
       </div>
     );
@@ -1170,7 +1177,7 @@ export default function AdminPanelSection() {
       }}>
         <div>
           <h3 style={sectionHeaderStyle}>
-            Manager Command Center
+            <GoldHeading text="Manager Command Center" />
           </h3>
           <p style={{
             margin: 0,

@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
 
@@ -220,7 +221,9 @@ export default function TestsSection() {
         paddingBottom: '15px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
       }}>
-        <h3 style={sectionHeaderStyle}>Training Tests & Assessments</h3>
+        <h3 style={sectionHeaderStyle}>
+          <GoldHeading text="Training Tests & Assessments" />
+        </h3>
         <span style={{
           background: `linear-gradient(135deg, ${CORAL_COLOR}, ${CORAL_COLOR_DARK})`,
           color: 'white',
@@ -235,7 +238,9 @@ export default function TestsSection() {
       {!activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>📝 Available Tests</h4>
+            <h4 style={brandCardHeaderStyle}>
+              <GoldHeading text="📝 Available Tests" />
+            </h4>
           </div>
           <div style={cardBodyStyle}>
             {userTests.map(test => (
@@ -271,7 +276,9 @@ export default function TestsSection() {
       {activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>🧪 {activeTest.name}</h4>
+            <h4 style={brandCardHeaderStyle}>
+              <GoldHeading text={`🧪 ${activeTest.name}`} />
+            </h4>
           </div>
           <div style={cardBodyStyle}>
             <div style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -343,7 +350,9 @@ export default function TestsSection() {
       {testResults.length > 0 && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>📈 Test History</h4>
+            <h4 style={brandCardHeaderStyle}>
+              <GoldHeading text="📈 Test History" />
+            </h4>
           </div>
           <div style={cardBodyStyle}>
             <div style={{ overflowX: 'auto' }}>

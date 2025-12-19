@@ -5,6 +5,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { ChecklistItem } from '@/types';
 import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import GoldHeading from '../ui/GoldHeading';
 
 // Define the new color theme - Soft Coral Purple
 const SECTION_COLOR = '#D4A5A5'; // Soft coral
@@ -490,7 +491,7 @@ export default function StandardOperatingProceduresSection() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div>
             <h3 style={sectionHeaderStyle}>
-              Standard Operating Procedures
+              <GoldHeading text="Standard Operating Procedures" />
             </h3>
             <p style={{
               margin: 0,
@@ -732,7 +733,9 @@ export default function StandardOperatingProceduresSection() {
           padding: '14px 20px',
           borderBottom: `1px solid rgba(${ACCENT_COLOR_RGB}, 0.3)`,
         }}>
-          <h4 style={cardHeaderStyle}>⚠️ Bank & Cash Handling Notice</h4>
+          <h4 style={cardHeaderStyle}>
+            <GoldHeading text="⚠️ Bank & Cash Handling Notice" />
+          </h4>
         </div>
         <div style={{
           padding: '16px 20px',
@@ -833,7 +836,9 @@ export default function StandardOperatingProceduresSection() {
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <h4 style={cardHeaderStyle}>💰 Bank Quick Reference</h4>
+          <h4 style={cardHeaderStyle}>
+            <GoldHeading text="💰 Bank Quick Reference" />
+          </h4>
         </div>
         <div style={{ padding: '16px' }}>
           <div style={{

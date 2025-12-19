@@ -110,7 +110,6 @@ export default function Sidebar() {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    ...navLinkTextStyle,
     background: 'rgba(255, 255, 255, 0.05)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     backdropFilter: 'blur(10px)',
@@ -188,7 +187,9 @@ export default function Sidebar() {
                 <span style={iconStyle}>
                   {item.icon}
                 </span>
-                {item.label}
+                <span style={navLinkTextStyle}>
+                  {item.label}
+                </span>
               </a>
             </li>
           );

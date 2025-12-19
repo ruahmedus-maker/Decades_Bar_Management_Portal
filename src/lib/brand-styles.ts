@@ -11,12 +11,27 @@ export const goldTextStyle = {
     filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
 };
 
+// High-contrast solid gold for small text legibility
+export const solidGoldStyle = {
+    color: '#FFD700',
+    filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.5))',
+};
+
 // Branding Font Utility
 export const brandFont = 'var(--font-outfit), sans-serif';
 
-// Base Style for Section Headers (Main title at the top of sections)
+// Style for Sidebar Navigation Links
+export const navLinkTextStyle = {
+    ...solidGoldStyle,
+    fontFamily: brandFont,
+    fontWeight: 500, // Increased weight for better legibility
+    textTransform: 'uppercase' as const,
+    letterSpacing: '1px',
+    fontSize: '0.85rem',
+};
+
+// Base Style for Section Headers (Structure only)
 export const sectionHeaderStyle = {
-    ...goldTextStyle,
     fontFamily: brandFont,
     fontWeight: 200,
     textTransform: 'uppercase' as const,
@@ -25,21 +40,22 @@ export const sectionHeaderStyle = {
     margin: 0,
 };
 
-// Style for Sidebar Navigation Links
-export const navLinkTextStyle = {
-    ...goldTextStyle,
-    fontFamily: brandFont,
-    fontWeight: 300, // Slightly thicker for readability in small navigation links
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-    fontSize: '0.9rem',
-};
-
-// Premium Card Title Style
+// Premium Card Title Style (Structure only)
 export const cardHeaderStyle = {
-    ...goldTextStyle,
     fontFamily: brandFont,
     fontWeight: 400,
     fontSize: '1.2rem',
     letterSpacing: '1px',
+    margin: 0,
+};
+
+// Full Gold Header styles (for convenience in cases without icons)
+export const goldSectionHeaderStyle = {
+    ...sectionHeaderStyle,
+    ...goldTextStyle,
+};
+
+export const goldCardHeaderStyle = {
+    ...cardHeaderStyle,
+    ...goldTextStyle,
 };
