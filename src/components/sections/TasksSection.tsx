@@ -5,6 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { Task, User } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getAllUsers } from '@/lib/supabase-auth';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 export default function TasksSection() {
   const { showToast, currentUser, isAdmin } = useApp();
@@ -78,7 +79,7 @@ export default function TasksSection() {
     try {
       const allUsers = await getAllUsers();
       // Filter to only show bartenders and trainees (not admins) for task assignment
-      const teamUsers = allUsers.filter(user => 
+      const teamUsers = allUsers.filter(user =>
         user.position === 'Bartender' || user.position === 'Trainee'
       );
       setUsers(teamUsers);
@@ -93,7 +94,7 @@ export default function TasksSection() {
         status,
         completed: status === 'completed'
       };
-      
+
       if (status === 'completed') {
         updateData.completed_at = new Date().toISOString();
       } else {
@@ -109,10 +110,10 @@ export default function TasksSection() {
 
       const statusMessages = {
         'pending': 'Task marked as pending',
-        'in-progress': 'Task marked as in progress', 
+        'in-progress': 'Task marked as in progress',
         'completed': 'Task marked as completed'
       };
-      
+
       showToast(statusMessages[status]);
       loadTasks();
     } catch (error) {
@@ -126,7 +127,7 @@ export default function TasksSection() {
 
     try {
       setCreating(true);
-      
+
       if (!newTask.title.trim()) {
         showToast('Task title is required');
         return;
@@ -177,35 +178,35 @@ export default function TasksSection() {
   };
 
   const deleteTask = async (taskId: string) => {
-  if (!confirm('Are you sure you want to delete this task?')) return;
+    if (!confirm('Are you sure you want to delete this task?')) return;
 
-  try {
-    setDeletingTaskId(taskId);
-    console.log('🗑️ Deleting task:', taskId);
-    
-    const { error } = await supabase
-      .from('tasks')
-      .delete()
-      .eq('id', taskId);
+    try {
+      setDeletingTaskId(taskId);
+      console.log('🗑️ Deleting task:', taskId);
 
-    if (error) {
-      console.error('❌ Supabase delete error:', error);
-      throw error;
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) {
+        console.error('❌ Supabase delete error:', error);
+        throw error;
+      }
+
+      console.log('✅ Task deleted successfully from database');
+      showToast('Task deleted successfully');
+
+      // Update local state immediately instead of waiting for reload
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+
+    } catch (error: any) {
+      console.error('❌ Error deleting task:', error);
+      showToast(`Error deleting task: ${error.message}`);
+    } finally {
+      setDeletingTaskId(null);
     }
-
-    console.log('✅ Task deleted successfully from database');
-    showToast('Task deleted successfully');
-    
-    // Update local state immediately instead of waiting for reload
-    setTasks(prev => prev.filter(task => task.id !== taskId));
-    
-  } catch (error: any) {
-    console.error('❌ Error deleting task:', error);
-    showToast(`Error deleting task: ${error.message}`);
-  } finally {
-    setDeletingTaskId(null);
-  }
-};
+  };
 
   useEffect(() => {
     loadTasks();
@@ -215,21 +216,21 @@ export default function TasksSection() {
   }, [currentUser, isAdmin]);
 
   if (loading && tasks.length === 0) {
-  return (
-    <div style={{
-      marginBottom: '30px',
-      padding: '40px',
-      textAlign: 'center',
-      color: 'white'
-    }}>
-      <div>⏳</div>
-      <h3>Loading Tasks...</h3>
-      <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
-        Connecting to database...
-      </p>
-    </div>
-  );
-}
+    return (
+      <div style={{
+        marginBottom: '30px',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <div>⏳</div>
+        <h3 style={sectionHeaderStyle}>Loading Tasks...</h3>
+        <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+          Connecting to database...
+        </p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -240,12 +241,12 @@ export default function TasksSection() {
         color: 'white'
       }}>
         <div>❌</div>
-        <h3>Tasks Feature</h3>
+        <h3 style={sectionHeaderStyle}>Tasks Feature</h3>
         <p>{error}</p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '15px' }}>
-          <button 
+          <button
             onClick={loadTasks}
-            style={{ 
+            style={{
               background: '#3B82F6',
               color: 'white',
               border: 'none',
@@ -275,7 +276,7 @@ export default function TasksSection() {
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
-        <h3 style={{ color: 'white', margin: 0 }}>Tasks Management</h3>
+        <h3 style={sectionHeaderStyle}>Tasks Management</h3>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: '5px 0 0 0' }}>
           {isAdmin ? 'Manage and track all tasks' : 'Your assigned tasks'}
         </p>
@@ -292,13 +293,13 @@ export default function TasksSection() {
             marginBottom: '20px',
             border: '1px solid rgba(255, 255, 255, 0.15)'
           }}>
-            <h4 style={{ color: 'white', margin: '0 0 15px 0' }}>Create New Task</h4>
+            <h4 style={cardHeaderStyle}>Create New Task</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <input
                 type="text"
                 placeholder="Task Title *"
                 value={newTask.title}
-                onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                 style={{
                   padding: '10px',
                   background: 'rgba(255, 255, 255, 0.1)',
@@ -311,7 +312,7 @@ export default function TasksSection() {
               <textarea
                 placeholder="Task Description"
                 value={newTask.description}
-                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                 rows={3}
                 style={{
                   padding: '10px',
@@ -323,7 +324,7 @@ export default function TasksSection() {
                   resize: 'vertical'
                 }}
               />
-              
+
               {/* User Dropdown */}
               <div>
                 <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
@@ -331,7 +332,7 @@ export default function TasksSection() {
                 </label>
                 <select
                   value={newTask.assignedTo}
-                  onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
+                  onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
                   style={{
                     padding: '10px',
                     background: 'rgba(255, 255, 255, 0.1)',
@@ -359,7 +360,7 @@ export default function TasksSection() {
                   <input
                     type="date"
                     value={newTask.dueDate}
-                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                    onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
                     style={{
                       padding: '10px',
                       background: 'rgba(255, 255, 255, 0.1)',
@@ -377,7 +378,7 @@ export default function TasksSection() {
                   </label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask({...newTask, priority: e.target.value as 'low' | 'medium' | 'high'})}
+                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' })}
                     style={{
                       padding: '10px',
                       background: 'rgba(255, 255, 255, 0.1)',
@@ -395,9 +396,9 @@ export default function TasksSection() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button 
+                <button
                   onClick={() => setShowCreateForm(false)}
-                  style={{ 
+                  style={{
                     background: 'transparent',
                     color: 'rgba(255, 255, 255, 0.7)',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -408,10 +409,10 @@ export default function TasksSection() {
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={createTask}
                   disabled={creating}
-                  style={{ 
+                  style={{
                     background: '#10B981',
                     color: 'white',
                     border: 'none',
@@ -430,13 +431,13 @@ export default function TasksSection() {
 
         <div style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={{ color: 'white', margin: 0 }}>
+            <h4 style={cardHeaderStyle}>
               Task List ({tasks.length} tasks)
             </h4>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button 
+              <button
                 onClick={loadTasks}
-                style={{ 
+                style={{
                   background: '#3B82F6',
                   color: 'white',
                   border: 'none',
@@ -449,9 +450,9 @@ export default function TasksSection() {
                 Refresh
               </button>
               {isAdmin && (
-                <button 
+                <button
                   onClick={() => setShowCreateForm(!showCreateForm)}
-                  style={{ 
+                  style={{
                     background: showCreateForm ? '#6B7280' : '#10B981',
                     color: 'white',
                     border: 'none',
@@ -466,10 +467,10 @@ export default function TasksSection() {
               )}
             </div>
           </div>
-          
+
           {tasks.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
+            <div style={{
+              textAlign: 'center',
               padding: '40px',
               color: 'rgba(255, 255, 255, 0.7)',
               background: 'rgba(255, 255, 255, 0.05)',
@@ -487,7 +488,7 @@ export default function TasksSection() {
           ) : (
             <div>
               {tasks.map((task) => (
-                <div 
+                <div
                   key={task.id}
                   style={{
                     padding: '15px',
@@ -500,40 +501,40 @@ export default function TasksSection() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ 
-                        fontWeight: 'bold', 
+                      <div style={{
+                        fontWeight: 'bold',
                         color: 'white',
                         textDecoration: task.status === 'completed' ? 'line-through' : 'none',
                         marginBottom: '5px'
                       }}>
                         {task.title}
-                        <span style={{ 
+                        <span style={{
                           marginLeft: '10px',
                           fontSize: '0.7rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: 
+                          background:
                             task.priority === 'high' ? '#EF4444' :
-                            task.priority === 'medium' ? '#F59E0B' : '#10B981',
+                              task.priority === 'medium' ? '#F59E0B' : '#10B981',
                           color: 'white'
                         }}>
                           {task.priority}
                         </span>
-                        <span style={{ 
+                        <span style={{
                           marginLeft: '10px',
                           fontSize: '0.7rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: 
+                          background:
                             task.status === 'completed' ? 'rgba(16, 185, 129, 0.2)' :
-                            task.status === 'in-progress' ? 'rgba(59, 130, 246, 0.2)' :
-                            'rgba(245, 158, 11, 0.2)',
-                          color: 
+                              task.status === 'in-progress' ? 'rgba(59, 130, 246, 0.2)' :
+                                'rgba(245, 158, 11, 0.2)',
+                          color:
                             task.status === 'completed' ? '#10B981' :
-                            task.status === 'in-progress' ? '#3B82F6' : '#F59E0B'
+                              task.status === 'in-progress' ? '#3B82F6' : '#F59E0B'
                         }}>
                           {task.status === 'completed' ? '✅ Completed' :
-                           task.status === 'in-progress' ? '🟡 In Progress' : '⚪ Pending'}
+                            task.status === 'in-progress' ? '🟡 In Progress' : '⚪ Pending'}
                         </span>
                       </div>
                       {task.description && (
@@ -557,13 +558,13 @@ export default function TasksSection() {
                         )}
                       </div>
                     </div>
-                    
+
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                       {/* Pending -> Start Task */}
                       {task.status === 'pending' && (
-                        <button 
+                        <button
                           onClick={() => updateTaskStatus(task.id, 'in-progress')}
-                          style={{ 
+                          style={{
                             background: '#3B82F6',
                             color: 'white',
                             border: 'none',
@@ -577,12 +578,12 @@ export default function TasksSection() {
                           Start Task
                         </button>
                       )}
-                      
+
                       {/* In Progress -> Complete */}
                       {task.status === 'in-progress' && (
-                        <button 
+                        <button
                           onClick={() => updateTaskStatus(task.id, 'completed')}
-                          style={{ 
+                          style={{
                             background: '#10B981',
                             color: 'white',
                             border: 'none',
@@ -596,12 +597,12 @@ export default function TasksSection() {
                           Complete
                         </button>
                       )}
-                      
+
                       {/* Completed -> Reopen */}
                       {task.status === 'completed' && (
-                        <button 
+                        <button
                           onClick={() => updateTaskStatus(task.id, 'in-progress')}
-                          style={{ 
+                          style={{
                             background: '#F59E0B',
                             color: 'white',
                             border: 'none',
@@ -615,27 +616,27 @@ export default function TasksSection() {
                           Reopen
                         </button>
                       )}
-                      
+
                       {/* Delete button for admins */}
                       {isAdmin && (
-                          <button 
-                            onClick={() => deleteTask(task.id)}
-                            disabled={deletingTaskId === task.id}
-                            style={{ 
-                              background: deletingTaskId === task.id ? '#6B7280' : '#EF4444',
-                              color: 'white',
-                              border: 'none',
-                              padding: '6px 12px',
-                              borderRadius: '6px',
-                              cursor: deletingTaskId === task.id ? 'not-allowed' : 'pointer',
-                              fontSize: '0.8rem',
-                              whiteSpace: 'nowrap',
-                              opacity: deletingTaskId === task.id ? 0.6 : 1
-                            }}
-                          >
-                            {deletingTaskId === task.id ? 'Deleting...' : 'Delete'}
-                          </button>
-                        )}
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          disabled={deletingTaskId === task.id}
+                          style={{
+                            background: deletingTaskId === task.id ? '#6B7280' : '#EF4444',
+                            color: 'white',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            cursor: deletingTaskId === task.id ? 'not-allowed' : 'pointer',
+                            fontSize: '0.8rem',
+                            whiteSpace: 'nowrap',
+                            opacity: deletingTaskId === task.id ? 0.6 : 1
+                          }}
+                        >
+                          {deletingTaskId === task.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

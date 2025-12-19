@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { getAllUsers, updateUser, deleteUser } from '@/lib/supabase-auth';
 import { getProgressBreakdown } from '@/lib/progress';
 import { supabaseMaintenance } from '@/lib/supabase-maintenance';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Modern color theme for admin panel
 const SECTION_COLOR = '#2563eb';
@@ -73,8 +74,9 @@ function AdminCard({ title, value, icon, color, onClick }: any) {
             {title}
           </p>
           <h3 style={{
+            ...goldTextStyle,
+            fontFamily: brandFont,
             margin: 0,
-            color: 'white',
             fontSize: '1.8rem',
             fontWeight: 'bold'
           }}>
@@ -151,11 +153,7 @@ function TeamManagementContent({
         padding: '25px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
       }}>
-        <h4 style={{
-          color: 'white',
-          margin: '0 0 20px 0',
-          fontSize: '1.2rem'
-        }}>
+        <h4 style={cardHeaderStyle}>
           👥 Team Management ({teamUsers.length} users)
         </h4>
 
@@ -469,7 +467,7 @@ function MaintenanceTicketsManagement() {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: 'white' }}>
         <div>⏳</div>
-        <h3>Loading Maintenance Tickets...</h3>
+        <h3 style={sectionHeaderStyle}>Loading Maintenance Tickets...</h3>
       </div>
     );
   }
@@ -589,7 +587,7 @@ function MaintenanceTicketsManagement() {
           border: '1px solid rgba(255, 255, 255, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={{ color: 'white', margin: 0 }}>Manage Ticket: {selectedTicket.title}</h4>
+            <h4 style={cardHeaderStyle}>Manage Ticket: {selectedTicket.title}</h4>
             <button
               onClick={() => setSelectedTicket(null)}
               disabled={isSubmitting}
@@ -768,7 +766,7 @@ function MaintenanceTicketsManagement() {
         border: '1px solid rgba(255, 255, 255, 0.15)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h4 style={{ color: 'white', margin: 0 }}>
+          <h4 style={cardHeaderStyle}>
             Maintenance Tickets ({filteredTickets.length} tickets)
           </h4>
         </div>
@@ -1123,7 +1121,7 @@ export default function AdminPanelSection() {
         textAlign: 'center',
         color: 'white'
       }}>
-        <h3>🔒 Admin Access Required</h3>
+        <h3 style={sectionHeaderStyle}>🔒 Admin Access Required</h3>
         <p>You need administrator privileges to access this section.</p>
       </div>
     );
@@ -1142,7 +1140,7 @@ export default function AdminPanelSection() {
         color: 'white'
       }}>
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
-        <h3>Loading Admin Panel...</h3>
+        <h3 style={sectionHeaderStyle}>Loading Admin Panel...</h3>
         <p>Connecting to cloud database</p>
       </div>
     );
@@ -1171,12 +1169,7 @@ export default function AdminPanelSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.6rem',
-            fontWeight: 700,
-            margin: 0,
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Manager Command Center
           </h3>
           <p style={{
@@ -1297,11 +1290,7 @@ export default function AdminPanelSection() {
               border: '1px solid rgba(255, 255, 255, 0.15)',
               marginBottom: '30px',
             }}>
-              <h4 style={{
-                color: 'white',
-                margin: '0 0 20px 0',
-                fontSize: '1.2rem'
-              }}>
+              <h4 style={cardHeaderStyle}>
                 ⚡ Quick Actions
               </h4>
               <div style={{
@@ -1391,11 +1380,7 @@ export default function AdminPanelSection() {
               padding: '25px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
             }}>
-              <h4 style={{
-                color: 'white',
-                margin: '0 0 20px 0',
-                fontSize: '1.2rem'
-              }}>
+              <h4 style={cardHeaderStyle}>
                 📈 Top Performers
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1474,11 +1459,7 @@ export default function AdminPanelSection() {
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={{
-                color: 'white',
-                margin: 0,
-                fontSize: '1.2rem'
-              }}>
+              <h4 style={cardHeaderStyle}>
                 📈 Employee Progress Tracking
               </h4>
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -1636,11 +1617,7 @@ export default function AdminPanelSection() {
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={{
-                color: 'white',
-                margin: 0,
-                fontSize: '1.2rem'
-              }}>
+              <h4 style={cardHeaderStyle}>
                 🔧 Maintenance Tickets Management
               </h4>
               <button

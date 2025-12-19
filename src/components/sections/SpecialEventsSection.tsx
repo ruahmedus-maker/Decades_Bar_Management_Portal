@@ -7,6 +7,7 @@ import { SpecialEvent, Task } from '@/types';
 import { CardProps } from '@/types';
 import { supabaseSpecialEvents } from '@/lib/supabase-special-events';
 import { supabase } from '@/lib/supabase';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for special events
 const SECTION_COLOR = '#ED8936'; // Orange color for special events
@@ -15,7 +16,7 @@ const SECTION_COLOR_RGB = '237, 137, 54';
 // Animated Card Component without Hover Effects
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -38,12 +39,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -51,7 +47,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
                 ))}
@@ -93,25 +89,25 @@ interface EventCardProps {
 }
 
 // Event Card Component without Hover Effects
-function EventCard({ 
-  event, 
-  index, 
-  isAdminView, 
-  onAddTask, 
-  onDeleteEvent, 
-  onUpdateTaskStatus, 
-  getStatusColor, 
-  getPriorityColor, 
-  users 
+function EventCard({
+  event,
+  index,
+  isAdminView,
+  onAddTask,
+  onDeleteEvent,
+  onUpdateTaskStatus,
+  getStatusColor,
+  getPriorityColor,
+  users
 }: EventCardProps) {
-  
+
   // Add type for the checkbox change event
   const handleCheckboxChange = (taskId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     onUpdateTaskStatus(event.id, taskId, e.target.checked);
   };
 
   return (
-    <div 
+    <div
       style={{
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
@@ -127,18 +123,12 @@ function EventCard({
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-          <h4 style={{
-            color: 'white',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600,
-            transition: 'all 0.3s ease'
-          }}>
+          <h4 style={cardHeaderStyle}>
             {event.name}
           </h4>
-          <span style={{ 
-            padding: '4px 12px', 
-            borderRadius: '12px', 
+          <span style={{
+            padding: '4px 12px',
+            borderRadius: '12px',
             fontSize: '0.8rem',
             background: `${getStatusColor(event.status)}20`,
             color: getStatusColor(event.status),
@@ -156,14 +146,14 @@ function EventCard({
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: '5px 0' }}>
             <strong>Theme:</strong> {event.theme || 'No theme specified'}
           </p>
-          
+
           {event.drinkSpecials && (
             <div style={{ marginTop: '10px' }}>
               <strong style={{ color: SECTION_COLOR }}>Drink Specials:</strong>
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.05)', 
-                padding: '10px', 
-                borderRadius: '6px', 
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                padding: '10px',
+                borderRadius: '6px',
                 marginTop: '5px',
                 whiteSpace: 'pre-wrap',
                 color: 'rgba(255, 255, 255, 0.9)'
@@ -172,14 +162,14 @@ function EventCard({
               </div>
             </div>
           )}
-          
+
           {event.notes && (
             <div style={{ marginTop: '10px' }}>
               <strong style={{ color: SECTION_COLOR }}>Notes & Instructions:</strong>
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.05)', 
-                padding: '10px', 
-                borderRadius: '6px', 
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                padding: '10px',
+                borderRadius: '6px',
                 marginTop: '5px',
                 whiteSpace: 'pre-wrap',
                 color: 'rgba(255, 255, 255, 0.9)'
@@ -195,9 +185,9 @@ function EventCard({
               <strong style={{ color: SECTION_COLOR }}>Tasks:</strong>
               <div style={{ marginTop: '10px' }}>
                 {event.tasks.map((task) => (
-                  <div key={task.id} style={{ 
-                    padding: '10px', 
-                    border: '1px solid rgba(255, 255, 255, 0.1)', 
+                  <div key={task.id} style={{
+                    padding: '10px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '6px',
                     marginBottom: '8px',
                     background: task.completed ? 'rgba(56, 161, 105, 0.1)' : 'rgba(255, 255, 255, 0.05)'
@@ -211,15 +201,15 @@ function EventCard({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(task.id, e)}
                             style={{ margin: 0 }}
                           />
-                          <strong style={{ 
+                          <strong style={{
                             textDecoration: task.completed ? 'line-through' : 'none',
                             color: 'rgba(255, 255, 255, 0.9)'
                           }}>
                             {task.title}
                           </strong>
-                          <span style={{ 
-                            padding: '2px 6px', 
-                            borderRadius: '8px', 
+                          <span style={{
+                            padding: '2px 6px',
+                            borderRadius: '8px',
                             fontSize: '0.7rem',
                             background: `${getPriorityColor(task.priority)}20`,
                             color: getPriorityColor(task.priority)
@@ -253,7 +243,7 @@ function EventCard({
         {/* Action Buttons - Only in Admin View */}
         {isAdminView && (
           <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
-            <button 
+            <button
               style={{
                 background: 'linear-gradient(135deg, #3182ce, #2b6cb0)',
                 color: 'white',
@@ -268,7 +258,7 @@ function EventCard({
             >
               + Add Task
             </button>
-            <button 
+            <button
               style={{
                 background: 'linear-gradient(135deg, #e53e3e, #c53030)',
                 color: 'white',
@@ -322,13 +312,13 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
   useEffect(() => {
     const loadUsers = async () => {
       if (!isAdminView) return;
-      
+
       try {
         const { data, error } = await supabase
           .from('users')
           .select('email, name, position')
           .eq('status', 'active');
-        
+
         if (!error && data) {
           setUsers(data);
         }
@@ -355,7 +345,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
     try {
       setLoading(true);
       const eventsData = await supabaseSpecialEvents.getEvents();
-      const eventsArray = Object.values(eventsData).sort((a, b) => 
+      const eventsArray = Object.values(eventsData).sort((a, b) =>
         new Date(b.date).getTime() - new Date(a.date).getTime()
       );
       setEvents(eventsArray);
@@ -417,7 +407,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
 
   const handleUpdateTaskStatus = async (eventId: string, taskId: string, completed: boolean) => {
     try {
-      await supabaseSpecialEvents.updateTask(taskId, { 
+      await supabaseSpecialEvents.updateTask(taskId, {
         completed,
         completedAt: completed ? new Date().toISOString() : undefined
       });
@@ -489,7 +479,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
     // Subscribe to changes using supabaseSpecialEvents
     const subscription = supabaseSpecialEvents.subscribeToEvents((events) => {
       console.log('🔔 Real-time update received');
-      const eventsArray = Object.values(events).sort((a, b) => 
+      const eventsArray = Object.values(events).sort((a, b) =>
         new Date(b.date).getTime() - new Date(a.date).getTime()
       );
       setEvents(eventsArray);
@@ -503,7 +493,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
 
   if (loading) {
     return (
-      <div 
+      <div
         id="special-events"
         style={{
           marginBottom: '30px',
@@ -520,14 +510,14 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
         }}
       >
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
-        <h3>Loading Special Events...</h3>
+        <h3 style={sectionHeaderStyle}>Loading Special Events...</h3>
         <p>Connecting to cloud database</p>
       </div>
     );
   }
 
   return (
-    <div 
+    <div
       id="special-events"
       style={{
         marginBottom: '30px',
@@ -542,7 +532,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -554,13 +544,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Special Events
           </h3>
           <p style={{
@@ -625,7 +609,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
             index={1}
           >
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
                   color: 'white',
@@ -643,7 +627,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
               >
                 🎉 Create New Event
               </button>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, #4a5568, #2d3748)',
                   color: 'white',
@@ -682,8 +666,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   value={eventForm.name}
                   onChange={handleEventFormChange}
                   placeholder="e.g., New Year's Eve Party"
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -701,8 +685,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   name="date"
                   value={eventForm.date}
                   onChange={handleEventFormChange}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -721,8 +705,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   value={eventForm.theme}
                   onChange={handleEventFormChange}
                   placeholder="e.g., 1920s Great Gatsby"
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -741,8 +725,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   onChange={handleEventFormChange}
                   placeholder="List drink specials and prices..."
                   rows={3}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -762,8 +746,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   onChange={handleEventFormChange}
                   placeholder="Any special instructions or notes..."
                   rows={3}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -781,8 +765,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   name="status"
                   value={eventForm.status}
                   onChange={handleEventFormChange}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -798,7 +782,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
               </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, #38a169, #2f855a)',
                   color: 'white',
@@ -814,7 +798,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
               >
                 Create Event
               </button>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, #a0aec0, #718096)',
                   color: 'white',
@@ -850,8 +834,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   value={taskForm.title}
                   onChange={handleTaskFormChange}
                   placeholder="e.g., Order decorations"
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -870,8 +854,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   onChange={handleTaskFormChange}
                   placeholder="Task details..."
                   rows={2}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -889,8 +873,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   name="assignedTo"
                   value={taskForm.assignedTo}
                   onChange={handleTaskFormChange}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -915,8 +899,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   name="dueDate"
                   value={taskForm.dueDate}
                   onChange={handleTaskFormChange}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -933,8 +917,8 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
                   name="priority"
                   value={taskForm.priority}
                   onChange={handleTaskFormChange}
-                  style={{ 
-                    width: '100%', 
+                  style={{
+                    width: '100%',
                     padding: '12px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -949,7 +933,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
               </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, #3182ce, #2b6cb0)',
                   color: 'white',
@@ -965,7 +949,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
               >
                 Add Task
               </button>
-              <button 
+              <button
                 style={{
                   background: 'linear-gradient(135deg, #a0aec0, #718096)',
                   color: 'white',

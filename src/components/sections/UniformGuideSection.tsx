@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for uniform guide
 const SECTION_COLOR = '#9F7AEA'; // Purple color for uniforms
@@ -22,7 +23,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
   const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #B794F4, transparent)`;
 
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -44,12 +45,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -57,7 +53,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
                 ))}
@@ -96,7 +92,7 @@ function UniformCard({ title, items, index }: any) {
   const uniformColor = uniformColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, transparent)`;
 
   return (
-    <div 
+    <div
       style={{
         textAlign: 'left',
         padding: '20px',
@@ -123,13 +119,13 @@ function UniformCard({ title, items, index }: any) {
         }}>
           {title}
         </h5>
-        
+
         <div style={{ marginBottom: '15px' }}>
           <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
             {items.map((item: string, idx: number) => (
-              <li key={idx} style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                marginBottom: '8px', 
+              <li key={idx} style={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginBottom: '8px',
                 lineHeight: 1.4,
                 fontSize: '0.9rem'
               }}>
@@ -147,21 +143,21 @@ export default function UniformGuideSection() {
   const { currentUser } = useApp();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (!currentUser) return;
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // Wait 60 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'uniform-guide', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
+    // Wait 60 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'uniform-guide', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
 
   const uniformData = [
     {
@@ -205,7 +201,7 @@ useEffect(() => {
   ];
 
   return (
-    <div 
+    <div
       id="uniform-guide"
       style={{
         marginBottom: '30px',
@@ -220,7 +216,7 @@ useEffect(() => {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -232,13 +228,7 @@ useEffect(() => {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Uniform Guidelines
           </h3>
           <p style={{

@@ -5,19 +5,13 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 
 function DecadesIntroduction() {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Cinematic Gold Text Effect
-  const goldTextStyle = {
-    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
-    textTransform: 'uppercase' as const,
-  };
+  // Cinematic Gold Text Effect - Removed local definition, using import
 
   return (
     <div
@@ -159,12 +153,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -353,13 +342,7 @@ export default function WelcomeSection() {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h3 style={{
-          color: '#ffffff',
-          fontSize: '1.4rem',
-          fontWeight: 700,
-          margin: 0,
-          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-        }}>
+        <h3 style={sectionHeaderStyle}>
           Welcome to Your Training Hub
         </h3>
         <span style={{
@@ -434,12 +417,7 @@ export default function WelcomeSection() {
               borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
               backdropFilter: 'blur(8px)'
             }}>
-              <h4 style={{
-                color: '#ffffff',
-                margin: 0,
-                fontSize: '1.2rem',
-                fontWeight: 600
-              }}>
+              <h4 style={cardHeaderStyle}>
                 🎯 Your First Week at Decades
               </h4>
             </div>

@@ -4,6 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for drinks specials
 const SECTION_COLOR = '#4CAF50'; // Green color for drinks specials
@@ -22,7 +23,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
   //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #66BB6A, transparent)`;
 
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -44,12 +45,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -57,7 +53,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
                 ))}
@@ -97,7 +93,7 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
   const specialColor = specialColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, transparent)`;
 
   return (
-    <div 
+    <div
       style={{
         textAlign: 'left',
         padding: '20px',
@@ -124,17 +120,17 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
         }}>
           {title}
         </h5>
-        
+
         {description && (
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.9)', 
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.9)',
             marginBottom: '15px',
             lineHeight: 1.5
           }}>
             {description}
           </p>
         )}
-        
+
         <div style={{ marginBottom: '15px' }}>
           <div style={{
             color: SECTION_COLOR,
@@ -146,9 +142,9 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
           </div>
           <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
             {specials.map((special: string, idx: number) => (
-              <li key={idx} style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                marginBottom: '4px', 
+              <li key={idx} style={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginBottom: '4px',
                 lineHeight: 1.4,
                 fontSize: '0.9rem'
               }}>
@@ -157,7 +153,7 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
             ))}
           </ul>
         </div>
-        
+
         <div style={{ marginBottom: '15px' }}>
           <div style={{
             color: SECTION_COLOR,
@@ -167,15 +163,15 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
           }}>
             Hours:
           </div>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.9)', 
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.9)',
             margin: 0,
             fontSize: '0.9rem'
           }}>
             {hours}
           </p>
         </div>
-        
+
         {notes && (
           <div>
             <div style={{
@@ -186,8 +182,8 @@ function SpecialCard({ title, description, specials, hours, notes, index }: any)
             }}>
               Note:
             </div>
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.9)', 
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.9)',
               margin: 0,
               fontSize: '0.9rem',
               lineHeight: 1.4
@@ -205,24 +201,24 @@ export default function DrinksSpecialsSection() {
   const { currentUser } = useApp();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (!currentUser) return;
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'drinks-specials', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
+    // Wait 30 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'drinks-specials', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
 
   return (
-    <div 
+    <div
       id="drinks-specials"
       style={{
         marginBottom: '30px',
@@ -237,7 +233,7 @@ useEffect(() => {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -249,13 +245,7 @@ useEffect(() => {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Drink Specials & Promotions
           </h3>
           <p style={{
@@ -311,14 +301,14 @@ useEffect(() => {
               title="Thursday Night"
               specials={[
                 '$5 Miller Lites',
-                '$6 Green Tea Shots', 
+                '$6 Green Tea Shots',
                 '$10 Margaritas'
               ]}
               hours="Until Midnight"
               notes="Drink Tickets are for Rail Drinks Only"
               index={0}
             />
-            
+
             {/* You can add more special cards for other days */}
             <SpecialCard
               title="Friday Happy Hour"
@@ -331,7 +321,7 @@ useEffect(() => {
               notes="Available on all floors"
               index={1}
             />
-            
+
             <SpecialCard
               title="Saturday Specials"
               specials={[

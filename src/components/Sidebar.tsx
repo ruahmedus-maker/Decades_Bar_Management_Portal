@@ -3,6 +3,7 @@
 import { useApp } from '@/contexts/AppContext';
 import { NAV_ITEMS } from '@/lib/constants';
 import { ENABLE_TESTS } from '@/lib/test-utils';
+import { goldTextStyle, brandFont, navLinkTextStyle } from '@/lib/brand-styles';
 
 // Create a type for the valid section IDs for better type safety
 type SectionId = typeof NAV_ITEMS[number]['id'];
@@ -74,13 +75,7 @@ export default function Sidebar() {
     borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
   };
 
-  // Cinematic Gold Text Effect (Matching Header)
-  const goldTextStyle = {
-    background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
-  };
+  // Cinematic Gold Text Effect (Matching Header) - Removed local definition, using import
 
   const logoTitleStyle = {
     ...goldTextStyle,
@@ -109,15 +104,13 @@ export default function Sidebar() {
   };
 
   const navLinkStyle = {
-    color: '#ffffff',
     textDecoration: 'none',
     padding: '14px 16px',
     borderRadius: '12px',
-    transition: 'none', // Removed - caused scroll crashes
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    fontWeight: 500,
+    ...navLinkTextStyle,
     background: 'rgba(255, 255, 255, 0.05)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     backdropFilter: 'blur(10px)',

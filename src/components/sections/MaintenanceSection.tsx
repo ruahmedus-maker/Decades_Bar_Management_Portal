@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 import { MaintenanceTicket, CardProps } from '@/types';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
@@ -14,7 +15,7 @@ const SECTION_COLOR_RGB = '30, 64, 175';
 // Simplified Card Component without hover effects
 function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -34,12 +35,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
           {description && (
@@ -74,7 +70,7 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
   };
 
   return (
-    <div 
+    <div
       style={{
         padding: '20px',
         background: 'rgba(255, 255, 255, 0.08)',
@@ -95,8 +91,8 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-            <h5 style={{ 
-              color: 'white', 
+            <h5 style={{
+              color: 'white',
               margin: 0,
               fontSize: '1rem',
               fontWeight: 600
@@ -115,8 +111,8 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
               {status}
             </span>
           </div>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.7)', 
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.7)',
             margin: 0,
             fontSize: '0.9rem',
             lineHeight: 1.5
@@ -176,40 +172,40 @@ export default function MaintenanceSection() {
     }
   };
 
-  
 
-// In your useEffect, replace the subscription code with this:
-useEffect(() => {
-  fetchRecentTickets();
 
-  // Subscribe to real-time changes with proper typing
-  const subscription = supabase
-    .channel('maintenance_tickets_changes')
-    .on(
-      'postgres_changes',
-      {
-        event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-        schema: 'public',
-        table: 'maintenance_tickets'
-      },
-      (payload: RealtimePostgresChangesPayload<any>) => {
-        console.log('Maintenance ticket change received!', payload);
-        fetchRecentTickets(); // Refresh the list
-      }
-    )
-    .subscribe((status) => {
-      if (status === 'SUBSCRIBED') {
-        console.log('✅ Real-time subscription active');
-      }
-      if (status === 'CHANNEL_ERROR') {
-        console.error('❌ Real-time subscription failed');
-      }
-    });
+  // In your useEffect, replace the subscription code with this:
+  useEffect(() => {
+    fetchRecentTickets();
 
-  return () => {
-    subscription.unsubscribe();
-  };
-}, []);
+    // Subscribe to real-time changes with proper typing
+    const subscription = supabase
+      .channel('maintenance_tickets_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'maintenance_tickets'
+        },
+        (payload: RealtimePostgresChangesPayload<any>) => {
+          console.log('Maintenance ticket change received!', payload);
+          fetchRecentTickets(); // Refresh the list
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Real-time subscription active');
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Real-time subscription failed');
+        }
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Helper function to get appropriate icon based on ticket title
   const getTicketIcon = (title: string) => {
@@ -221,86 +217,86 @@ useEffect(() => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!currentUser) {
-    showToast('You must be logged in to submit a maintenance ticket');
-    return;
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    // Generate a UUID for the ticket ID
-    const ticketId = crypto.randomUUID();
-
-    // Debug: Log what we're about to send
-    console.log('🔄 Attempting to create maintenance ticket with data:', {
-      id: ticketId,
-      floor: ticketForm.floor,
-      location: ticketForm.location,
-      title: ticketForm.title,
-      description: ticketForm.description,
-      reported_by: currentUser.name,
-      reported_by_email: currentUser.email,
-      status: 'open',
-      priority: ticketForm.priority
-    });
-
-    
-    // Simplified - only include fields that are required or have values
-    const ticketData = {
-      id: ticketId,
-      floor: ticketForm.floor,
-      location: ticketForm.location,
-      title: ticketForm.title,
-      description: ticketForm.description,
-      reported_by: currentUser.name,
-      reported_by_email: currentUser.email,
-      status: 'open' as const,
-      priority: ticketForm.priority
-      // Omit assigned_to and notes - they'll use database NULL defaults
-    };
-
-    console.log('📤 Sending to Supabase...');
-
-    const { data, error } = await supabase
-      .from('maintenance_tickets')
-      .insert([ticketData])
-      .select();
-
-       console.log('📥 Supabase response:', { data, error });
-
-    if (error) {
-      console.error('❌ Supabase error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
-      throw error;
+    e.preventDefault();
+    if (!currentUser) {
+      showToast('You must be logged in to submit a maintenance ticket');
+      return;
     }
-    
-    console.log('✅ Ticket created successfully:', data);
-    showToast('Maintenance ticket submitted successfully!');
-    
-    // Reset form
-    setTicketForm({
-      floor: '2000s',
-      location: '',
-      title: '',
-      description: '',
-      priority: 'medium'
-    });
 
-    // Refresh the recent tickets list
-    fetchRecentTickets();
-  } catch (error: any) {
-    console.error('Error submitting maintenance ticket:', error);
-    showToast(error.message || 'Error submitting ticket. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+
+    try {
+      // Generate a UUID for the ticket ID
+      const ticketId = crypto.randomUUID();
+
+      // Debug: Log what we're about to send
+      console.log('🔄 Attempting to create maintenance ticket with data:', {
+        id: ticketId,
+        floor: ticketForm.floor,
+        location: ticketForm.location,
+        title: ticketForm.title,
+        description: ticketForm.description,
+        reported_by: currentUser.name,
+        reported_by_email: currentUser.email,
+        status: 'open',
+        priority: ticketForm.priority
+      });
+
+
+      // Simplified - only include fields that are required or have values
+      const ticketData = {
+        id: ticketId,
+        floor: ticketForm.floor,
+        location: ticketForm.location,
+        title: ticketForm.title,
+        description: ticketForm.description,
+        reported_by: currentUser.name,
+        reported_by_email: currentUser.email,
+        status: 'open' as const,
+        priority: ticketForm.priority
+        // Omit assigned_to and notes - they'll use database NULL defaults
+      };
+
+      console.log('📤 Sending to Supabase...');
+
+      const { data, error } = await supabase
+        .from('maintenance_tickets')
+        .insert([ticketData])
+        .select();
+
+      console.log('📥 Supabase response:', { data, error });
+
+      if (error) {
+        console.error('❌ Supabase error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        throw error;
+      }
+
+      console.log('✅ Ticket created successfully:', data);
+      showToast('Maintenance ticket submitted successfully!');
+
+      // Reset form
+      setTicketForm({
+        floor: '2000s',
+        location: '',
+        title: '',
+        description: '',
+        priority: 'medium'
+      });
+
+      // Refresh the recent tickets list
+      fetchRecentTickets();
+    } catch (error: any) {
+      console.error('Error submitting maintenance ticket:', error);
+      showToast(error.message || 'Error submitting ticket. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setTicketForm(prev => ({
@@ -322,7 +318,7 @@ useEffect(() => {
   };
 
   return (
-    <div 
+    <div
       id="maintenance-section"
       style={{
         marginBottom: '30px',
@@ -337,7 +333,7 @@ useEffect(() => {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -349,13 +345,7 @@ useEffect(() => {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Maintenance Request
           </h3>
           <p style={{
@@ -415,7 +405,7 @@ useEffect(() => {
                   <option value="Rooftop">Rooftop</option>
                 </select>
               </div>
-              
+
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
                   Priority *
@@ -510,10 +500,10 @@ useEffect(() => {
             </div>
 
             {currentUser && (
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.08)', 
-                padding: '12px', 
-                borderRadius: '8px', 
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                padding: '12px',
+                borderRadius: '8px',
                 marginBottom: '15px',
                 fontSize: '0.9rem',
                 backdropFilter: 'blur(10px)',
@@ -523,14 +513,14 @@ useEffect(() => {
               </div>
             )}
 
-            <button 
+            <button
               type="submit"
               disabled={isSubmitting}
               style={{
                 width: '100%',
                 padding: '12px 24px',
-                background: isSubmitting 
-                  ? 'rgba(255, 255, 255, 0.2)' 
+                background: isSubmitting
+                  ? 'rgba(255, 255, 255, 0.2)'
                   : `rgba(${SECTION_COLOR_RGB}, 0.3)`,
                 border: isSubmitting
                   ? '1px solid rgba(255, 255, 255, 0.3)'
@@ -577,9 +567,9 @@ useEffect(() => {
                   />
                 ))
               ) : (
-                <div style={{ 
-                  textAlign: 'center', 
-                  padding: '20px', 
+                <div style={{
+                  textAlign: 'center',
+                  padding: '20px',
                   color: 'rgba(255, 255, 255, 0.7)',
                   gridColumn: '1 / -1'
                 }}>

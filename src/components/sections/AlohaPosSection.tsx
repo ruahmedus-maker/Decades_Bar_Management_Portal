@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for Aloha POS - Green theme
 const SECTION_COLOR = '#38A169'; // Green color for POS
@@ -16,7 +17,7 @@ const TRAINING_VIDEOS = [
     duration: '0:27'
   },
   {
-    id: 'H3JPBhvbNqc', 
+    id: 'H3JPBhvbNqc',
     title: 'Aloha POS functions',
     description: 'Step-by-step guide to splitting payment Card/Cash - Open in YouTube for full instructions',
     category: 'Aloha POS',
@@ -97,7 +98,7 @@ const TRAINING_VIDEOS = [
 // SIMPLE Card Component - NO HOVER EFFECTS
 function SimpleCard({ title, description, items, footer, index, children }: any) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '12px',
         margin: '15px 0',
@@ -118,19 +119,14 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
         background: `linear-gradient(90deg, ${SECTION_COLOR}, #48BB78)`,
         zIndex: 1
       }} />
-      
+
       <div style={{ position: 'relative', zIndex: 1, marginTop: '3px' }}>
         <div style={{
           background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
           padding: '16px 20px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.1rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -138,7 +134,7 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
-              <ul style={{paddingLeft: '18px', marginBottom: '0', marginTop: '12px'}}>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
                 ))}
@@ -187,8 +183,8 @@ function ChecklistItem({ children, index }: any) {
         cursor: 'pointer',
         accentColor: SECTION_COLOR
       }} />
-      <span style={{ 
-        color: 'rgba(255, 255, 255, 0.9)', 
+      <span style={{
+        color: 'rgba(255, 255, 255, 0.9)',
         lineHeight: 1.4,
         fontSize: '0.9rem',
         flex: 1
@@ -200,9 +196,9 @@ function ChecklistItem({ children, index }: any) {
 }
 
 // YouTube Video Player - SIMPLIFIED
-function YouTubeVideo({ videoId, title, description, duration }: { 
-  videoId: string; 
-  title: string; 
+function YouTubeVideo({ videoId, title, description, duration }: {
+  videoId: string;
+  title: string;
   description: string;
   duration: string;
 }) {
@@ -238,7 +234,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
   return (
     <SimpleCard title={title} index={0}>
       <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
-      
+
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
@@ -262,9 +258,9 @@ function YouTubeVideo({ videoId, title, description, duration }: {
           allowFullScreen
           title={title}
         />
-        
+
         {showOverlay && (
-          <div 
+          <div
             style={{
               position: 'absolute',
               top: 0,
@@ -291,19 +287,19 @@ function YouTubeVideo({ videoId, title, description, duration }: {
         )}
       </div>
 
-      <div style={{ 
-        marginTop: '8px', 
-        fontSize: '0.85rem', 
+      <div style={{
+        marginTop: '8px',
+        fontSize: '0.85rem',
         color: 'rgba(255, 255, 255, 0.7)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <span>🔗 <a 
-          href={`https://youtu.be/${videoId}`} 
-          target="_blank" 
+        <span>🔗 <a
+          href={`https://youtu.be/${videoId}`}
+          target="_blank"
           rel="noopener noreferrer"
-          style={{ 
+          style={{
             color: SECTION_COLOR,
             textDecoration: 'none',
             fontWeight: '500'
@@ -322,11 +318,11 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
   onCategoryChange: (category: string) => void;
 }) {
   const categories = ['All', ...new Set(TRAINING_VIDEOS.map(video => video.category))];
-  
+
   return (
-    <div style={{ 
-      display: 'flex', 
-      gap: '8px', 
+    <div style={{
+      display: 'flex',
+      gap: '8px',
       margin: '16px',
       flexWrap: 'wrap'
     }}>
@@ -338,15 +334,15 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
             padding: '10px 16px',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.2)',
-            background: activeCategory === category 
-              ? `rgba(${SECTION_COLOR_RGB}, 0.2)` 
+            background: activeCategory === category
+              ? `rgba(${SECTION_COLOR_RGB}, 0.2)`
               : 'rgba(255, 255, 255, 0.08)',
             color: 'rgba(255, 255, 255, 0.9)',
             cursor: 'pointer',
             fontSize: '0.85rem',
             fontWeight: '500',
-            borderColor: activeCategory === category 
-              ? `rgba(${SECTION_COLOR_RGB}, 0.4)` 
+            borderColor: activeCategory === category
+              ? `rgba(${SECTION_COLOR_RGB}, 0.4)`
               : 'rgba(255, 255, 255, 0.2)',
           }}
         >
@@ -362,24 +358,24 @@ export default function AlohaPosSection() {
   const [activeCategory, setActiveCategory] = useState('All');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (!currentUser) return;
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // Wait 60 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'aloha-pos', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
+    // Wait 60 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'aloha-pos', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
 
   // Filter videos by category
-  const filteredVideos = TRAINING_VIDEOS.filter(video => 
+  const filteredVideos = TRAINING_VIDEOS.filter(video =>
     activeCategory === 'All' || video.category === activeCategory
   );
 
@@ -393,7 +389,7 @@ useEffect(() => {
   };
 
   return (
-    <div 
+    <div
       id="aloha-pos"
       style={{
         marginBottom: '25px',
@@ -405,7 +401,7 @@ useEffect(() => {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
@@ -416,12 +412,7 @@ useEffect(() => {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.3rem',
-            fontWeight: 700,
-            margin: 0,
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Aloha POS System Guide
           </h3>
           <p style={{
@@ -453,21 +444,21 @@ useEffect(() => {
           title="🎯 Welcome to Aloha POS Training"
           index={1}
         >
-          <p style={{ 
-            margin: 0, 
+          <p style={{
+            margin: 0,
             color: 'rgba(255, 255, 255, 0.9)',
             lineHeight: 1.5,
             fontSize: '0.95rem'
           }}>
-            Welcome to the Aloha POS Video Library. Here you'll find all the training videos 
+            Welcome to the Aloha POS Video Library. Here you'll find all the training videos
             covering procedures and systems you'll use during your shift. Click on any video to start learning.
           </p>
         </SimpleCard>
 
         {/* Category Filter */}
-        <CategoryFilter 
-          activeCategory={activeCategory} 
-          onCategoryChange={setActiveCategory} 
+        <CategoryFilter
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
         />
 
         {/* Videos Grid */}
@@ -477,9 +468,9 @@ useEffect(() => {
               title="No Videos Found"
               index={2}
             >
-              <p style={{ 
-                textAlign: 'center', 
-                color: 'rgba(255, 255, 255, 0.7)', 
+              <p style={{
+                textAlign: 'center',
+                color: 'rgba(255, 255, 255, 0.7)',
                 fontStyle: 'italic',
                 margin: 0
               }}>
@@ -537,8 +528,8 @@ useEffect(() => {
           title="💡 Video Learning Tips"
           index={5}
         >
-          <ul style={{ 
-            margin: 0, 
+          <ul style={{
+            margin: 0,
             paddingLeft: '18px',
             color: 'rgba(255, 255, 255, 0.9)',
             lineHeight: 1.5
@@ -553,7 +544,7 @@ useEffect(() => {
         </SimpleCard>
 
         {/* Reset Button */}
-        <button 
+        <button
           onClick={resetChecklists}
           style={{
             background: `linear-gradient(135deg, ${SECTION_COLOR}, #2F855A)`,

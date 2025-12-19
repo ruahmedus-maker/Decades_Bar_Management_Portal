@@ -76,10 +76,11 @@ Quick access to cocktail specifications.
 
 ---
 
-## 🎨 Design System & Aesthetics
-The application features a "Premium/Cinematic" aesthetic.
+### 🎨 Design System & Aesthetics
+The application features a "Premium/Cinematic" aesthetic consistently applied across all sections.
 - **Primary Theme**: Gold & Black (#D4AF37).
-- **Core Visual Feature**: **Cinematic 3D Gold Text** (linear gradients + drop shadows) used for headers and titles.
+- **Core Visual Feature**: **Cinematic 3D Gold Text** (linear gradients + drop shadows) and the **"Outfit"** font.
+- **Centralized Styling**: Utility file `src/lib/brand-styles.ts` exports common branding styles (`goldTextStyle`, `sectionHeaderStyle`, `cardHeaderStyle`) for consistent application.
 - **UI Patterns**: Glassmorphism (blur backgrounds), subtle micro-animations, and consistent card layouts.
 
 ---

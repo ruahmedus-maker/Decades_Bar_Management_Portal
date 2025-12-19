@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // REMOVE these unused imports:
 // import { submitAcknowledgement, getProgressBreakdown, subscribeToProgress, isSectionCompleted } from '@/lib/progress';
@@ -134,7 +135,7 @@ export default function ProgressSection() {
         textAlign: 'center' as const
       }}>
         <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🎉</div>
-        <h3 style={{ margin: 0, marginBottom: '12px', fontSize: '1.3rem', fontWeight: 600 }}>
+        <h3 style={sectionHeaderStyle}>
           Training Completed!
         </h3>
         <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9, marginBottom: '16px' }}>
@@ -210,12 +211,7 @@ export default function ProgressSection() {
     >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{
-          margin: 0,
-          fontSize: '1.3rem',
-          fontWeight: 600,
-          color: PRIMARY_COLOR,
-        }}>
+        <h3 style={sectionHeaderStyle}>
           Your Training Progress
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -320,11 +316,7 @@ export default function ProgressSection() {
         border: '1px solid rgba(255,255,255,0.12)',
         marginBottom: '20px',
       }}>
-        <h4 style={{
-          margin: '0 0 10px 0',
-          fontSize: '1rem',
-          color: LIGHT_COLOR
-        }}>
+        <h4 style={cardHeaderStyle}>
           Progress Breakdown
         </h4>
         {sectionDetails.map((detail: SectionDetail) => (

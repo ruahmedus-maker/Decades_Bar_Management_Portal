@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 import { supabase } from '@/lib/supabase';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -151,7 +152,7 @@ export default function KeyPerformanceIndicatorsSection() {
         <div className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-xl">
             <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/20">
                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-1">Key Performance Indicators</h2>
+                    <h3 style={sectionHeaderStyle}>Key Performance Indicators</h3>
                     <p className="text-white/70">Performance data for {selectedMonth}</p>
                 </div>
                 <div className="flex gap-4">
@@ -179,21 +180,21 @@ export default function KeyPerformanceIndicatorsSection() {
                     {/* Top Performers Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-white/60 text-sm uppercase tracking-wider mb-2">Top Sales</h3>
+                            <h4 style={cardHeaderStyle}>Top Sales</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? data[0].employee_name : 'N/A'}
                             </p>
                             <span className="text-teal-400 font-mono">${data.length > 0 ? data[0].sales.toLocaleString() : 0}</span>
                         </div>
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-white/60 text-sm uppercase tracking-wider mb-2">Highest Check Avg</h3>
+                            <h4 style={cardHeaderStyle}>Highest Check Avg</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? [...data].sort((a, b) => b.check_average - a.check_average)[0].employee_name : 'N/A'}
                             </p>
                             <span className="text-green-400 font-mono">${data.length > 0 ? [...data].sort((a, b) => b.check_average - a.check_average)[0].check_average.toFixed(2) : 0}</span>
                         </div>
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-white/60 text-sm uppercase tracking-wider mb-2">Most Punctual</h3>
+                            <h4 style={cardHeaderStyle}>Most Punctual</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? [...data].sort((a, b) => b.punctuality_score - a.punctuality_score)[0].employee_name : 'N/A'}
                             </p>
@@ -204,7 +205,7 @@ export default function KeyPerformanceIndicatorsSection() {
                     {/* Charts Row */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 h-[300px]">
                         <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 className="text-white mb-4 font-semibold">Sales Distribution</h4>
+                            <h4 style={cardHeaderStyle}>Sales Distribution</h4>
                             <ResponsiveContainer width="100%" height="90%">
                                 <PieChart>
                                     <Pie
@@ -229,7 +230,7 @@ export default function KeyPerformanceIndicatorsSection() {
                         </div>
 
                         <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 className="text-white mb-4 font-semibold">Check Average Comparison</h4>
+                            <h4 style={cardHeaderStyle}>Check Average Comparison</h4>
                             <ResponsiveContainer width="100%" height="90%">
                                 <BarChart data={data}>
                                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
@@ -295,7 +296,7 @@ export default function KeyPerformanceIndicatorsSection() {
             {showImportModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-gray-900 border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-4">Import Aloha Data</h3>
+                        <h3 style={cardHeaderStyle}>Import Aloha Data</h3>
                         <p className="text-white/70 mb-6 text-sm">
                             Upload a CSV file with columns: <br />
                             <code>Name, Sales, Checks, Hours, Late_Count</code>

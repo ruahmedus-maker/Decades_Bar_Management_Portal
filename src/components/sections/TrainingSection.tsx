@@ -4,11 +4,12 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Card Component without Hover Effects
 function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: CardProps) {
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -30,12 +31,7 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
           borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -59,7 +55,7 @@ function WeekDay({ title, children, index, highlight }: any) {
   const dayColor = dayColors[index] || 'linear-gradient(45deg, var(--accent), transparent)';
 
   return (
-    <div 
+    <div
       style={{
         textAlign: 'left',
         padding: '20px',
@@ -105,23 +101,23 @@ function WeekDay({ title, children, index, highlight }: any) {
 
 export default function TrainingMaterials() {
   const { currentUser } = useApp();
-const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (!currentUser) return;
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // Wait 60 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'training', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
+    // Wait 60 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'training', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
   return (
     <div style={{
       marginBottom: '30px',
@@ -134,7 +130,7 @@ useEffect(() => {
       boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       animation: 'fadeIn 0.5s ease'
     }} className="active" id="training">
-      
+
       {/* Section Header */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
@@ -145,13 +141,7 @@ useEffect(() => {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h3 style={{
-          color: '#ffffff',
-          fontSize: '1.4rem',
-          fontWeight: 700,
-          margin: 0,
-          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-        }}>
+        <h3 style={sectionHeaderStyle}>
           Training Materials
         </h3>
         <span style={{
@@ -169,8 +159,8 @@ useEffect(() => {
 
       <div style={{ padding: '25px' }}>
         {/* Getting Started Card */}
-        <AnimatedCard 
-          title="🎯 Getting Started - Your Training Roadmap" 
+        <AnimatedCard
+          title="🎯 Getting Started - Your Training Roadmap"
           glowColor="linear-gradient(45deg, #48bb78, #38a169, transparent)"
         >
           <p style={{
@@ -187,8 +177,8 @@ useEffect(() => {
             gap: '20px'
           }}>
             <WeekDay title="📚 Phase 1: Foundation Knowledge" index={0}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -199,8 +189,8 @@ useEffect(() => {
               </ul>
             </WeekDay>
             <WeekDay title="🛠️ Phase 2: Practical Training" index={1}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -211,8 +201,8 @@ useEffect(() => {
               </ul>
             </WeekDay>
             <WeekDay title="🎓 Phase 3: Mastery & Independence" index={2}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -226,8 +216,8 @@ useEffect(() => {
         </AnimatedCard>
 
         {/* Decades Standards Card */}
-        <AnimatedCard 
-          title="⚡ Decades Bar Standards" 
+        <AnimatedCard
+          title="⚡ Decades Bar Standards"
           glowColor="linear-gradient(45deg, #4299e1, #3182ce, transparent)"
         >
           <div style={{
@@ -236,8 +226,8 @@ useEffect(() => {
             gap: '20px'
           }}>
             <WeekDay title="Pouring Standards" index={0}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -248,8 +238,8 @@ useEffect(() => {
               </ul>
             </WeekDay>
             <WeekDay title="Speed Expectations" index={1}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -260,8 +250,8 @@ useEffect(() => {
               </ul>
             </WeekDay>
             <WeekDay title="Quality Standards" index={2}>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -275,8 +265,8 @@ useEffect(() => {
         </AnimatedCard>
 
         {/* Training Schedule Card */}
-        <AnimatedCard 
-          title="📅 Training Schedule & Floor Assignments" 
+        <AnimatedCard
+          title="📅 Training Schedule & Floor Assignments"
           glowColor="linear-gradient(45deg, #9f7aea, #805ad5, transparent)"
         >
           <div style={{
@@ -286,8 +276,8 @@ useEffect(() => {
             marginBottom: '25px'
           }}>
             <WeekDay title="Friday Training" index={0} highlight="2000's Floor">
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -298,8 +288,8 @@ useEffect(() => {
               </ul>
             </WeekDay>
             <WeekDay title="Saturday Training" index={1} highlight="Hip Hop & Rooftop">
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -329,8 +319,8 @@ useEffect(() => {
             <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>
               <strong>Your primary goal during the first shift is OBSERVATION.</strong> Pay close attention to how experienced bartenders:
             </p>
-            <ul style={{ 
-              margin: 0, 
+            <ul style={{
+              margin: 0,
               paddingLeft: '20px',
               color: 'rgba(255, 255, 255, 0.9)',
               marginBottom: '15px'
@@ -360,14 +350,14 @@ useEffect(() => {
           margin: '25px 0'
         }}>
           {/* Bartending Fundamentals Card */}
-          <AnimatedCard 
-            title="🧪 Bartending Fundamentals" 
+          <AnimatedCard
+            title="🧪 Bartending Fundamentals"
             glowColor="linear-gradient(45deg, #ed8936, #dd6b20, transparent)"
           >
             <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>
               <strong>Learning Path:</strong> Start with basic techniques before moving to complex cocktails
             </p>
-            
+
             <div style={{
               background: 'rgba(255, 255, 255, 0.08)',
               padding: '15px',
@@ -382,8 +372,8 @@ useEffect(() => {
               }}>
                 Practice Sequence:
               </h5>
-              <ol style={{ 
-                margin: 0, 
+              <ol style={{
+                margin: 0,
                 paddingLeft: '20px',
                 color: 'rgba(255, 255, 255, 0.9)'
               }}>
@@ -394,48 +384,48 @@ useEffect(() => {
               </ol>
             </div>
 
-            <ul style={{ 
+            <ul style={{
               listStyle: 'none',
               padding: 0,
               margin: 0
             }}>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Pouring Techniques:</strong> Always use jiggers - 1.5oz standard pour, 1.25oz for straight shots
               </li>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Mixing Methods:</strong> Shake until tin frosts, stir for 30 seconds for spirit-forward drinks
               </li>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Glassware Knowledge:</strong> Refer to Glassware Guide section for proper glass selection
               </li>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Garnishing:</strong> Citrus wheels cut fresh daily, herbs inspected for freshness
               </li>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Product Knowledge:</strong> Focus on top 20 most used spirits first
               </li>
-              <li style={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
+              <li style={{
+                color: 'rgba(255, 255, 255, 0.9)',
                 padding: '8px 0'
               }}>
                 <strong>Speed & Efficiency:</strong> "Two-hand" working - always be doing two things at once
@@ -448,9 +438,9 @@ useEffect(() => {
       </div>
 
       <ProgressSection />
-      
+
     </div>
-    
+
   );
-  
+
 }

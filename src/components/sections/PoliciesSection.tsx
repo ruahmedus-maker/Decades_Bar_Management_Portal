@@ -4,6 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define unique coral color for policies
 const SECTION_COLOR = '#FF8C42'; // Orange coral
@@ -22,7 +23,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
   //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #FFA366, transparent)`;
 
   return (
-    <div 
+    <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
@@ -45,12 +46,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -58,7 +54,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {children || (
             <>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
-              <ul style={{paddingLeft: '20px', marginBottom: '0', marginTop: '15px'}}>
+              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
                   <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
                 ))}
@@ -91,23 +87,23 @@ export default function PoliciesSection() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-  if (!currentUser) return;
+    if (!currentUser) return;
 
-  // Wait 30 seconds then mark as complete
-  timerRef.current = setTimeout(() => {
-    trackSectionVisit(currentUser.email, 'policies', 60);
-    console.log('Section auto-completed after 60 seconds');
-  }, 60000);
+    // Wait 30 seconds then mark as complete
+    timerRef.current = setTimeout(() => {
+      trackSectionVisit(currentUser.email, 'policies', 60);
+      console.log('Section auto-completed after 60 seconds');
+    }, 60000);
 
-  return () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-}, [currentUser]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [currentUser]);
 
   return (
-    <div 
+    <div
       id="policies"
       style={{
         marginBottom: '30px',
@@ -124,7 +120,7 @@ export default function PoliciesSection() {
       }}
       className="active"
     >
-      
+
       {/* Section Header */}
       <div style={{
         background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
@@ -136,13 +132,7 @@ export default function PoliciesSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Policies and Procedures
           </h3>
           <p style={{

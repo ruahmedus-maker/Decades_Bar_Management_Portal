@@ -4,6 +4,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { getAllCategories, getCocktails, searchCocktails as searchCocktailsAPI } from '@/lib/supabase-cocktails';
 import type { Cocktail, CocktailCategory } from '@/types/cocktails';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the cocktail section color
 const SECTION_COLOR = '#FF6B6B'; // Coral color for cocktails section
@@ -32,12 +33,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -106,10 +102,9 @@ function CocktailCard({ name, ingredients, instructions, index }: {
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h5 style={{
-          color: 'white',
-          marginBottom: '15px',
+          ...cardHeaderStyle,
           fontSize: '1.1rem',
-          fontWeight: 600,
+          marginBottom: '15px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           paddingBottom: '8px'
         }}>
@@ -277,7 +272,7 @@ function ErrorDisplay({ message, onRetry }: { message: string; onRetry: () => vo
         maxWidth: '500px',
         margin: '0 auto'
       }}>
-        <h3 style={{ color: '#EF4444', marginBottom: '15px' }}>⚠️ Error Loading Cocktails</h3>
+        <h3 style={sectionHeaderStyle}>⚠️ Error Loading Cocktails</h3>
         <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '20px' }}>{message}</p>
         <button
           onClick={onRetry}
@@ -486,13 +481,7 @@ export default function CocktailsSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Cocktail Recipe Database
           </h3>
           <p style={{
@@ -621,7 +610,7 @@ export default function CocktailsSection() {
               padding: '40px',
               color: 'rgba(255, 255, 255, 0.7)'
             }}>
-              <h4 style={{ color: 'white', marginBottom: '10px' }}>No cocktails found</h4>
+              <h4 style={cardHeaderStyle}>No cocktails found</h4>
               <p>Try adjusting your search or selecting a different category</p>
             </div>
           )}

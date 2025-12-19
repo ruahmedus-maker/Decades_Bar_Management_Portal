@@ -5,6 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { CardProps } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getAllUsers } from '@/lib/supabase-auth';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 
 // Define the section color for employee counseling - teal blue theme
 const SECTION_COLOR = '#0D9488'; // Teal color for counseling
@@ -59,12 +60,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.2rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
           {description && (
@@ -538,13 +534,7 @@ export default function EmployeeCounselingSection() {
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
           backdropFilter: 'blur(10px)'
         }}>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Employee Counselings & Write-ups
           </h3>
           <span style={{
@@ -588,7 +578,7 @@ export default function EmployeeCounselingSection() {
         }}
       >
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
-        <h3>Loading Counseling Records...</h3>
+        <h3 style={sectionHeaderStyle}>Loading Counseling Records...</h3>
         <p>Connecting to cloud database</p>
       </div>
     );
@@ -624,13 +614,7 @@ export default function EmployeeCounselingSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Employee Counselings & Write-ups
           </h3>
           <p style={{

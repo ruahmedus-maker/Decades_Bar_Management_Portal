@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle } from '@/lib/brand-styles';
 
 const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
 
@@ -179,9 +180,9 @@ export default function TestsSection() {
 
       // Refresh results
       await loadTestResults();
-      
+
       showToast(`Test submitted! Score: ${result.score}/${result.total_questions} (${result.percentage}%) - ${result.passed ? 'PASSED' : 'FAILED'}`);
-      
+
       // Clear for next test
       setTestAnswers({});
       setActiveTest(null);
@@ -219,12 +220,7 @@ export default function TestsSection() {
         paddingBottom: '15px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
       }}>
-        <h3 style={{
-          color: '#ffffff',
-          fontSize: '1.4rem',
-          fontWeight: 700,
-          margin: 0,
-        }}>Training Tests & Assessments</h3>
+        <h3 style={sectionHeaderStyle}>Training Tests & Assessments</h3>
         <span style={{
           background: `linear-gradient(135deg, ${CORAL_COLOR}, ${CORAL_COLOR_DARK})`,
           color: 'white',
@@ -239,7 +235,7 @@ export default function TestsSection() {
       {!activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={cardTitleStyle}>📝 Available Tests</h4>
+            <h4 style={brandCardHeaderStyle}>📝 Available Tests</h4>
           </div>
           <div style={cardBodyStyle}>
             {userTests.map(test => (
@@ -257,7 +253,7 @@ export default function TestsSection() {
                 <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '0 0 12px 0', fontSize: '0.8rem' }}>
                   <strong>Passing Score:</strong> {test.passingScore}% | <strong>Questions:</strong> {test.questions.length}
                 </p>
-                <button 
+                <button
                   style={buttonStyle}
                   onClick={() => startTest(test)}
                   onMouseEnter={(e) => Object.assign(e.currentTarget.style, buttonHoverStyle)}
@@ -275,7 +271,7 @@ export default function TestsSection() {
       {activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={cardTitleStyle}>🧪 {activeTest.name}</h4>
+            <h4 style={brandCardHeaderStyle}>🧪 {activeTest.name}</h4>
           </div>
           <div style={cardBodyStyle}>
             <div style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -289,8 +285,8 @@ export default function TestsSection() {
                 <div key={q.id} style={questionStyle}>
                   <p style={questionTextStyle}><strong>{index + 1}. {q.question}</strong></p>
                   {q.options.map((opt, i) => (
-                    <label 
-                      key={i} 
+                    <label
+                      key={i}
                       style={{
                         ...optionLabelStyle,
                         ...(testAnswers[q.id] === i ? {
@@ -315,7 +311,7 @@ export default function TestsSection() {
             </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button 
+              <button
                 style={{
                   ...buttonStyle,
                   ...(submitting ? { opacity: 0.7, cursor: 'not-allowed' } : {})
@@ -327,7 +323,7 @@ export default function TestsSection() {
               >
                 {submitting ? 'Submitting...' : 'Submit Test'}
               </button>
-              <button 
+              <button
                 style={{
                   ...buttonStyle,
                   background: 'rgba(255, 255, 255, 0.1)',
@@ -347,7 +343,7 @@ export default function TestsSection() {
       {testResults.length > 0 && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={cardTitleStyle}>📈 Test History</h4>
+            <h4 style={brandCardHeaderStyle}>📈 Test History</h4>
           </div>
           <div style={cardBodyStyle}>
             <div style={{ overflowX: 'auto' }}>

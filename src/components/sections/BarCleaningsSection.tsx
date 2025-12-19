@@ -2,6 +2,7 @@
 
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
 import { useState, useEffect, useRef } from 'react';
 import { CardProps } from '@/types';
 
@@ -30,12 +31,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           padding: '16px 20px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
-          <h4 style={{
-            color: '#ffffff',
-            margin: 0,
-            fontSize: '1.1rem',
-            fontWeight: 600
-          }}>
+          <h4 style={cardHeaderStyle}>
             {title}
           </h4>
         </div>
@@ -403,12 +399,7 @@ export default function BarCleaningsSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{
-            color: '#ffffff',
-            fontSize: '1.3rem',
-            fontWeight: 700,
-            margin: 0,
-          }}>
+          <h3 style={sectionHeaderStyle}>
             Bar Cleaning Schedule
           </h3>
           <p style={{
@@ -509,11 +500,7 @@ export default function BarCleaningsSection() {
             }} onClick={() => changeMonth(-1)}>
               ← Previous
             </button>
-            <h4 style={{
-              color: 'white',
-              margin: 0,
-              fontSize: '1rem'
-            }}>
+            <h4 style={cardHeaderStyle}>
               {new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h4>
             <button style={{
