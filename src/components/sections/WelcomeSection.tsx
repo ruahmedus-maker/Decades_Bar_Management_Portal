@@ -57,7 +57,7 @@ function DecadesIntroduction() {
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
             fontFamily: 'var(--font-outfit), sans-serif',
-            fontSize: '2rem',
+            fontSize: '2.2rem',
             marginBottom: '10px',
             fontWeight: 200,
             letterSpacing: '4px',
