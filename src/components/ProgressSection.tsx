@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 // REMOVE these unused imports:
 // import { submitAcknowledgement, getProgressBreakdown, subscribeToProgress, isSectionCompleted } from '@/lib/progress';
@@ -115,7 +115,9 @@ export default function ProgressSection() {
 
   // Glass effect base styles
   const glassStyle = {
-    background: 'rgba(255, 255, 255, 0.08)',
+    background: uiBackground,
+    backdropFilter: uiBackdropFilter,
+    WebkitBackdropFilter: uiBackdropFilterWebkit,
     border: `1px solid rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
     borderRadius: '12px',
     color: 'white',

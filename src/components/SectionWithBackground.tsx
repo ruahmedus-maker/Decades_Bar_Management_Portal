@@ -1,6 +1,7 @@
 // components/SectionWithBackground.tsx
 import Image from 'next/image';
 import { useState } from 'react';
+import { uiBackground } from '@/lib/brand-styles';
 
 interface SectionWithBackgroundProps {
   children: React.ReactNode;
@@ -10,9 +11,9 @@ interface SectionWithBackgroundProps {
   priority?: boolean;
 }
 
-export default function SectionWithBackground({ 
-  children, 
-  imagePath, 
+export default function SectionWithBackground({
+  children,
+  imagePath,
   overlay = true,
   height = '400px',
   priority = false
@@ -76,7 +77,7 @@ export default function SectionWithBackground({
         }}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
       />
-      
+
       {overlay && (
         <div style={{
           position: 'absolute',
@@ -84,7 +85,7 @@ export default function SectionWithBackground({
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: uiBackground,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
@@ -92,7 +93,7 @@ export default function SectionWithBackground({
           {children}
         </div>
       )}
-      
+
       {!overlay && children}
     </div>
   );

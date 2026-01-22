@@ -2,6 +2,7 @@
 
 import { useApp } from '@/contexts/AppContext';
 import NotificationCenter from './NotificationCenter';
+import { uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 // Gold theme to match Sidebar
 const THEME_COLOR = '#D4AF37';
@@ -18,9 +19,9 @@ export default function Header() {
     height: '80px',
     zIndex: 999,
     padding: '0 30px',
-    background: 'rgba(255, 255, 255, 0.12)',
-    backdropFilter: 'blur(12px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+    background: uiBackground,
+    backdropFilter: uiBackdropFilter,
+    WebkitBackdropFilter: uiBackdropFilterWebkit,
     border: '1px solid rgba(255, 255, 255, 0.25)',
     boxShadow: `
       0 20px 40px rgba(0, 0, 0, 0.3),

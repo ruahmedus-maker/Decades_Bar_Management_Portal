@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 import GoldHeading from '../ui/GoldHeading';
 
 
@@ -22,9 +22,9 @@ function DecadesIntroduction() {
         boxShadow: isHovered
           ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
+        background: uiBackground,
+        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilter,
+        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilterWebkit,
         border: isHovered
           ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
@@ -326,9 +326,9 @@ export default function WelcomeSection() {
       marginBottom: '30px',
       borderRadius: '20px',
       overflow: 'hidden',
-      background: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(15px) saturate(170%)',
-      WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+      background: uiBackground,
+      backdropFilter: uiBackdropFilter,
+      WebkitBackdropFilter: uiBackdropFilterWebkit,
       border: '1px solid rgba(255, 255, 255, 0.22)',
       boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       animation: 'fadeIn 0.5s ease'
@@ -390,9 +390,9 @@ export default function WelcomeSection() {
           borderRadius: '16px',
           margin: '25px 0 0 0',
           boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(12px) saturate(160%)',
-          WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+          background: uiBackground,
+          backdropFilter: uiBackdropFilter,
+          WebkitBackdropFilter: uiBackdropFilterWebkit,
           border: '1px solid rgba(255, 255, 255, 0.18)',
           transition: 'all 0.4s ease',
           overflow: 'hidden',

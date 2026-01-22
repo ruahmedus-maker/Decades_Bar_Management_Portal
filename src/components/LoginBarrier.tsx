@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { validatePasswordStrength, APPROVED_CODES, ADMIN_CODES } from '@/lib/supabase-auth';
-import { goldTextStyle } from '@/lib/brand-styles';
+import { goldTextStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 // Gold theme matching Sidebar
 const THEME_COLOR = '#D4AF37';
@@ -128,9 +128,9 @@ export default function LoginBarrier() {
     left: 0,
     width: '100%',
     height: '100%',
-    background: 'rgba(26, 54, 93, 0.4)',
-    backdropFilter: 'blur(3px) saturate(140%)',
-    WebkitBackdropFilter: 'blur(3px) saturate(140%)',
+    background: uiBackground,
+    backdropFilter: uiBackdropFilter,
+    WebkitBackdropFilter: uiBackdropFilterWebkit,
     zIndex: 9999,
     display: 'flex',
     justifyContent: 'center',

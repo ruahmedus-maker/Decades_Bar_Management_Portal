@@ -3,7 +3,7 @@
 import { useApp } from '@/contexts/AppContext';
 import { NAV_ITEMS } from '@/lib/constants';
 import { ENABLE_TESTS } from '@/lib/test-utils';
-import { goldTextStyle, brandFont, navLinkTextStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, navLinkTextStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 // Create a type for the valid section IDs for better type safety
 type SectionId = typeof NAV_ITEMS[number]['id'];
@@ -47,9 +47,9 @@ export default function Sidebar() {
     zIndex: 100,
     overflowY: 'auto' as const,
     padding: '25px 20px',
-    background: 'rgba(255, 255, 255, 0.12)',
-    backdropFilter: 'blur(12px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+    background: uiBackground,
+    backdropFilter: uiBackdropFilter,
+    WebkitBackdropFilter: uiBackdropFilterWebkit,
     border: '1px solid rgba(255, 255, 255, 0.25)',
     boxShadow: `
       0 20px 40px rgba(0, 0, 0, 0.3),
