@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 // Define the section color for glassware guide
 const SECTION_COLOR = '#4299E1'; // Blue color for glassware
@@ -28,9 +28,9 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         borderRadius: '16px',
         margin: '15px 0',
         boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0) scale(1)',
@@ -45,7 +45,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={cardHeaderStyle}>
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
             {title}
           </h4>
         </div>
@@ -257,9 +257,9 @@ export default function GlasswareGuideSection() {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
         animation: 'fadeIn 0.5s ease'
@@ -278,7 +278,7 @@ export default function GlasswareGuideSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={sectionHeaderStyle}>
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
             Glassware Guide
           </h3>
           <p style={{

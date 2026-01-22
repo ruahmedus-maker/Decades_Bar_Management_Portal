@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { sectionHeaderStyle, cardHeaderStyle, goldTextStyle, brandFont, goldSectionHeaderStyle, goldCardHeaderStyle } from '@/lib/brand-styles';
+import { sectionHeaderStyle, cardHeaderStyle, goldTextStyle, brandFont, goldSectionHeaderStyle, goldCardHeaderStyle, uiBackground, premiumWhiteStyle } from '@/lib/brand-styles';
 import GoldHeading from '../ui/GoldHeading';
 import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
@@ -55,7 +55,7 @@ function AdminCard({ title, value, icon, color, onClick }: any) {
   return (
     <div
       style={{
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: uiBackground,
         borderRadius: '12px',
         padding: '20px',
         border: `1px solid rgba(255, 255, 255, 0.15)`,
@@ -75,11 +75,13 @@ function AdminCard({ title, value, icon, color, onClick }: any) {
             {title}
           </p>
           <h3 style={{
-            ...goldTextStyle,
+            ...premiumWhiteStyle,
             fontFamily: brandFont,
             margin: 0,
             fontSize: '1.8rem',
-            fontWeight: 'bold'
+            fontWeight: 200,
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
           }}>
             {value}
           </h3>
@@ -149,7 +151,7 @@ function TeamManagementContent({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: uiBackground,
         borderRadius: '16px',
         padding: '25px',
         border: '1px solid rgba(255, 255, 255, 0.15)',

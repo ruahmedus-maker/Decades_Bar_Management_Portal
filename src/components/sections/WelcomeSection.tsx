@@ -5,8 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 
 function DecadesIntroduction() {
@@ -62,9 +61,10 @@ function DecadesIntroduction() {
             fontWeight: 150,
             letterSpacing: '4px',
             margin: 0,
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            ...premiumWhiteStyle
           }}>
-            <GoldHeading text="🎵 Welcome to Decades 🎵" />
+            🎵 Welcome to Decades 🎵
           </h1>
           <p style={{
             color: 'rgba(255, 255, 255, 0.9)',
@@ -117,9 +117,9 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
         boxShadow: isHovered
           ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px) saturate(160%)',
+        background: uiBackground,
+        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilter,
+        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilterWebkit,
         border: isHovered
           ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
@@ -155,8 +155,8 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text={title} />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -344,8 +344,8 @@ export default function WelcomeSection() {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h3 style={sectionHeaderStyle}>
-          <GoldHeading text="Welcome to Your Training Hub" />
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
+          Welcome to Your Training Hub
         </h3>
         <span style={{
           background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
@@ -419,8 +419,8 @@ export default function WelcomeSection() {
               borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
               backdropFilter: 'blur(8px)'
             }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="🎯 Your First Week at Decades" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                🎯 Your First Week at Decades
               </h4>
             </div>
             <div style={{ padding: '20px' }}>

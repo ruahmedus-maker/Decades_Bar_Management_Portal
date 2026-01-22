@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 // Define the section color for Aloha POS - Green theme
 const SECTION_COLOR = '#38A169'; // Green color for POS
@@ -103,7 +103,7 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
         borderRadius: '12px',
         margin: '15px 0',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: uiBackground,
         border: '1px solid rgba(255, 255, 255, 0.15)',
         overflow: 'hidden',
         position: 'relative'
@@ -395,7 +395,7 @@ export default function AlohaPosSection() {
         marginBottom: '25px',
         borderRadius: '16px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: uiBackground,
         border: '1px solid rgba(255, 255, 255, 0.15)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
       }}

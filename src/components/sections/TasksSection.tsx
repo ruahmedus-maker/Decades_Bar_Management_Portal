@@ -5,7 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { Task, User } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getAllUsers } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 export default function TasksSection() {
   const { showToast, currentUser, isAdmin } = useApp();
@@ -224,7 +224,7 @@ export default function TasksSection() {
         color: 'white'
       }}>
         <div>⏳</div>
-        <h3 style={sectionHeaderStyle}>Loading Tasks...</h3>
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Loading Tasks...</h3>
         <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
           Connecting to database...
         </p>
@@ -265,7 +265,9 @@ export default function TasksSection() {
   return (
     <div style={{
       marginBottom: '30px',
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: uiBackground,
+      backdropFilter: uiBackdropFilter,
+      WebkitBackdropFilter: uiBackdropFilterWebkit,
       border: '1px solid rgba(255, 255, 255, 0.2)',
       borderRadius: '20px',
       overflow: 'hidden'
@@ -276,7 +278,7 @@ export default function TasksSection() {
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
-        <h3 style={sectionHeaderStyle}>Tasks Management</h3>
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Tasks Management</h3>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: '5px 0 0 0' }}>
           {isAdmin ? 'Manage and track all tasks' : 'Your assigned tasks'}
         </p>
@@ -293,7 +295,7 @@ export default function TasksSection() {
             marginBottom: '20px',
             border: '1px solid rgba(255, 255, 255, 0.15)'
           }}>
-            <h4 style={cardHeaderStyle}>Create New Task</h4>
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Create New Task</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <input
                 type="text"
@@ -431,7 +433,7 @@ export default function TasksSection() {
 
         <div style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={cardHeaderStyle}>
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
               Task List ({tasks.length} tasks)
             </h4>
             <div style={{ display: 'flex', gap: '10px' }}>

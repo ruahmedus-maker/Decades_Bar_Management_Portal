@@ -12,8 +12,8 @@ type SectionId = typeof NAV_ITEMS[number]['id'];
 const ADMIN_SECTIONS: SectionId[] = ['admin-panel', 'employee-counselings', 'performance-report'];
 
 // Gold/Bronze color scheme
-const SIDEBAR_COLOR = '#D4AF37'; // Metallic Gold (Matches generic gold icons better)
-const SIDEBAR_COLOR_RGB = '212, 175, 55';
+const SIDEBAR_COLOR = '#FFFFFF'; // Clean White
+const SIDEBAR_COLOR_RGB = '255, 255, 255';
 
 
 export default function Sidebar() {
@@ -78,21 +78,21 @@ export default function Sidebar() {
   // Cinematic Gold Text Effect (Matching Header) - Removed local definition, using import
 
   const logoTitleStyle = {
-    ...goldTextStyle,
+    color: '#FFFFFF',
     fontSize: '2.2rem',
-    fontFamily: 'var(--font-outfit), sans-serif',
-    fontWeight: 200, // Matching the thin geometric logo
+    fontFamily: brandFont,
+    fontWeight: 100, // Extra thin geometric look
     marginBottom: '5px',
     textTransform: 'uppercase' as const,
-    letterSpacing: '4px',
+    letterSpacing: '6px', // Extra wide
+    filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.3))',
   };
 
   const logoSubtitleStyle = {
-    ...goldTextStyle,
+    color: 'rgba(255, 255, 255, 0.7)',
     fontSize: '0.8rem',
-    fontFamily: 'var(--font-outfit), sans-serif',
-    fontWeight: 400,
-    opacity: 0.9,
+    fontFamily: brandFont,
+    fontWeight: 300,
     letterSpacing: '4px',
     textTransform: 'uppercase' as const,
   };
@@ -117,19 +117,19 @@ export default function Sidebar() {
   };
 
   const navLinkHoverStyle = {
-    background: 'rgba(255, 255, 255, 0.15)',
-    transform: 'translateX(8px) translateY(-2px)',
-    color: SIDEBAR_COLOR,
+    background: 'rgba(255, 255, 255, 0.1)',
+    transform: 'translateX(8px)',
+    color: '#FFFFFF',
     boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
-    borderColor: `rgba(${SIDEBAR_COLOR_RGB}, 0.3)`,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   };
 
   const navLinkActiveStyle = {
-    background: `rgba(${SIDEBAR_COLOR_RGB}, 0.2)`,
-    border: `1px solid rgba(${SIDEBAR_COLOR_RGB}, 0.4)`,
-    borderLeft: `4px solid ${SIDEBAR_COLOR}`,
+    background: 'rgba(255, 255, 255, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.4)',
+    borderLeft: '4px solid #FFFFFF',
     transform: 'translateX(5px)',
-    boxShadow: `0 8px 20px rgba(${SIDEBAR_COLOR_RGB}, 0.2)`,
+    boxShadow: '0 8px 20px rgba(255, 255, 255, 0.1)',
   };
 
   const iconStyle = {

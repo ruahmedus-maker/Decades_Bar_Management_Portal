@@ -2,7 +2,7 @@
 
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 import GoldHeading from '../ui/GoldHeading';
 import { useState, useEffect, useRef } from 'react';
 import { CardProps } from '@/types';
@@ -19,8 +19,9 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         borderRadius: '12px',
         margin: '12px 0',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.08)',
-        // REMOVED: backdrop-filter entirely
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.15)',
         overflow: 'hidden',
         position: 'relative'
@@ -32,8 +33,8 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           padding: '16px 20px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text={title} />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            {title}
           </h4>
         </div>
         <div style={{ padding: '16px 20px' }}>
@@ -381,8 +382,9 @@ export default function BarCleaningsSection() {
         marginBottom: '25px',
         borderRadius: '16px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.08)',
-        // REMOVED: backdrop-filter
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.15)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
       }}
@@ -400,8 +402,8 @@ export default function BarCleaningsSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={sectionHeaderStyle}>
-            <GoldHeading text="Bar Cleaning Schedule" />
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
+            Bar Cleaning Schedule
           </h3>
           <p style={{
             margin: 0,

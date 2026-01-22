@@ -4,8 +4,7 @@ import { supabase } from '@/lib/supabase';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { ChecklistItem } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 // Define the new color theme - Soft Coral Purple
 const SECTION_COLOR = '#D4A5A5'; // Soft coral
@@ -414,9 +413,14 @@ export default function StandardOperatingProceduresSection() {
 
   // Main container style
   const mainContainerStyle = {
-    ...glassStyle,
+    background: uiBackground,
+    backdropFilter: uiBackdropFilter,
+    WebkitBackdropFilter: uiBackdropFilterWebkit,
+    borderRadius: '20px',
     marginBottom: '25px',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.22)',
+    overflow: 'hidden' as const,
   };
 
   const headerStyle = {
@@ -490,8 +494,8 @@ export default function StandardOperatingProceduresSection() {
       <div style={headerStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div>
-            <h3 style={sectionHeaderStyle}>
-              <GoldHeading text="Standard Operating Procedures" />
+            <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
+              Standard Operating Procedures
             </h3>
             <p style={{
               margin: 0,
@@ -733,8 +737,8 @@ export default function StandardOperatingProceduresSection() {
           padding: '14px 20px',
           borderBottom: `1px solid rgba(${ACCENT_COLOR_RGB}, 0.3)`,
         }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text="⚠️ Bank & Cash Handling Notice" />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            ⚠️ Bank & Cash Handling Notice
           </h4>
         </div>
         <div style={{
@@ -771,7 +775,7 @@ export default function StandardOperatingProceduresSection() {
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <h4 style={cardHeaderStyle}>{getCategoryName(activeCategory)}</h4>
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>{getCategoryName(activeCategory)}</h4>
             <span style={{
               background: `linear-gradient(135deg, ${ACCENT_COLOR}, #8E7CB0)`,
               color: 'white',
@@ -836,8 +840,8 @@ export default function StandardOperatingProceduresSection() {
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text="💰 Bank Quick Reference" />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            💰 Bank Quick Reference
           </h4>
         </div>
         <div style={{ padding: '16px' }}>

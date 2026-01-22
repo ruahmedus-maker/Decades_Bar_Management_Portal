@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 import { supabase } from '@/lib/supabase';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -149,11 +149,28 @@ export default function KeyPerformanceIndicatorsSection() {
     };
 
     return (
-        <div className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-xl">
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/20">
+        <div
+            style={{
+                background: uiBackground,
+                backdropFilter: uiBackdropFilter,
+                WebkitBackdropFilter: uiBackdropFilterWebkit,
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+            }}
+        >
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '32px',
+                paddingBottom: '16px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
                 <div>
-                    <h3 style={sectionHeaderStyle}>Key Performance Indicators</h3>
-                    <p className="text-white/70">Performance data for {selectedMonth}</p>
+                    <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Key Performance Indicators</h3>
+                    <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0 }}>Performance data for {selectedMonth}</p>
                 </div>
                 <div className="flex gap-4">
                     <input
@@ -179,22 +196,22 @@ export default function KeyPerformanceIndicatorsSection() {
                 <>
                     {/* Top Performers Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h4 style={cardHeaderStyle}>Top Sales</h4>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Top Sales</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? data[0].employee_name : 'N/A'}
                             </p>
                             <span className="text-teal-400 font-mono">${data.length > 0 ? data[0].sales.toLocaleString() : 0}</span>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h4 style={cardHeaderStyle}>Highest Check Avg</h4>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Highest Check Avg</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? [...data].sort((a, b) => b.check_average - a.check_average)[0].employee_name : 'N/A'}
                             </p>
                             <span className="text-green-400 font-mono">${data.length > 0 ? [...data].sort((a, b) => b.check_average - a.check_average)[0].check_average.toFixed(2) : 0}</span>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h4 style={cardHeaderStyle}>Most Punctual</h4>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Most Punctual</h4>
                             <p className="text-3xl font-bold text-white">
                                 {data.length > 0 ? [...data].sort((a, b) => b.punctuality_score - a.punctuality_score)[0].employee_name : 'N/A'}
                             </p>
@@ -204,8 +221,8 @@ export default function KeyPerformanceIndicatorsSection() {
 
                     {/* Charts Row */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 h-[300px]">
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 style={cardHeaderStyle}>Sales Distribution</h4>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Sales Distribution</h4>
                             <ResponsiveContainer width="100%" height="90%">
                                 <PieChart>
                                     <Pie
@@ -229,8 +246,8 @@ export default function KeyPerformanceIndicatorsSection() {
                             </ResponsiveContainer>
                         </div>
 
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 style={cardHeaderStyle}>Check Average Comparison</h4>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Check Average Comparison</h4>
                             <ResponsiveContainer width="100%" height="90%">
                                 <BarChart data={data}>
                                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
@@ -247,7 +264,7 @@ export default function KeyPerformanceIndicatorsSection() {
                     </div>
 
                     {/* Ranking Table */}
-                    <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                    <div style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
                         <table className="w-full text-left text-white">
                             <thead className="bg-black/20 text-white/60">
                                 <tr>
@@ -296,7 +313,7 @@ export default function KeyPerformanceIndicatorsSection() {
             {showImportModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-gray-900 border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-                        <h3 style={cardHeaderStyle}>Import Aloha Data</h3>
+                        <h3 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Import Aloha Data</h3>
                         <p className="text-white/70 mb-6 text-sm">
                             Upload a CSV file with columns: <br />
                             <code>Name, Sales, Checks, Hours, Late_Count</code>

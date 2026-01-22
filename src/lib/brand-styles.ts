@@ -17,16 +17,22 @@ export const solidGoldStyle = {
     filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.5))',
 };
 
+// Premium White Style (Aloha POS Style)
+export const premiumWhiteStyle = {
+    color: '#FFFFFF',
+    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.3))',
+};
+
 // Branding Font Utility
 export const brandFont = 'var(--font-outfit), sans-serif';
 
 // Style for Sidebar Navigation Links
 export const navLinkTextStyle = {
-    ...solidGoldStyle,
+    ...premiumWhiteStyle,
     fontFamily: brandFont,
-    fontWeight: 500, // Increased weight for better legibility
+    fontWeight: 300, // Slightly heavier than header for better legibility in nav
     textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
+    letterSpacing: '2px', // Wide spacing
     fontSize: '0.85rem',
 };
 

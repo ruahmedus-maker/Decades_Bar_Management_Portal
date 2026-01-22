@@ -5,8 +5,7 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
 
@@ -17,9 +16,9 @@ const CORAL_COLOR_DARK = '#E57373';
 
 // Style objects
 const sectionStyle = {
-  background: 'rgba(255, 255, 255, 0.12)',
-  backdropFilter: 'blur(20px) saturate(180%)',
-  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+  background: uiBackground,
+  backdropFilter: uiBackdropFilter,
+  WebkitBackdropFilter: uiBackdropFilterWebkit,
   border: '1px solid rgba(255, 255, 255, 0.25)',
   borderRadius: '20px',
   padding: '30px',
@@ -28,9 +27,9 @@ const sectionStyle = {
 };
 
 const cardStyle = {
-  background: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(15px) saturate(170%)',
-  WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+  background: uiBackground,
+  backdropFilter: uiBackdropFilter,
+  WebkitBackdropFilter: uiBackdropFilterWebkit,
   border: '1px solid rgba(255, 255, 255, 0.2)',
   borderRadius: '16px',
   marginBottom: '25px',
@@ -221,8 +220,8 @@ export default function TestsSection() {
         paddingBottom: '15px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
       }}>
-        <h3 style={sectionHeaderStyle}>
-          <GoldHeading text="Training Tests & Assessments" />
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
+          Training Tests & Assessments
         </h3>
         <span style={{
           background: `linear-gradient(135deg, ${CORAL_COLOR}, ${CORAL_COLOR_DARK})`,
@@ -238,8 +237,8 @@ export default function TestsSection() {
       {!activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>
-              <GoldHeading text="📝 Available Tests" />
+            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
+              📝 Available Tests
             </h4>
           </div>
           <div style={cardBodyStyle}>
@@ -276,8 +275,8 @@ export default function TestsSection() {
       {activeTest && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>
-              <GoldHeading text={`🧪 ${activeTest.name}`} />
+            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
+              🧪 {activeTest.name}
             </h4>
           </div>
           <div style={cardBodyStyle}>
@@ -350,8 +349,8 @@ export default function TestsSection() {
       {testResults.length > 0 && (
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <h4 style={brandCardHeaderStyle}>
-              <GoldHeading text="📈 Test History" />
+            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
+              📈 Test History
             </h4>
           </div>
           <div style={cardBodyStyle}>

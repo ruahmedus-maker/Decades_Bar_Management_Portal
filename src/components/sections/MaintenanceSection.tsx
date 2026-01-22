@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 import { MaintenanceTicket, CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
@@ -20,9 +20,9 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         borderRadius: '16px',
         margin: '15px 0',
         boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
         position: 'relative'
@@ -35,7 +35,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={cardHeaderStyle}>
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
             {title}
           </h4>
           {description && (
@@ -324,9 +324,9 @@ export default function MaintenanceSection() {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(15px) saturate(170%)',
-        WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
         animation: 'fadeIn 0.5s ease'
@@ -345,7 +345,7 @@ export default function MaintenanceSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={sectionHeaderStyle}>
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
             Maintenance Request
           </h3>
           <p style={{

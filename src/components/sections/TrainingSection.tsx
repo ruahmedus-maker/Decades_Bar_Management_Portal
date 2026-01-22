@@ -4,8 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
 
 // Card Component without Hover Effects
 function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: CardProps) {
@@ -15,9 +14,9 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
         borderRadius: '16px',
         margin: '15px 0',
         boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(12px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(160%)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
         transition: 'none', // Removed cubic-bezier - caused browser crashes
         transform: 'translateY(0) scale(1)',
@@ -32,8 +31,8 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
           borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text={title} />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
@@ -121,12 +120,12 @@ export default function TrainingMaterials() {
   }, [currentUser]);
   return (
     <div style={{
-      marginBottom: '30px',
+      margin: '0 0 30px 0',
       borderRadius: '20px',
       overflow: 'hidden',
-      background: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(15px) saturate(170%)',
-      WebkitBackdropFilter: 'blur(15px) saturate(170%)',
+      background: uiBackground,
+      backdropFilter: uiBackdropFilter,
+      WebkitBackdropFilter: uiBackdropFilterWebkit,
       border: '1px solid rgba(255, 255, 255, 0.22)',
       boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       animation: 'fadeIn 0.5s ease'
@@ -142,8 +141,8 @@ export default function TrainingMaterials() {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h3 style={sectionHeaderStyle}>
-          <GoldHeading text="Training Materials" />
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
+          Training Materials
         </h3>
         <span style={{
           background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
