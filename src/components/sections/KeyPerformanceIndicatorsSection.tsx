@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 import { supabase } from '@/lib/supabase';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -170,7 +170,7 @@ export default function KeyPerformanceIndicatorsSection() {
             }}>
                 <div>
                     <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Key Performance Indicators</h3>
-                    <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0 }}>Performance data for {selectedMonth}</p>
+                    <p style={{ ...premiumBodyStyle, margin: 0 }}>Performance data for {selectedMonth}</p>
                 </div>
                 <div className="flex gap-4">
                     <input
@@ -191,7 +191,7 @@ export default function KeyPerformanceIndicatorsSection() {
             </div>
 
             {loading ? (
-                <div className="text-white text-center py-20">Loading KPI Data...</div>
+                <div style={{ ...premiumBodyStyle, textAlign: 'center', padding: '80px 0' }}>Loading KPI Data...</div>
             ) : (
                 <>
                     {/* Top Performers Cards */}
@@ -297,9 +297,9 @@ export default function KeyPerformanceIndicatorsSection() {
                                 ))}
                                 {data.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="p-8 text-center text-white/40">
+                                        <td colSpan={6} className="p-8 text-center" style={{ ...premiumBodyStyle, opacity: 0.5 }}>
                                             No data found for this month.
-                                            {currentUser?.position === 'Admin' && <span onClick={() => setShowImportModal(true)} className="text-teal-400 cursor-pointer hover:underline ml-1">Import Data?</span>}
+                                            {currentUser?.position === 'Admin' && <span onClick={() => setShowImportModal(true)} style={{ color: '#2DD4BF', cursor: 'pointer', marginLeft: '4px' }}>Import Data?</span>}
                                         </td>
                                     </tr>
                                 )}
@@ -314,7 +314,7 @@ export default function KeyPerformanceIndicatorsSection() {
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-gray-900 border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl">
                         <h3 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>Import Aloha Data</h3>
-                        <p className="text-white/70 mb-6 text-sm">
+                        <p style={{ ...premiumBodyStyle, marginBottom: '24px', fontSize: '0.85rem' }}>
                             Upload a CSV file with columns: <br />
                             <code>Name, Sales, Checks, Hours, Late_Count</code>
                         </p>

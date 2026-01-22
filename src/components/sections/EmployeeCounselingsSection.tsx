@@ -5,7 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { CardProps } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getAllUsers } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for employee counseling - teal blue theme
 const SECTION_COLOR = '#0D9488'; // Teal color for counseling
@@ -66,8 +66,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {description && (
             <p style={{
               margin: '8px 0 0 0',
-              opacity: 0.9,
-              color: 'rgba(255, 255, 255, 0.9)',
+              ...premiumBodyStyle,
               fontSize: '0.9rem'
             }}>
               {description}
@@ -143,10 +142,9 @@ function CounselingRecordItem({ record, onExport, onAcknowledge, index }: any) {
         </h5>
 
         <p style={{
-          color: 'rgba(255, 255, 255, 0.7)',
+          ...premiumBodyStyle,
           margin: '0 0 12px 0',
-          fontSize: '0.9rem',
-          lineHeight: 1.5
+          fontSize: '0.9rem'
         }}>
           {record.description.substring(0, 120)}...
         </p>
@@ -552,7 +550,7 @@ export default function EmployeeCounselingSection() {
             Admin Only
           </span>
         </div>
-        <div style={{ padding: '25px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.8)' }}>
+        <div style={{ padding: '25px', textAlign: 'center', ...premiumBodyStyle }}>
           <p>Access to this section is restricted to management only.</p>
         </div>
       </div>
@@ -579,7 +577,7 @@ export default function EmployeeCounselingSection() {
       >
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
         <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Loading Counseling Records...</h3>
-        <p>Connecting to cloud database</p>
+        <p style={premiumBodyStyle}>Connecting to cloud database</p>
       </div>
     );
   }
@@ -619,8 +617,7 @@ export default function EmployeeCounselingSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>

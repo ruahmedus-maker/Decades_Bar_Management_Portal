@@ -7,7 +7,7 @@ import { SpecialEvent, Task } from '@/types';
 import { CardProps } from '@/types';
 import { supabaseSpecialEvents } from '@/lib/supabase-special-events';
 import { supabase } from '@/lib/supabase';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for special events
 const SECTION_COLOR = '#ED8936'; // Orange color for special events
@@ -46,10 +46,10 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -123,7 +123,7 @@ function EventCard({
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-          <h4 style={cardHeaderStyle}>
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
             {event.name}
           </h4>
           <span style={{
@@ -140,10 +140,10 @@ function EventCard({
         </div>
 
         <div style={{ marginBottom: '15px' }}>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: '5px 0' }}>
+          <p style={{ ...premiumBodyStyle, margin: '5px 0' }}>
             <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
           </p>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: '5px 0' }}>
+          <p style={{ ...premiumBodyStyle, margin: '5px 0' }}>
             <strong>Theme:</strong> {event.theme || 'No theme specified'}
           </p>
 
@@ -156,7 +156,7 @@ function EventCard({
                 borderRadius: '6px',
                 marginTop: '5px',
                 whiteSpace: 'pre-wrap',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 {event.drinkSpecials}
               </div>
@@ -172,7 +172,7 @@ function EventCard({
                 borderRadius: '6px',
                 marginTop: '5px',
                 whiteSpace: 'pre-wrap',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 {event.notes}
               </div>
@@ -203,7 +203,7 @@ function EventCard({
                           />
                           <strong style={{
                             textDecoration: task.completed ? 'line-through' : 'none',
-                            color: 'rgba(255, 255, 255, 0.9)'
+                            ...premiumBodyStyle
                           }}>
                             {task.title}
                           </strong>
@@ -218,11 +218,11 @@ function EventCard({
                           </span>
                         </div>
                         {task.description && (
-                          <p style={{ margin: '5px 0', fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                          <p style={{ margin: '5px 0', fontSize: '0.9rem', ...premiumBodyStyle, opacity: 0.7 }}>
                             {task.description}
                           </p>
                         )}
-                        <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                        <div style={{ fontSize: '0.8rem', ...premiumBodyStyle, opacity: 0.6 }}>
                           <span>Assigned to: {task.assignedTo}</span>
                           {task.dueDate && (
                             <span> • Due: {new Date(task.dueDate).toLocaleDateString()}</span>
@@ -511,7 +511,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
       >
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
         <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Loading Special Events...</h3>
-        <p>Connecting to cloud database</p>
+        <p style={premiumBodyStyle}>Connecting to cloud database</p>
       </div>
     );
   }
@@ -549,8 +549,7 @@ export default function SpecialEventsSection({ isAdminView = false }: SpecialEve
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for uniform guide
 const SECTION_COLOR = '#9F7AEA'; // Purple color for uniforms
@@ -52,10 +52,10 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -124,9 +124,8 @@ function UniformCard({ title, items, index }: any) {
           <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
             {items.map((item: string, idx: number) => (
               <li key={idx} style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 marginBottom: '8px',
-                lineHeight: 1.4,
                 fontSize: '0.9rem'
               }}>
                 {item}
@@ -233,8 +232,7 @@ export default function UniformGuideSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>

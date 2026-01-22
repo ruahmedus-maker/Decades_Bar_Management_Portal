@@ -20,7 +20,19 @@ export const solidGoldStyle = {
 // Premium White Style (Aloha POS Style)
 export const premiumWhiteStyle = {
     color: '#FFFFFF',
+    fontWeight: 200,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '4px',
     filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.3))',
+};
+
+// Premium Body Style (Aloha Content Style)
+export const premiumBodyStyle = {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontFamily: 'var(--font-outfit), sans-serif',
+    fontWeight: 300,
+    lineHeight: '1.6',
+    letterSpacing: '0.5px',
 };
 
 // Branding Font Utility
@@ -38,20 +50,19 @@ export const navLinkTextStyle = {
 
 // Base Style for Section Headers (Structure only)
 export const sectionHeaderStyle = {
+    ...premiumWhiteStyle,
     fontFamily: brandFont,
-    fontWeight: 200,
-    textTransform: 'uppercase' as const,
-    letterSpacing: '4px',
     fontSize: '1.4rem',
     margin: 0,
 };
 
 // Premium Card Title Style (Structure only)
 export const cardHeaderStyle = {
+    ...premiumWhiteStyle,
     fontFamily: brandFont,
     fontWeight: 400,
-    fontSize: '1.2rem',
-    letterSpacing: '1px',
+    fontSize: '1.1rem',
+    letterSpacing: '2px',
     margin: 0,
 };
 

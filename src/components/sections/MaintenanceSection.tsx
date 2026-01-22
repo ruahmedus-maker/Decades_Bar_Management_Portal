@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 import { MaintenanceTicket, CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for maintenance - deep blue theme
 const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
@@ -41,8 +41,7 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
           {description && (
             <p style={{
               margin: '8px 0 0 0',
-              opacity: 0.9,
-              color: 'rgba(255, 255, 255, 0.9)',
+              ...premiumBodyStyle,
               fontSize: '0.9rem'
             }}>
               {description}
@@ -112,10 +111,9 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
             </span>
           </div>
           <p style={{
-            color: 'rgba(255, 255, 255, 0.7)',
+            ...premiumBodyStyle,
             margin: 0,
-            fontSize: '0.9rem',
-            lineHeight: 1.5
+            fontSize: '0.9rem'
           }}>
             {description}
           </p>
@@ -350,8 +348,7 @@ export default function MaintenanceSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>
@@ -507,7 +504,8 @@ export default function MaintenanceSection() {
                 marginBottom: '15px',
                 fontSize: '0.9rem',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                ...premiumBodyStyle
               }}>
                 <strong style={{ color: SECTION_COLOR }}>Reported by:</strong> {currentUser.name} ({currentUser.email})
               </div>
@@ -545,7 +543,7 @@ export default function MaintenanceSection() {
           index={1}
         >
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
+            <div style={{ textAlign: 'center', padding: '20px', ...premiumBodyStyle, opacity: 0.7 }}>
               Loading recent tickets...
             </div>
           ) : (
@@ -570,7 +568,8 @@ export default function MaintenanceSection() {
                 <div style={{
                   textAlign: 'center',
                   padding: '20px',
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  ...premiumBodyStyle,
+                  opacity: 0.7,
                   gridColumn: '1 / -1'
                 }}>
                   No maintenance tickets found. Create one above!
@@ -601,7 +600,7 @@ export default function MaintenanceSection() {
               <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
                 🛠️ Equipment Repairs
               </h5>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.8rem' }}>
+              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
                 Ice machines, POS systems, audio equipment, etc.
               </p>
             </div>
@@ -616,7 +615,7 @@ export default function MaintenanceSection() {
               <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
                 🏢 Facility Issues
               </h5>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.8rem' }}>
+              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
                 Leaks, lighting, temperature control, structural issues
               </p>
             </div>
@@ -631,7 +630,7 @@ export default function MaintenanceSection() {
               <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
                 🪑 Furniture & Fixtures
               </h5>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.8rem' }}>
+              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
                 Broken chairs, tables, bar fixtures, decor issues
               </p>
             </div>
@@ -646,7 +645,7 @@ export default function MaintenanceSection() {
               <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
                 🚨 Safety Concerns
               </h5>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '0.8rem' }}>
+              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
                 Slippery floors, electrical hazards, emergency equipment
               </p>
             </div>

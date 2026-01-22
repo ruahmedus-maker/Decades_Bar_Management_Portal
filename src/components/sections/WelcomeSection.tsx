@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 
 function DecadesIntroduction() {
@@ -57,20 +57,15 @@ function DecadesIntroduction() {
           <h1 style={{
             fontFamily: 'var(--font-outfit), sans-serif',
             fontSize: '2.2rem',
-            marginBottom: '10px',
-            fontWeight: 150,
-            letterSpacing: '4px',
             margin: 0,
-            textTransform: 'uppercase',
             ...premiumWhiteStyle
           }}>
             🎵 Welcome to Decades 🎵
           </h1>
           <p style={{
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '1.3rem',
-            fontWeight: 500,
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+            fontWeight: 500
           }}>
             Where Every Floor is a Different Era
           </p>
@@ -79,9 +74,7 @@ function DecadesIntroduction() {
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <p style={{
             fontSize: '1.1rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: '1.6',
-            textShadow: '0 1px 1px rgba(0, 0, 0, 0.1)'
+            ...premiumBodyStyle
           }}>
             Your journey to becoming an exceptional Decades bartender starts here.
             This comprehensive training portal will guide you through everything you need to know
@@ -160,10 +153,10 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+          <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
           <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
             {items.map((item: string, i: number) => (
-              <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+              <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
             ))}
           </ul>
         </div>
@@ -177,8 +170,8 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           alignItems: 'center',
           borderTop: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
-          <span>{footer.left}</span>
-          <span>{footer.right}</span>
+          <span style={premiumBodyStyle}>{footer.left}</span>
+          <span style={premiumBodyStyle}>{footer.right}</span>
         </div>
       </div>
     </div>
@@ -244,9 +237,8 @@ function WeekDay({ icon, day, title, desc, index }: any) {
           {day}
         </h5>
         <p style={{
-          color: 'rgba(255, 255, 255, 0.9)',
-          margin: 0,
-          lineHeight: '1.5'
+          ...premiumBodyStyle,
+          margin: 0
         }}>
           <strong>{title}</strong><br />{desc}
         </p>
@@ -336,9 +328,9 @@ export default function WelcomeSection() {
 
       {/* Section Header */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.4)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -348,13 +340,13 @@ export default function WelcomeSection() {
           Welcome to Your Training Hub
         </h3>
         <span style={{
-          background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
           color: 'white',
           padding: '6px 12px',
           borderRadius: '20px',
           fontSize: '0.8rem',
           fontWeight: 'bold',
-          boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
         }}>
           New
         </span>
@@ -365,9 +357,8 @@ export default function WelcomeSection() {
 
         <p style={{
           fontSize: '1.1rem',
-          lineHeight: '1.6',
-          marginBottom: '25px',
-          color: 'rgba(255, 255, 255, 0.9)'
+          ...premiumBodyStyle,
+          marginBottom: '25px'
         }}>
           Welcome to the Decades Bar Management System, your comprehensive guide to excellence in high-volume nightclub bartending.
           This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.

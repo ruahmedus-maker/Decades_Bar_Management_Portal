@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Card Component without Hover Effects
 function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)' }: CardProps) {
@@ -26,9 +26,9 @@ function AnimatedCard({ title, children, glowColor = 'linear-gradient(45deg, var
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
+          background: 'rgba(255, 255, 255, 0.05)',
           padding: '20px',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
           <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
@@ -133,9 +133,9 @@ export default function TrainingMaterials() {
 
       {/* Section Header */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.15))',
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.4)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -145,13 +145,13 @@ export default function TrainingMaterials() {
           Training Materials
         </h3>
         <span style={{
-          background: 'linear-gradient(135deg, var(--accent), #c19b2a)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
           color: 'white',
           padding: '6px 12px',
           borderRadius: '20px',
           fontSize: '0.8rem',
           fontWeight: 'bold',
-          boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
         }}>
           Updated
         </span>
@@ -164,10 +164,9 @@ export default function TrainingMaterials() {
           glowColor="linear-gradient(45deg, #48bb78, #38a169, transparent)"
         >
           <p style={{
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '1.1rem',
-            marginBottom: '20px',
-            lineHeight: '1.6'
+            marginBottom: '20px'
           }}>
             Welcome to Decades! Follow this structured learning path to master your role as a bartender in our high-volume night club environment.
           </p>
@@ -180,7 +179,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Review this Training Section</li>
                 <li>Study Drink Recipes & Glassware Guide</li>
@@ -192,7 +191,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Shadow experienced bartenders</li>
                 <li>Practice pouring techniques</li>
@@ -204,7 +203,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Solo shifts with support</li>
                 <li>Speed and efficiency training</li>
@@ -229,7 +228,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li><strong>Standard Cocktail Pour:</strong> 1.5oz</li>
                 <li><strong>Straight Shot Pour:</strong> ~1.25oz (just below shot glass rim)</li>
@@ -241,7 +240,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li><strong>Simple Cocktails:</strong> 30-45 seconds</li>
                 <li><strong>Complex Cocktails:</strong> 60-90 seconds</li>
@@ -253,7 +252,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>All drinks measured (no free pouring)</li>
                 <li>Garnishes fresh and consistent</li>
@@ -279,7 +278,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Focus on mainstream cocktails</li>
                 <li>High-volume service training</li>
@@ -291,7 +290,7 @@ export default function TrainingMaterials() {
               <ul style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Premium service techniques</li>
                 <li>Bottle service protocols</li>
@@ -316,13 +315,13 @@ export default function TrainingMaterials() {
             }}>
               🎯 First Shift Focus: Watch & Learn
             </h5>
-            <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>
+            <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>
               <strong>Your primary goal during the first shift is OBSERVATION.</strong> Pay close attention to how experienced bartenders:
             </p>
             <ul style={{
               margin: 0,
               paddingLeft: '20px',
-              color: 'rgba(255, 255, 255, 0.9)',
+              ...premiumBodyStyle,
               marginBottom: '15px'
             }}>
               <li>Handle multiple drink orders simultaneously</li>
@@ -334,7 +333,8 @@ export default function TrainingMaterials() {
             </ul>
             <p style={{
               fontStyle: 'italic',
-              color: 'rgba(255, 255, 255, 0.8)',
+              ...premiumBodyStyle,
+              opacity: 0.8,
               margin: 0
             }}>
               Take mental notes and ask thoughtful questions during slower moments.
@@ -354,7 +354,7 @@ export default function TrainingMaterials() {
             title="🧪 Bartending Fundamentals"
             glowColor="linear-gradient(45deg, #ed8936, #dd6b20, transparent)"
           >
-            <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>
+            <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>
               <strong>Learning Path:</strong> Start with basic techniques before moving to complex cocktails
             </p>
 
@@ -375,7 +375,7 @@ export default function TrainingMaterials() {
               <ol style={{
                 margin: 0,
                 paddingLeft: '20px',
-                color: 'rgba(255, 255, 255, 0.9)'
+                ...premiumBodyStyle
               }}>
                 <li>Master pouring accuracy with water bottles</li>
                 <li>Learn Decades signature drink recipes</li>
@@ -390,42 +390,42 @@ export default function TrainingMaterials() {
               margin: 0
             }}>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Pouring Techniques:</strong> Always use jiggers - 1.5oz standard pour, 1.25oz for straight shots
               </li>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Mixing Methods:</strong> Shake until tin frosts, stir for 30 seconds for spirit-forward drinks
               </li>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Glassware Knowledge:</strong> Refer to Glassware Guide section for proper glass selection
               </li>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Garnishing:</strong> Citrus wheels cut fresh daily, herbs inspected for freshness
               </li>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <strong>Product Knowledge:</strong> Focus on top 20 most used spirits first
               </li>
               <li style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 padding: '8px 0'
               }}>
                 <strong>Speed & Efficiency:</strong> "Two-hand" working - always be doing two things at once

@@ -4,8 +4,7 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { getAllCategories, getCocktails, searchCocktails as searchCocktailsAPI } from '@/lib/supabase-cocktails';
 import type { Cocktail, CocktailCategory } from '@/types/cocktails';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the cocktail section color
 const SECTION_COLOR = '#FF6B6B'; // Coral color for cocktails section
@@ -41,10 +40,10 @@ function AnimatedCard({ title, description, items, footer, index, children }: an
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -125,9 +124,8 @@ function CocktailCard({ name, ingredients, instructions, index }: {
           <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
             {ingredients.map((ingredient, idx) => (
               <li key={idx} style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 marginBottom: '4px',
-                lineHeight: 1.4,
                 fontSize: '0.9rem'
               }}>
                 {ingredient}
@@ -149,9 +147,8 @@ function CocktailCard({ name, ingredients, instructions, index }: {
           <ol style={{ margin: '8px 0', paddingLeft: '20px' }}>
             {instructions.map((instruction, idx) => (
               <li key={idx} style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 marginBottom: '4px',
-                lineHeight: 1.4,
                 fontSize: '0.9rem'
               }}>
                 {instruction}
@@ -275,7 +272,7 @@ function ErrorDisplay({ message, onRetry }: { message: string; onRetry: () => vo
         margin: '0 auto'
       }}>
         <h3 style={sectionHeaderStyle}>⚠️ Error Loading Cocktails</h3>
-        <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '20px' }}>{message}</p>
+        <p style={{ ...premiumBodyStyle, marginBottom: '20px' }}>{message}</p>
         <button
           onClick={onRetry}
           style={{
@@ -612,10 +609,10 @@ export default function CocktailsSection() {
               padding: '40px',
               color: 'rgba(255, 255, 255, 0.7)'
             }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="No cocktails found" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                No cocktails found
               </h4>
-              <p>Try adjusting your search or selecting a different category</p>
+              <p style={premiumBodyStyle}>Try adjusting your search or selecting a different category</p>
             </div>
           )}
         </AnimatedCard>

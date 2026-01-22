@@ -2,8 +2,7 @@
 
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 import { useState, useEffect, useRef } from 'react';
 import { CardProps } from '@/types';
 
@@ -37,18 +36,16 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
             {title}
           </h4>
         </div>
-        <div style={{ padding: '16px 20px' }}>
-          {children || (
-            <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
-              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
-                {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        {children || (
+          <>
+            <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
+            <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
+              {items?.map((item: string, i: number) => (
+                <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px' }}>{item}</li>
+              ))}
+            </ul>
+          </>
+        )}
         {footer && (
           <div style={{
             padding: '12px 20px',
@@ -90,8 +87,7 @@ function ChecklistItem({ children, index }: any) {
         cursor: 'pointer'
       }} />
       <span style={{
-        color: 'rgba(255, 255, 255, 0.9)',
-        lineHeight: 1.4,
+        ...premiumBodyStyle,
         fontSize: '0.9rem',
         flex: 1
       }}>
@@ -139,7 +135,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
 
   return (
     <AnimatedCard title={title} index={0}>
-      <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
+      <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
 
       <div style={{
         position: 'relative',
@@ -503,8 +499,8 @@ export default function BarCleaningsSection() {
             }} onClick={() => changeMonth(-1)}>
               ← Previous
             </button>
-            <h4 style={cardHeaderStyle}>
-              <GoldHeading text={new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} />
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+              {new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h4>
             <button style={{
               background: SECTION_COLOR,

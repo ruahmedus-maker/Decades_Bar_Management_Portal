@@ -2,8 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define unique coral color for comps & voids
 const SECTION_COLOR = '#FF6B6B'; // Bright coral
@@ -49,10 +48,10 @@ function StaticCard({ title, description, items, footer, index, children }: any)
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -189,7 +188,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
                 Customer Situations
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
                 <li><strong>xxxdecxxx</strong> - Customer declined/refused</li>
                 <li><strong>xxxdissxxx</strong> - Customer dissatisfied</li>
                 <li><strong>xxxwaitxxx</strong> - Long wait time compensation</li>
@@ -207,7 +206,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
                 Product Issues
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
                 <li><strong>xxxqualxxx</strong> - Product quality issue</li>
                 <li><strong>xxxspilxxx</strong> - Drink spilled/accident</li>
                 <li><strong>xxxwrongxxx</strong> - Wrong item made/ordered</li>
@@ -225,7 +224,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
                 System & Operational
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
                 <li><strong>xxxvoidxxx</strong> - General void transaction</li>
                 <li><strong>xxxdupxxx</strong> - Duplicate charge</li>
                 <li><strong>xxxerrxxx</strong> - Bartender/System error</li>
@@ -255,7 +254,7 @@ export default function CompsVoidsSection() {
             </h5>
             <p style={{
               margin: 0,
-              color: 'rgba(255, 255, 255, 0.9)',
+              ...premiumBodyStyle,
               fontSize: '0.9rem',
               fontStyle: 'italic'
             }}>
@@ -284,7 +283,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Manager Approval
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>All comps require manager approval</li>
                 <li>Document customer name and reason</li>
                 <li>Use designated comp codes in POS</li>
@@ -301,7 +300,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Valid Reasons
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Customer service recovery</li>
                 <li>VIP guest treatment</li>
                 <li>Product quality issues</li>
@@ -331,7 +330,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Void Requirements
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Manager approval for all voids</li>
                 <li>Document detailed reason</li>
                 <li>Include original transaction ID</li>
@@ -348,7 +347,7 @@ export default function CompsVoidsSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Common Void Scenarios
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Duplicate charges</li>
                 <li>Incorrect items ordered</li>
                 <li>System errors</li>

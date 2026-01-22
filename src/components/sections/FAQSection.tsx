@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for FAQ
 const SECTION_COLOR = '#38B2AC'; // Teal color for FAQ
@@ -53,10 +53,10 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -132,9 +132,8 @@ function FAQItem({ question, answer, index }: any) {
             borderTop: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`
           }}>
             <p style={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              margin: 0,
-              lineHeight: 1.6
+              ...premiumBodyStyle,
+              margin: 0
             }}>
               {answer}
             </p>
@@ -225,8 +224,7 @@ export default function FAQSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>

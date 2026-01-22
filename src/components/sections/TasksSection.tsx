@@ -5,7 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { Task, User } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getAllUsers } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 export default function TasksSection() {
   const { showToast, currentUser, isAdmin } = useApp();
@@ -225,7 +225,7 @@ export default function TasksSection() {
       }}>
         <div>⏳</div>
         <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Loading Tasks...</h3>
-        <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+        <p style={{ ...premiumBodyStyle, fontSize: '0.9rem' }}>
           Connecting to database...
         </p>
       </div>
@@ -279,7 +279,7 @@ export default function TasksSection() {
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
         <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>Tasks Management</h3>
-        <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: '5px 0 0 0' }}>
+        <p style={{ ...premiumBodyStyle, margin: '5px 0 0 0' }}>
           {isAdmin ? 'Manage and track all tasks' : 'Your assigned tasks'}
         </p>
       </div>
@@ -329,7 +329,7 @@ export default function TasksSection() {
 
               {/* User Dropdown */}
               <div>
-                <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
+                <label style={{ ...premiumBodyStyle, fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
                   Assign To *
                 </label>
                 <select
@@ -356,7 +356,7 @@ export default function TasksSection() {
 
               <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
+                  <label style={{ ...premiumBodyStyle, fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
                     Due Date
                   </label>
                   <input
@@ -375,7 +375,7 @@ export default function TasksSection() {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
+                  <label style={{ ...premiumBodyStyle, fontSize: '0.9rem', display: 'block', marginBottom: '5px' }}>
                     Priority
                   </label>
                   <select
@@ -540,7 +540,7 @@ export default function TasksSection() {
                         </span>
                       </div>
                       {task.description && (
-                        <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem', marginBottom: '10px' }}>
+                        <div style={{ ...premiumBodyStyle, fontSize: '0.9rem', marginBottom: '10px' }}>
                           {task.description}
                         </div>
                       )}

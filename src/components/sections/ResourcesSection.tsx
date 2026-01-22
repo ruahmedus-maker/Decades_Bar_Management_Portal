@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for resources
 const SECTION_COLOR = '#8B5CF6'; // Purple color for resources
@@ -95,10 +95,9 @@ function ResourceItem({ title, description, icon, index }: any) {
             {title}
           </h5>
           <p style={{
-            color: 'rgba(255, 255, 255, 0.7)',
+            ...premiumBodyStyle,
             margin: 0,
-            fontSize: '0.9rem',
-            lineHeight: 1.5
+            fontSize: '0.9rem'
           }}>
             {description}
           </p>
@@ -205,8 +204,7 @@ export default function ResourcesSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>

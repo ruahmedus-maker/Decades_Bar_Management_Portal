@@ -10,10 +10,6 @@ import VersionDisplay from '@/components/VersionDisplay';
 import { getBuildInfo } from '@/lib/build-info';
 import { AppProvider } from '@/contexts/AppContext';
 
-const inter = Inter({
-  subsets: ["latin"],
-});
-
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "600", "700"],
@@ -87,12 +83,12 @@ export default function RootLayout({
       </head>
       <AppProvider>
         <body
-          className={inter.className}
+          className={outfit.className}
           style={{
             margin: 0,
             padding: 0,
             minHeight: '100vh',
-            fontFamily: 'system-ui, sans-serif',
+            fontFamily: 'var(--font-outfit), sans-serif',
             background: 'transparent',
             overflowX: 'hidden',
             WebkitTouchCallout: 'none',

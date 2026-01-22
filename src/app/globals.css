@@ -18,7 +18,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 
 html {
@@ -30,7 +30,7 @@ body {
   background: transparent !important;
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-outfit), sans-serif;
   min-height: 100vh;
   color: white;
   overflow-x: hidden;

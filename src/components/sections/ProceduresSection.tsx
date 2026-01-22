@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { ChecklistItem } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the new color theme - Soft Coral Purple
 const SECTION_COLOR = '#D4A5A5'; // Soft coral
@@ -456,7 +456,7 @@ export default function StandardOperatingProceduresSection() {
     border: completed ? '1px solid rgba(56, 161, 105, 0.3)' : '1px solid rgba(255, 255, 255, 0.12)',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: 'rgba(255, 255, 255, 0.9)'
+    ...premiumBodyStyle
   });
 
   if (isLoading) {
@@ -465,13 +465,12 @@ export default function StandardOperatingProceduresSection() {
         <div style={headerStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <div>
-              <h3 style={sectionHeaderStyle}>
+              <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
                 Standard Operating Procedures
               </h3>
               <p style={{
                 margin: 0,
-                opacity: 0.9,
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 fontSize: '0.9rem',
                 marginTop: '4px'
               }}>
@@ -499,8 +498,7 @@ export default function StandardOperatingProceduresSection() {
             </h3>
             <p style={{
               margin: 0,
-              opacity: 0.9,
-              color: 'rgba(255, 255, 255, 0.9)',
+              ...premiumBodyStyle,
               fontSize: '0.9rem',
               marginTop: '4px'
             }}>
@@ -672,14 +670,15 @@ export default function StandardOperatingProceduresSection() {
               ✅
             </div>
             <div>
-              <h4 style={cardHeaderStyle}>
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
                 Ready for Manager Checkout
               </h4>
               <p style={{
                 margin: 0,
-                color: 'rgba(255, 255, 255, 0.9)',
+                ...premiumBodyStyle,
                 fontSize: '0.85rem',
-                marginTop: '4px'
+                marginTop: '4px',
+                opacity: 0.9
               }}>
                 Managers have been notified via email and push notifications.
               </p>
@@ -690,7 +689,8 @@ export default function StandardOperatingProceduresSection() {
             padding: '12px',
             borderRadius: '8px',
             fontSize: '0.8rem',
-            color: 'rgba(255, 255, 255, 0.8)'
+            ...premiumBodyStyle,
+            opacity: 0.8
           }}>
             <strong>Next Steps:</strong> Please wait for a manager to complete your final count and approval.
             You will receive confirmation when checkout is complete.
@@ -707,13 +707,13 @@ export default function StandardOperatingProceduresSection() {
           margin: '16px',
           padding: '16px',
           fontSize: '0.85rem',
-          color: 'rgba(255, 255, 255, 0.9)'
+          ...premiumBodyStyle
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <span style={{ fontSize: '1.2rem' }}>📢</span>
             <strong>Notification System Active</strong>
           </div>
-          <p style={{ margin: 0, lineHeight: 1.4 }}>
+          <p style={{ margin: 0, ...premiumBodyStyle }}>
             When you click "Ready for Checkout", managers will be notified via:
           </p>
           <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>

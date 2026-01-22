@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define the section color for Aloha POS - Green theme
 const SECTION_COLOR = '#38A169'; // Green color for POS
@@ -126,17 +126,17 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
           padding: '16px 20px',
           borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
         }}>
-          <h4 style={cardHeaderStyle}>
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '16px 20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
               <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '6px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -184,8 +184,7 @@ function ChecklistItem({ children, index }: any) {
         accentColor: SECTION_COLOR
       }} />
       <span style={{
-        color: 'rgba(255, 255, 255, 0.9)',
-        lineHeight: 1.4,
+        ...premiumBodyStyle,
         fontSize: '0.9rem',
         flex: 1
       }}>
@@ -233,7 +232,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
 
   return (
     <SimpleCard title={title} index={0}>
-      <p style={{ marginBottom: '12px', color: 'rgba(255, 255, 255, 0.9)' }}>{description}</p>
+      <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
 
       <div style={{
         position: 'relative',
@@ -412,7 +411,7 @@ export default function AlohaPosSection() {
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={sectionHeaderStyle}>
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
             Aloha POS System Guide
           </h3>
           <p style={{
@@ -446,8 +445,7 @@ export default function AlohaPosSection() {
         >
           <p style={{
             margin: 0,
-            color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: 1.5,
+            ...premiumBodyStyle,
             fontSize: '0.95rem'
           }}>
             Welcome to the Aloha POS Video Library. Here you'll find all the training videos
@@ -531,8 +529,7 @@ export default function AlohaPosSection() {
           <ul style={{
             margin: 0,
             paddingLeft: '18px',
-            color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: 1.5
+            ...premiumBodyStyle
           }}>
             <li>Click the fullscreen button for better viewing experience</li>
             <li>Use playback speed controls to watch at your preferred pace</li>

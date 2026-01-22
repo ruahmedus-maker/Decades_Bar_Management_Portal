@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { sectionHeaderStyle, cardHeaderStyle, goldTextStyle, brandFont, goldSectionHeaderStyle, goldCardHeaderStyle, uiBackground, premiumWhiteStyle } from '@/lib/brand-styles';
-import GoldHeading from '../ui/GoldHeading';
+import { sectionHeaderStyle, cardHeaderStyle, brandFont, uiBackground, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 import { User, MaintenanceTicket, Task } from '@/types';
 import SpecialEventsSection from './SpecialEventsSection';
 import TasksSection from './TasksSection';
@@ -156,7 +155,7 @@ function TeamManagementContent({
         padding: '25px',
         border: '1px solid rgba(255, 255, 255, 0.15)',
       }}>
-        <h4 style={cardHeaderStyle}>
+        <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
           👥 Team Management ({teamUsers.length} users)
         </h4>
 
@@ -164,7 +163,7 @@ function TeamManagementContent({
           <div style={{
             textAlign: 'center',
             padding: '40px',
-            color: 'rgba(255, 255, 255, 0.7)',
+            ...premiumBodyStyle,
             fontStyle: 'italic'
           }}>
             No bartenders or trainees found.
@@ -194,19 +193,21 @@ function TeamManagementContent({
                         <span style={{
                           marginLeft: '10px',
                           fontSize: '0.7rem',
-                          background: 'rgba(37, 99, 235, 0.3)',
+                          background: 'rgba(255, 255, 255, 0.2)',
                           color: 'white',
                           padding: '2px 8px',
-                          borderRadius: '8px'
+                          borderRadius: '8px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px'
                         }}>
                           You
                         </span>
                       )}
                     </h5>
                     <p style={{
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      margin: 0,
-                      fontSize: '0.9rem'
+                      ...premiumBodyStyle,
+                      fontSize: '0.9rem',
+                      opacity: 0.8
                     }}>
                       {user.email}
                     </p>
@@ -466,14 +467,12 @@ function MaintenanceTicketsManagement() {
     filter === 'all' || ticket.status === filter
   );
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '40px', color: 'white' }}>
-        <div>⏳</div>
-        <h3 style={sectionHeaderStyle}>Loading Maintenance Tickets...</h3>
-      </div>
-    );
-  }
+  return (
+    <div style={{ textAlign: 'center', padding: '100px', background: uiBackground, borderRadius: '20px' }}>
+      <div style={{ fontSize: '2rem', marginBottom: '20px' }}>⏳</div>
+      <h3 style={sectionHeaderStyle}>Loading Maintenance...</h3>
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -590,8 +589,8 @@ function MaintenanceTicketsManagement() {
           border: '1px solid rgba(255, 255, 255, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={cardHeaderStyle}>
-              <GoldHeading text={`Manage Ticket: ${selectedTicket.title}`} />
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+              Manage Ticket: {selectedTicket?.title}
             </h4>
             <button
               onClick={() => setSelectedTicket(null)}
@@ -706,7 +705,7 @@ function MaintenanceTicketsManagement() {
               </button>
               <button
                 type="button"
-                onClick={() => handleDeleteTicket(selectedTicket.id)}
+                onClick={() => selectedTicket && handleDeleteTicket(selectedTicket.id)}
                 disabled={isSubmitting}
                 style={{
                   background: '#e53e3e',
@@ -725,7 +724,7 @@ function MaintenanceTicketsManagement() {
               <div style={{ display: 'flex', gap: '5px', marginLeft: 'auto' }}>
                 <button
                   type="button"
-                  onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'in-progress')}
+                  onClick={() => selectedTicket && handleQuickStatusUpdate(selectedTicket.id, 'in-progress')}
                   disabled={isSubmitting}
                   style={{
                     background: '#d69e2e',
@@ -742,7 +741,7 @@ function MaintenanceTicketsManagement() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleQuickStatusUpdate(selectedTicket.id, 'completed')}
+                  onClick={() => selectedTicket && handleQuickStatusUpdate(selectedTicket.id, 'completed')}
                   disabled={isSubmitting}
                   style={{
                     background: '#38a169',
@@ -771,8 +770,8 @@ function MaintenanceTicketsManagement() {
         border: '1px solid rgba(255, 255, 255, 0.15)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h4 style={cardHeaderStyle}>
-            <GoldHeading text={`Maintenance Tickets (${filteredTickets.length} tickets)`} />
+          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            Maintenance Tickets ({filteredTickets.length} tickets)
           </h4>
         </div>
 
@@ -1127,7 +1126,7 @@ export default function AdminPanelSection() {
         color: 'white'
       }}>
         <h3 style={sectionHeaderStyle}>
-          <GoldHeading text="🔒 Admin Access Required" />
+          🔒 Admin Access Required
         </h3>
         <p>You need administrator privileges to access this section.</p>
       </div>
@@ -1148,7 +1147,7 @@ export default function AdminPanelSection() {
       }}>
         <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div>
         <h3 style={sectionHeaderStyle}>
-          <GoldHeading text="Loading Admin Panel..." />
+          Loading Admin Panel...
         </h3>
         <p>Connecting to cloud database</p>
       </div>
@@ -1162,7 +1161,8 @@ export default function AdminPanelSection() {
         marginBottom: '30px',
         borderRadius: '20px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: uiBackground,
+        backdropFilter: 'blur(15px) saturate(160%)',
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)'
       }}
@@ -1179,7 +1179,7 @@ export default function AdminPanelSection() {
       }}>
         <div>
           <h3 style={sectionHeaderStyle}>
-            <GoldHeading text="Manager Command Center" />
+            Manager Command Center
           </h3>
           <p style={{
             margin: 0,
@@ -1299,8 +1299,8 @@ export default function AdminPanelSection() {
               border: '1px solid rgba(255, 255, 255, 0.15)',
               marginBottom: '30px',
             }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="⚡ Quick Actions" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                ⚡ Quick Actions
               </h4>
               <div style={{
                 display: 'grid',
@@ -1389,8 +1389,8 @@ export default function AdminPanelSection() {
               padding: '25px',
               border: '1px solid rgba(255, 255, 255, 0.15)',
             }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="📈 Top Performers" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                📈 Top Performers
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {userProgress
@@ -1468,8 +1468,8 @@ export default function AdminPanelSection() {
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="📈 Employee Progress Tracking" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                📈 Employee Progress Tracking
               </h4>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button
@@ -1626,8 +1626,8 @@ export default function AdminPanelSection() {
             border: '1px solid rgba(255, 255, 255, 0.15)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h4 style={cardHeaderStyle}>
-                <GoldHeading text="🔧 Maintenance Tickets Management" />
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                🔧 Maintenance Tickets Management
               </h4>
               <button
                 onClick={loadAllData}

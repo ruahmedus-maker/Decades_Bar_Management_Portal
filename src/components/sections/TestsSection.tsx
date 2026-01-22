@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
 
@@ -224,12 +224,14 @@ export default function TestsSection() {
           Training Tests & Assessments
         </h3>
         <span style={{
-          background: `linear-gradient(135deg, ${CORAL_COLOR}, ${CORAL_COLOR_DARK})`,
+          background: `linear-gradient(135deg, rgba(${CORAL_COLOR_RGB}, 0.3), rgba(${CORAL_COLOR_RGB}, 0.1))`,
           color: 'white',
           padding: '6px 12px',
           borderRadius: '20px',
           fontSize: '0.8rem',
           fontWeight: 'bold',
+          letterSpacing: '1px',
+          textTransform: 'uppercase'
         }}>Evaluation</span>
       </div>
 
@@ -250,11 +252,11 @@ export default function TestsSection() {
                 borderRadius: '8px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
               }}>
-                <h5 style={{ color: 'white', margin: '0 0 8px 0' }}>{test.name}</h5>
-                <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: '0 0 12px 0', fontSize: '0.9rem' }}>
+                <h5 style={{ ...premiumWhiteStyle, fontFamily: brandFont, margin: '0 0 8px 0', fontSize: '1rem' }}>{test.name}</h5>
+                <p style={{ ...premiumBodyStyle, margin: '0 0 12px 0', fontSize: '0.9rem' }}>
                   {test.description}
                 </p>
-                <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '0 0 12px 0', fontSize: '0.8rem' }}>
+                <p style={{ ...premiumBodyStyle, margin: '0 0 12px 0', fontSize: '0.8rem', opacity: 0.8 }}>
                   <strong>Passing Score:</strong> {test.passingScore}% | <strong>Questions:</strong> {test.questions.length}
                 </p>
                 <button
@@ -280,7 +282,7 @@ export default function TestsSection() {
             </h4>
           </div>
           <div style={cardBodyStyle}>
-            <div style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.8)' }}>
+            <div style={{ marginBottom: '20px', ...premiumBodyStyle }}>
               <p>{activeTest.description}</p>
               <p><strong>Passing Score:</strong> {activeTest.passingScore}%</p>
               <p><strong>Progress:</strong> {Object.keys(testAnswers).length}/{activeTest.questions.length} questions answered</p>

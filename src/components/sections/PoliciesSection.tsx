@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
-import { goldTextStyle, brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle } from '@/lib/brand-styles';
+import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
 // Define unique coral color for policies
 const SECTION_COLOR = '#FF8C42'; // Orange coral
@@ -53,10 +53,10 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '15px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
               <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -137,8 +137,7 @@ export default function PoliciesSection() {
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
+            ...premiumBodyStyle,
             fontSize: '0.95rem',
             marginTop: '4px'
           }}>
@@ -196,7 +195,7 @@ export default function PoliciesSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Professional Standards
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Punctuality and attendance</li>
                 <li>Professional communication</li>
                 <li>Conflict resolution</li>
@@ -215,7 +214,7 @@ export default function PoliciesSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Prohibited Behaviors
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Harassment of any kind</li>
                 <li>Substance abuse during work</li>
                 <li>Theft or dishonesty</li>
@@ -247,7 +246,7 @@ export default function PoliciesSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Emergency Protocols
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Fire evacuation procedures</li>
                 <li>Medical emergency response</li>
                 <li>Severe weather protocols</li>
@@ -266,7 +265,7 @@ export default function PoliciesSection() {
               <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
                 Workplace Safety
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.9)' }}>
+              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
                 <li>Slip and fall prevention</li>
                 <li>Proper lifting techniques</li>
                 <li>Chemical handling procedures</li>
