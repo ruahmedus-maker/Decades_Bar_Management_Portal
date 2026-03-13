@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { testService, type TestResult } from '@/lib/test-service';
+import { supabase } from '@/lib/supabase';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
@@ -97,6 +98,24 @@ export default function TestsSection({ standalone = false }: { standalone?: bool
       });
       await loadTestResults();
       showToast(`Score: ${result.percentage}% - ${result.passed ? 'PASSED' : 'FAILED'}`);
+      
+      // Notify Admin if test passed
+      if (result.passed) {
+        try {
+          const { error: noticeError } = await supabase.from('notifications').insert([{
+            type: 'test_passed',
+            title: `Test Passed: ${currentUser.name}`,
+            message: `${currentUser.name} passed the ${activeTest.name} with ${result.percentage}%`,
+            sender_id: currentUser.id,
+            sender_name: currentUser.name,
+            recipient_role: 'Admin'
+          }]);
+          if (noticeError) throw noticeError;
+        } catch (notifierr) {
+          console.error('Failed to send notification:', notifierr);
+        }
+      }
+
       setTestAnswers({});
       setActiveTest(null);
     } catch (error: any) {

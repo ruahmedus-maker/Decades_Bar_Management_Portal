@@ -69,7 +69,7 @@ export default function StandardOperatingProceduresSection() {
 
     setIsSending(true);
     try {
-      await supabase.from('notifications').insert([{
+      const { error } = await supabase.from('notifications').insert([{
         type: 'checkout_request',
         title: `Checkout: ${currentUser?.name}`,
         message: `${currentUser?.name} is ready for checkout.`,
@@ -77,8 +77,11 @@ export default function StandardOperatingProceduresSection() {
         sender_name: currentUser?.name,
         recipient_role: 'Admin'
       }]);
+
+      if (error) throw error;
       showToast('Manager notified.');
     } catch (e) {
+      console.error('Notification error:', e);
       showToast('Notification error.');
     } finally {
       setIsSending(false);
