@@ -69,7 +69,7 @@ export const TEST_CONFIGS: TestConfig[] = [
 // Helper functions
 export const getActiveTests = (position: string): TestConfig[] => {
   return TEST_CONFIGS.filter(test => 
-    test.enabled && test.requiredFor.includes(position as any)
+    test.enabled && (position === 'Admin' || test.requiredFor.includes(position as any))
   );
 };
 

@@ -7,7 +7,7 @@ import { testService, type TestResult } from '@/lib/test-service';
 import { getActiveTests, type TestConfig } from '@/lib/test-config';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
+import { ENABLE_TESTS } from '@/lib/test-utils';
 
 // Aloha Blue Background
 const SECTION_BLUE = 'rgba(37, 99, 235, 0.2)';
