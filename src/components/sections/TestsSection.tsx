@@ -106,7 +106,7 @@ export default function TestsSection({ standalone = false }: { standalone?: bool
             type: 'test_passed',
             title: `Test Passed: ${currentUser.name}`,
             message: `${currentUser.name} passed the ${activeTest.name} with ${result.percentage}%`,
-            sender_id: currentUser.id,
+            sender_id: currentUser.auth_id,
             sender_name: currentUser.name,
             recipient_role: 'Admin'
           }]);

@@ -73,7 +73,7 @@ export default function StandardOperatingProceduresSection() {
         type: 'checkout_request',
         title: `Checkout: ${currentUser?.name}`,
         message: `${currentUser?.name} is ready for checkout.`,
-        sender_id: currentUser?.id,
+        sender_id: currentUser?.auth_id,
         sender_name: currentUser?.name,
         recipient_role: 'Admin'
       }]);
