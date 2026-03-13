@@ -285,6 +285,10 @@ export const supabaseSpecialEvents = {
       )
       .subscribe();
 
-    return subscription;
+    return {
+      unsubscribe: () => {
+        supabase.removeChannel(subscription);
+      }
+    };
   }
 };

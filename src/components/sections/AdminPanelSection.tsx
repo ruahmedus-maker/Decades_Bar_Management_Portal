@@ -467,12 +467,14 @@ function MaintenanceTicketsManagement() {
     filter === 'all' || ticket.status === filter
   );
 
-  return (
-    <div style={{ textAlign: 'center', padding: '100px', background: uiBackground, borderRadius: '20px' }}>
-      <div style={{ fontSize: '2rem', marginBottom: '20px' }}>⏳</div>
-      <h3 style={sectionHeaderStyle}>Loading Maintenance...</h3>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px', background: uiBackground, borderRadius: '20px' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '20px', animation: 'pulse 2s infinite' }}>⏳</div>
+        <h3 style={sectionHeaderStyle}>Loading Maintenance...</h3>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -998,90 +1000,100 @@ export default function AdminPanelSection() {
   const loadAllData = async () => {
     if (!isAdmin) return;
 
+    // Timeout logic to prevent permanent loading state
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('DATA_LOAD_TIMEOUT')), 15000)
+    );
+
     try {
       setLoading(true);
       console.log('Loading admin data...');
 
-      // Load users
-      const allUsers = await getAllUsers();
-      console.log('All users loaded:', allUsers);
+      await Promise.race([
+        (async () => {
+          // Load users
+          const allUsers = await getAllUsers();
+          setUsers(allUsers);
 
-      setUsers(allUsers);
+          // Filter to only show bartenders and trainees
+          const bartendersAndTrainees = allUsers.filter(user =>
+            user.position === 'Bartender' || user.position === 'Trainee'
+          );
 
-      // Filter to only show bartenders and trainees (not admins) in progress/management
-      const bartendersAndTrainees = allUsers.filter(user =>
-        user.position === 'Bartender' || user.position === 'Trainee'
-      );
+          // Load user progress
+          const progressData: UserProgress[] = await Promise.all(
+            bartendersAndTrainees.map(async (user) => {
+              try {
+                const progress = await getProgressBreakdown(user.email);
+                return {
+                  user,
+                  sectionsCompleted: progress.sectionsVisited,
+                  totalSections: progress.totalSections,
+                  progressPercentage: progress.progress,
+                  lastActive: user.lastActive || 'Never',
+                  timeSinceLastActive: getTimeSince(user.lastActive),
+                  completionStatus: getCompletionStatus(progress.progress),
+                  acknowledged: progress.acknowledged || false,
+                  acknowledgementDate: progress.acknowledgementDate || null
+                };
+              } catch (error) {
+                console.error(`Error loading progress for ${user.email}:`, error);
+                return {
+                  user,
+                  sectionsCompleted: 0,
+                  totalSections: 0,
+                  progressPercentage: 0,
+                  lastActive: user.lastActive || 'Never',
+                  timeSinceLastActive: getTimeSince(user.lastActive),
+                  completionStatus: 'inactive' as const
+                };
+              }
+            })
+          );
+          setUserProgress(progressData);
 
-      console.log('Bartenders and trainees:', bartendersAndTrainees);
+          // Test results
+          const testData = bartendersAndTrainees.map(user => {
+            const results = user.testResults || {};
+            return { email: user.email, user, results };
+          });
+          setTestResults(testData);
 
-      // Load user progress for bartenders and trainees only
-      const progressData: UserProgress[] = await Promise.all(
-        bartendersAndTrainees.map(async (user) => {
-          try {
-            const progress = await getProgressBreakdown(user.email);
-            return {
-              user,
-              sectionsCompleted: progress.sectionsVisited,
-              totalSections: progress.totalSections,
-              progressPercentage: progress.progress,
-              lastActive: user.lastActive || 'Never',
-              timeSinceLastActive: getTimeSince(user.lastActive),
-              completionStatus: getCompletionStatus(progress.progress),
-              acknowledged: progress.acknowledged || false,
-              acknowledgementDate: progress.acknowledgementDate || null
-            };
-          } catch (error) {
-            console.error(`Error loading progress for ${user.email}:`, error);
-            return {
-              user,
-              sectionsCompleted: 0,
-              totalSections: 0,
-              progressPercentage: 0,
-              lastActive: user.lastActive || 'Never',
-              timeSinceLastActive: getTimeSince(user.lastActive),
-              completionStatus: 'inactive' as const
-            };
-          }
-        })
-      );
-      setUserProgress(progressData);
+          // Load quick stats - split queries for resilience
+          const [maintenanceResponse, tasksResponse] = await Promise.all([
+            supabase.from('maintenance_tickets').select('status'),
+            supabase.from('tasks').select('completed')
+          ]);
 
-      // Load test results for bartenders and trainees only
-      const testData = bartendersAndTrainees.map(user => {
-        const results = user.testResults || {};
-        return { email: user.email, user, results };
-      });
-      setTestResults(testData);
+          const maintenanceTickets = maintenanceResponse.data || [];
+          const tasks = tasksResponse.data || [];
 
-      // Load quick stats
-      const { data: maintenanceTickets } = await supabase
-        .from('maintenance_tickets')
-        .select('status');
+          const pendingTickets = maintenanceTickets.filter((t: any) =>
+            t.status === 'open' || t.status === 'assigned'
+          ).length;
 
-      const { data: tasks } = await supabase
-        .from('tasks')
-        .select('completed');
+          const completedTasks = tasks.filter((t: any) => t.completed).length;
 
-      const pendingTickets = (maintenanceTickets || []).filter((t: any) =>
-        t.status === 'open' || t.status === 'assigned'
-      ).length;
-
-      const completedTasks = (tasks || []).filter((t: any) => t.completed).length;
-
-      setQuickStats({
-        totalUsers: bartendersAndTrainees.length,
-        activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
-        pendingTickets,
-        completedTasks,
-        totalTasks: tasks?.length || 0,
-        excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
-      });
+          setQuickStats({
+            totalUsers: bartendersAndTrainees.length,
+            activeUsers: progressData.filter(p => p.completionStatus !== 'inactive').length,
+            pendingTickets,
+            completedTasks,
+            totalTasks: tasks.length,
+            excellentProgress: progressData.filter(p => p.progressPercentage >= 90).length
+          });
+        })(),
+        timeoutPromise
+      ]);
 
       console.log('Admin data loaded successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading admin data:', error);
-      showToast('Error loading admin data');
+      if (error.message === 'DATA_LOAD_TIMEOUT') {
+        showToast('Connection slow - using partial data');
+      } else {
+        showToast('Error loading admin data');
+      }
     } finally {
       setLoading(false);
     }

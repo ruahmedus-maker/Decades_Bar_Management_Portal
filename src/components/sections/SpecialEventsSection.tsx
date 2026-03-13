@@ -112,8 +112,6 @@ export default function SpecialEventsSection({ isAdminView = false }: { isAdminV
     return '#6B7280';
   };
 
-  if (loading) return null;
-
   return (
     <div
       id="special-events"
@@ -153,34 +151,43 @@ export default function SpecialEventsSection({ isAdminView = false }: { isAdminV
       </div>
 
       <div style={{ padding: '25px' }}>
-        {showEventForm && (
-          <AnimatedCard title="📝 Create Special Event">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-              <input type="text" placeholder="Event Name" value={eventForm.name} onChange={e => setEventForm({ ...eventForm, name: e.target.value })} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
-              <input type="date" value={eventForm.date} onChange={e => setEventForm({ ...eventForm, date: e.target.value })} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
-              <input type="text" placeholder="Theme" value={eventForm.theme} onChange={e => setEventForm({ ...eventForm, theme: e.target.value })} style={{ gridColumn: 'span 2', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
-              <textarea placeholder="Drink Specials" value={eventForm.drinkSpecials} onChange={e => setEventForm({ ...eventForm, drinkSpecials: e.target.value })} rows={3} style={{ gridColumn: 'span 2', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', resize: 'none' }} />
-              <button onClick={handleCreateEvent} style={{ gridColumn: 'span 2', padding: '12px', background: 'white', color: 'black', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Create Event</button>
-            </div>
-          </AnimatedCard>
-        )}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '16px', animation: 'pulse 2s infinite' }}>⏳</div>
+            <p style={{ ...premiumBodyStyle, opacity: 0.8 }}>Syncing with cloud database...</p>
+          </div>
+        ) : (
+          <>
+            {showEventForm && (
+              <AnimatedCard title="📝 Create Special Event">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <input type="text" placeholder="Event Name" value={eventForm.name} onChange={e => setEventForm({ ...eventForm, name: e.target.value })} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
+                  <input type="date" value={eventForm.date} onChange={e => setEventForm({ ...eventForm, date: e.target.value })} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
+                  <input type="text" placeholder="Theme" value={eventForm.theme} onChange={e => setEventForm({ ...eventForm, theme: e.target.value })} style={{ gridColumn: 'span 2', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} />
+                  <textarea placeholder="Drink Specials" value={eventForm.drinkSpecials} onChange={e => setEventForm({ ...eventForm, drinkSpecials: e.target.value })} rows={3} style={{ gridColumn: 'span 2', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', resize: 'none' }} />
+                  <button onClick={handleCreateEvent} style={{ gridColumn: 'span 2', padding: '12px', background: 'white', color: 'black', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Create Event</button>
+                </div>
+              </AnimatedCard>
+            )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          {events.map((event, idx) => (
-            <div key={event.id} style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-                <h5 style={{ ...premiumWhiteStyle, margin: 0, fontSize: '1rem', fontWeight: 300, letterSpacing: '1px' }}>{event.name}</h5>
-                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'white', background: getStatusColor(event.status), padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>{event.status}</span>
-              </div>
-              <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', marginBottom: '10px' }}>{new Date(event.date).toLocaleDateString()} • {event.theme || 'Standard Setting'}</p>
-              {event.drinkSpecials && <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px' }}>
-                <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', fontStyle: 'italic', margin: 0 }}>{event.drinkSpecials}</p>
-              </div>}
-              {isAdminView && <button onClick={() => deleteEvent(event.id)} style={{ marginTop: '15px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', fontSize: '0.7rem', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>DELETE EVENT</button>}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              {events.map((event, idx) => (
+                <div key={event.id} style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                    <h5 style={{ ...premiumWhiteStyle, margin: 0, fontSize: '1rem', fontWeight: 300, letterSpacing: '1px' }}>{event.name}</h5>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'white', background: getStatusColor(event.status), padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>{event.status}</span>
+                  </div>
+                  <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', marginBottom: '10px' }}>{new Date(event.date).toLocaleDateString()} • {event.theme || 'Standard Setting'}</p>
+                  {event.drinkSpecials && <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px' }}>
+                    <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', fontStyle: 'italic', margin: 0 }}>{event.drinkSpecials}</p>
+                  </div>}
+                  {isAdminView && <button onClick={() => deleteEvent(event.id)} style={{ marginTop: '15px', background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', fontSize: '0.7rem', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>DELETE EVENT</button>}
+                </div>
+              ))}
+              {events.length === 0 && <p style={{ ...premiumBodyStyle, opacity: 0.5, textAlign: 'center', gridColumn: 'span 2', padding: '40px' }}>No events currently scheduled.</p>}
             </div>
-          ))}
-          {events.length === 0 && <p style={{ ...premiumBodyStyle, opacity: 0.5, textAlign: 'center', gridColumn: 'span 2', padding: '40px' }}>No events currently scheduled.</p>}
-        </div>
+          </>
+        )}
 
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
