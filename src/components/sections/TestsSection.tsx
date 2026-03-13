@@ -106,7 +106,7 @@ export default function TestsSection({ standalone = false }: { standalone?: bool
     }
   };
 
-  if (!ENABLE_TESTS || !currentUser || userTests.length === 0) return null;
+  if ((!ENABLE_TESTS && currentUser?.position !== 'Admin') || !currentUser || userTests.length === 0) return null;
 
   return (
     <div

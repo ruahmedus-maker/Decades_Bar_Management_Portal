@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { NAV_ITEMS } from '@/lib/constants';
 import { ENABLE_TESTS } from '@/lib/test-utils';
@@ -26,8 +27,8 @@ export default function Sidebar() {
 
   // Filter navigation items based on user role and feature flags
   const filteredNavItems = NAV_ITEMS.filter(item => {
-    // Hide tests if disabled
-    if (item.id === 'tests' && !ENABLE_TESTS) return false;
+    // Hide tests if disabled, UNLESS the user is an admin (who should always be able to verify)
+    if (item.id === 'tests' && !ENABLE_TESTS && !isAdmin) return false;
 
     // Hide admin sections for non-admins using the predefined array
     if (ADMIN_SECTIONS.includes(item.id as SectionId) && !isAdmin) {
@@ -36,6 +37,11 @@ export default function Sidebar() {
 
     return true;
   });
+
+  useEffect(() => {
+    console.log('Sidebar Debug - isAdmin:', isAdmin);
+    console.log('Sidebar Debug - ENABLE_TESTS:', ENABLE_TESTS);
+  }, [isAdmin]);
 
   // Sidebar positioned to be exactly level with main content
   const sidebarStyle = {
