@@ -56,7 +56,7 @@ function AnimatedCard({ title, children, headerRight }: any) {
   );
 }
 
-export default function TestsSection() {
+export default function TestsSection({ standalone = false }: { standalone?: boolean }) {
   const { currentUser, showToast } = useApp();
   const [activeTest, setActiveTest] = useState<TestConfig | null>(null);
   const [testAnswers, setTestAnswers] = useState<Record<number, number>>({});
@@ -112,58 +112,60 @@ export default function TestsSection() {
     <div
       id="tests"
       style={{
-        marginBottom: '25px',
-        borderRadius: '20px',
+        marginBottom: standalone ? '0' : '25px',
+        borderRadius: standalone ? '0' : '20px',
         overflow: 'hidden',
-        background: uiBackground,
-        backdropFilter: uiBackdropFilter,
-        WebkitBackdropFilter: uiBackdropFilterWebkit,
-        border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+        background: standalone ? 'transparent' : uiBackground,
+        backdropFilter: standalone ? 'none' : uiBackdropFilter,
+        WebkitBackdropFilter: standalone ? 'none' : uiBackdropFilterWebkit,
+        border: standalone ? 'none' : '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: standalone ? 'none' : '0 16px 50px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >
-      {/* Section Header */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.05)',
-        padding: '20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
-            Training Tests
-          </h3>
-          <p style={{
-            margin: 0,
-            opacity: 0.7,
-            color: 'white',
-            fontSize: '0.8rem',
-            marginTop: '4px',
-            letterSpacing: '1px',
-            textTransform: 'uppercase'
-          }}>
-            Skill assessments and performance reviews
-          </p>
-        </div>
-        <span style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          padding: '6px 14px',
-          borderRadius: '20px',
-          fontSize: '0.7rem',
-          color: 'white',
-          fontWeight: 300,
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          letterSpacing: '1px'
+      {/* Section Header - Hidden in standalone mode */}
+      {!standalone && (
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
-          EVALUATIONS
-        </span>
-      </div>
+          <div>
+            <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+              Training Tests
+            </h3>
+            <p style={{
+              margin: 0,
+              opacity: 0.7,
+              color: 'white',
+              fontSize: '0.8rem',
+              marginTop: '4px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase'
+            }}>
+              Skill assessments and performance reviews
+            </p>
+          </div>
+          <span style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            fontSize: '0.7rem',
+            color: 'white',
+            fontWeight: 300,
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            letterSpacing: '1px'
+          }}>
+            EVALUATIONS
+          </span>
+        </div>
+      )}
 
-      <div style={{ padding: '25px' }}>
+      <div style={{ padding: standalone ? '0' : '25px' }}>
         {!activeTest ? (
           <AnimatedCard title="📝 Available Tests">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '15px' }}>
