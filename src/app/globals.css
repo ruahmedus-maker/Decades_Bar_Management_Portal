@@ -35,7 +35,7 @@ body {
   color: white;
   overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior: none;
+  overscroll-behavior: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -56,14 +56,12 @@ body {
   margin-left: 300px;
   margin-top: 120px;
   padding: 20px;
-  min-height: calc(100vh - 140px);
+  height: calc(100vh - 140px);
   background: transparent !important;
   width: calc(100% - 320px);
   position: relative;
-
-  /* OPTIMIZED SCROLLING - remove problematic properties */
   overflow-y: auto;
-  /* REMOVED: -webkit-overflow-scrolling - causes performance issues */
+  overflow-x: hidden;
 }
 
 /* ===== BUTTON STYLES - OPTIMIZED ===== */

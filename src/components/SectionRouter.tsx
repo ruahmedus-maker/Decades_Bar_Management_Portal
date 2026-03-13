@@ -17,8 +17,6 @@ import SpecialEventsSection from '@/components/sections/SpecialEventsSection';
 import CompsVoidsSection from '@/components/sections/CompsVoidsSection';
 import PoliciesSection from '@/components/sections/PoliciesSection';
 import AdminPanelSection from '@/components/sections/AdminPanelSection';
-import FAQSection from '@/components/sections/FAQSection';
-import ResourcesSection from '@/components/sections/ResourcesSection';
 import EmployeeCounselingsSection from '@/components/sections/EmployeeCounselingsSection';
 import KeyPerformanceIndicatorsSection from '@/components/sections/KeyPerformanceIndicatorsSection';
 import MaintenanceSection from './sections/MaintenanceSection';
@@ -79,10 +77,6 @@ export default function SectionRouter() {
         return <PoliciesSection />;
       case 'admin-panel':
         return <AdminPanelSection />;
-      case 'faq':
-        return <FAQSection />;
-      case 'resources':
-        return <ResourcesSection />;
       case 'employee-counselings':
         return <EmployeeCounselingsSection />;
       case 'performance-report':

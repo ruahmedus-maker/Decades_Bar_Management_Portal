@@ -29,8 +29,6 @@ export const NAV_ITEMS = [
   { id: 'comps-voids', icon: '💰', label: 'Comps & Voids' },
   { id: 'policies', icon: '📄', label: 'Policies' },
   { id: 'admin-panel', icon: '⚙️', label: 'Admin Panel' },
-  { id: 'faq', icon: '❓', label: 'FAQ' },
-  { id: 'resources', icon: '📚', label: 'Additional Resources' },
   // Add the missing admin-only items
   { id: 'employee-counselings', icon: '📝', label: 'Employee Counselings' },
   { id: 'performance-report', icon: '📊', label: 'Key Performance Indicators' },
