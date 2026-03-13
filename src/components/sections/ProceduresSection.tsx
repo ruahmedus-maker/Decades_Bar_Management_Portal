@@ -80,9 +80,9 @@ export default function StandardOperatingProceduresSection() {
 
       if (error) throw error;
       showToast('Manager notified.');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Notification error:', e);
-      showToast('Notification error.');
+      showToast(`Notification error: ${e.message || 'Unknown error'}`);
     } finally {
       setIsSending(false);
     }
