@@ -1,7 +1,6 @@
 // page.tsx
 'use client';
 
-import { useEffect } from 'react';
 import { AppProvider, useApp } from '@/contexts/AppContext';
 import LoginBarrier from '@/components/LoginBarrier';
 import Sidebar from '@/components/Sidebar';
@@ -21,13 +20,6 @@ function MainApp() {
   const shouldShowOnlyTest = ENABLE_TESTS && currentUser &&
     (currentUser.position === 'Bartender' || currentUser.position === 'Trainee');
 
-  useEffect(() => {
-    if (currentUser) {
-      console.log('MainApp Debug - ENABLE_TESTS:', ENABLE_TESTS);
-      console.log('MainApp Debug - currentUser.position:', currentUser.position);
-      console.log('MainApp Debug - shouldShowOnlyTest:', shouldShowOnlyTest);
-    }
-  }, [currentUser, shouldShowOnlyTest]);
 
   if (isLoading) {
     return (
