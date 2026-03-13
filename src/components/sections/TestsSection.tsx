@@ -9,121 +9,52 @@ import { brandFont, sectionHeaderStyle, cardHeaderStyle as brandCardHeaderStyle,
 
 const ENABLE_TESTS = process.env.NEXT_PUBLIC_ENABLE_TESTS === 'true';
 
-// Coral color scheme
-const CORAL_COLOR = '#FF7F7F';
-const CORAL_COLOR_RGB = '255, 127, 127';
-const CORAL_COLOR_DARK = '#E57373';
+// Aloha Blue Background
+const SECTION_BLUE = 'rgba(37, 99, 235, 0.2)';
 
-// Style objects
-const sectionStyle = {
-  background: uiBackground,
-  backdropFilter: uiBackdropFilter,
-  WebkitBackdropFilter: uiBackdropFilterWebkit,
-  border: '1px solid rgba(255, 255, 255, 0.25)',
-  borderRadius: '20px',
-  padding: '30px',
-  marginBottom: '30px',
-  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 127, 127, 0.1)',
-};
-
-const cardStyle = {
-  background: uiBackground,
-  backdropFilter: uiBackdropFilter,
-  WebkitBackdropFilter: uiBackdropFilterWebkit,
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '16px',
-  marginBottom: '25px',
-  overflow: 'hidden' as const,
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-};
-
-const cardHeaderStyle = {
-  background: `rgba(${CORAL_COLOR_RGB}, 0.2)`,
-  borderLeft: `4px solid ${CORAL_COLOR}`,
-  padding: '20px 25px',
-  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-};
-
-const cardTitleStyle = {
-  color: '#ffffff',
-  fontSize: '1.2rem',
-  fontWeight: 600,
-  margin: 0,
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-};
-
-const cardBodyStyle = {
-  padding: '25px',
-};
-
-const questionStyle = {
-  marginBottom: '25px',
-  padding: '20px',
-  background: 'rgba(255, 255, 255, 0.05)',
-  borderRadius: '12px',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-};
-
-const questionTextStyle = {
-  color: '#ffffff',
-  fontSize: '1.1rem',
-  fontWeight: 600,
-  marginBottom: '15px',
-};
-
-const optionLabelStyle = {
-  display: 'block',
-  margin: '8px 0',
-  padding: '12px 15px',
-  background: 'rgba(255, 255, 255, 0.08)',
-  borderRadius: '8px',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  cursor: 'pointer',
-  transition: 'none', // Removed - caused scroll crashes
-  color: '#ffffff',
-};
-
-const radioStyle = {
-  marginRight: '10px',
-  cursor: 'pointer',
-};
-
-const buttonStyle = {
-  background: `linear-gradient(135deg, ${CORAL_COLOR}, ${CORAL_COLOR_DARK})`,
-  color: 'white',
-  border: 'none',
-  padding: '12px 24px',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  fontWeight: 600,
-  fontSize: '1rem',
-  transition: 'none', // Removed - caused scroll crashes
-  boxShadow: `0 4px 15px rgba(${CORAL_COLOR_RGB}, 0.3)`,
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '8px',
-  marginTop: '15px',
-};
-
-const buttonHoverStyle = {
-  transform: 'translateY(-2px)',
-  boxShadow: `0 6px 20px rgba(${CORAL_COLOR_RGB}, 0.4)`,
-  background: `linear-gradient(135deg, ${CORAL_COLOR_DARK}, ${CORAL_COLOR})`,
-};
-
-const passedStyle = {
-  color: '#10B981',
-  fontWeight: 'bold',
-  fontSize: '1.1rem',
-};
-
-const failedStyle = {
-  color: '#EF4444',
-  fontWeight: 'bold',
-  fontSize: '1.1rem',
-};
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, children, headerRight }: any) {
+  return (
+    <div
+      style={{
+        borderRadius: '16px',
+        margin: '15px 0',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        overflow: 'hidden',
+        position: 'relative'
+      }}
+    >
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h4 style={{
+            ...brandCardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
+            {title}
+          </h4>
+          {headerRight}
+        </div>
+        <div style={{ padding: '20px' }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function TestsSection() {
   const { currentUser, showToast } = useApp();
@@ -133,16 +64,9 @@ export default function TestsSection() {
   const [submitting, setSubmitting] = useState(false);
   const [userTests, setUserTests] = useState<TestConfig[]>([]);
 
-  if (!ENABLE_TESTS) {
-    return null; // Or a message saying tests are disabled
-  }
-
-
-  // Load user's available tests
   useEffect(() => {
     if (currentUser) {
-      const availableTests = getActiveTests(currentUser.position);
-      setUserTests(availableTests);
+      setUserTests(getActiveTests(currentUser.position));
       loadTestResults();
     }
   }, [currentUser]);
@@ -153,21 +77,15 @@ export default function TestsSection() {
       const results = await testService.getUserTestResults(currentUser.email);
       setTestResults(results);
     } catch (error) {
-      console.error('Error loading test results:', error);
+      console.error('Error loading results:', error);
     }
-  };
-
-  const handleAnswerSelect = (questionId: number, answerIndex: number) => {
-    setTestAnswers(prev => ({ ...prev, [questionId]: answerIndex }));
   };
 
   const submitTest = async () => {
     if (!currentUser || !activeTest) return;
-
-    // Check if all questions are answered
-    const unansweredQuestions = activeTest.questions.filter(q => testAnswers[q.id] === undefined);
-    if (unansweredQuestions.length > 0) {
-      showToast(`Please answer all questions before submitting. ${unansweredQuestions.length} unanswered.`);
+    const unanswered = activeTest.questions.filter(q => testAnswers[q.id] === undefined);
+    if (unanswered.length > 0) {
+      showToast('Please complete all questions.');
       return;
     }
 
@@ -177,207 +95,182 @@ export default function TestsSection() {
         testId: activeTest.id,
         answers: testAnswers
       });
-
-      // Refresh results
       await loadTestResults();
-
-      showToast(`Test submitted! Score: ${result.score}/${result.total_questions} (${result.percentage}%) - ${result.passed ? 'PASSED' : 'FAILED'}`);
-
-      // Clear for next test
+      showToast(`Score: ${result.percentage}% - ${result.passed ? 'PASSED' : 'FAILED'}`);
       setTestAnswers({});
       setActiveTest(null);
-
     } catch (error: any) {
-      console.error('Error submitting test:', error);
-      showToast(error.message || 'Error submitting test');
+      showToast('Submission error');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const startTest = (test: TestConfig) => {
-    setActiveTest(test);
-    setTestAnswers({});
-  };
-
-  const cancelTest = () => {
-    setActiveTest(null);
-    setTestAnswers({});
-  };
-
-  // Don't show if no tests available for user
-  if (!currentUser || userTests.length === 0) {
-    return null;
-  }
+  if (!ENABLE_TESTS || !currentUser || userTests.length === 0) return null;
 
   return (
-    <div style={sectionStyle} id="tests">
+    <div
+      id="tests"
+      style={{
+        marginBottom: '25px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: uiBackground,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+      }}
+      className="active"
+    >
+      {/* Section Header */}
       <div style={{
+        background: 'rgba(255, 255, 255, 0.05)',
+        padding: '20px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '25px',
-        paddingBottom: '15px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+        alignItems: 'center'
       }}>
-        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-          Training Tests & Assessments
-        </h3>
+        <div>
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Training Tests
+          </h3>
+          <p style={{
+            margin: 0,
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
+          }}>
+            Skill assessments and performance reviews
+          </p>
+        </div>
         <span style={{
-          background: `linear-gradient(135deg, rgba(${CORAL_COLOR_RGB}, 0.3), rgba(${CORAL_COLOR_RGB}, 0.1))`,
-          color: 'white',
-          padding: '6px 12px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.8rem',
-          fontWeight: 'bold',
-          letterSpacing: '1px',
-          textTransform: 'uppercase'
-        }}>Evaluation</span>
+          fontSize: '0.7rem',
+          color: 'white',
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
+        }}>
+          EVALUATIONS
+        </span>
       </div>
 
-      {/* Test Selection */}
-      {!activeTest && (
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
-              📝 Available Tests
-            </h4>
-          </div>
-          <div style={cardBodyStyle}>
-            {userTests.map(test => (
-              <div key={test.id} style={{
-                padding: '15px',
-                marginBottom: '10px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-              }}>
-                <h5 style={{ ...premiumWhiteStyle, fontFamily: brandFont, margin: '0 0 8px 0', fontSize: '1rem' }}>{test.name}</h5>
-                <p style={{ ...premiumBodyStyle, margin: '0 0 12px 0', fontSize: '0.9rem' }}>
-                  {test.description}
-                </p>
-                <p style={{ ...premiumBodyStyle, margin: '0 0 12px 0', fontSize: '0.8rem', opacity: 0.8 }}>
-                  <strong>Passing Score:</strong> {test.passingScore}% | <strong>Questions:</strong> {test.questions.length}
-                </p>
-                <button
-                  style={buttonStyle}
-                  onClick={() => startTest(test)}
-                  onMouseEnter={(e) => Object.assign(e.currentTarget.style, buttonHoverStyle)}
-                  onMouseLeave={(e) => Object.assign(e.currentTarget.style, buttonStyle)}
-                >
-                  Start Test
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Active Test */}
-      {activeTest && (
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
-              🧪 {activeTest.name}
-            </h4>
-          </div>
-          <div style={cardBodyStyle}>
-            <div style={{ marginBottom: '20px', ...premiumBodyStyle }}>
-              <p>{activeTest.description}</p>
-              <p><strong>Passing Score:</strong> {activeTest.passingScore}%</p>
-              <p><strong>Progress:</strong> {Object.keys(testAnswers).length}/{activeTest.questions.length} questions answered</p>
-            </div>
-
-            <div id="test-questions">
-              {activeTest.questions.map((q, index) => (
-                <div key={q.id} style={questionStyle}>
-                  <p style={questionTextStyle}><strong>{index + 1}. {q.question}</strong></p>
-                  {q.options.map((opt, i) => (
-                    <label
-                      key={i}
-                      style={{
-                        ...optionLabelStyle,
-                        ...(testAnswers[q.id] === i ? {
-                          background: `rgba(${CORAL_COLOR_RGB}, 0.2)`,
-                          borderColor: CORAL_COLOR
-                        } : {})
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name={`q${q.id}`}
-                        value={i}
-                        checked={testAnswers[q.id] === i}
-                        onChange={() => handleAnswerSelect(q.id, i)}
-                        style={radioStyle}
-                      />
-                      {opt.text}
-                    </label>
-                  ))}
+      <div style={{ padding: '25px' }}>
+        {!activeTest ? (
+          <AnimatedCard title="📝 Available Tests">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '15px' }}>
+              {userTests.map(test => (
+                <div key={test.id} style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <h5 style={{ ...premiumWhiteStyle, fontSize: '1rem', fontWeight: 300, marginBottom: '8px', letterSpacing: '1px' }}>{test.name}</h5>
+                  <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', opacity: 0.7, marginBottom: '15px' }}>{test.description}</p>
+                  <button
+                    onClick={() => setActiveTest(test)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.22)',
+                      borderRadius: '8px',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Start Test
+                  </button>
                 </div>
               ))}
             </div>
-
-            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button
-                style={{
-                  ...buttonStyle,
-                  ...(submitting ? { opacity: 0.7, cursor: 'not-allowed' } : {})
-                }}
-                onClick={submitTest}
-                disabled={submitting}
-                onMouseEnter={(e) => !submitting && Object.assign(e.currentTarget.style, buttonHoverStyle)}
-                onMouseLeave={(e) => !submitting && Object.assign(e.currentTarget.style, buttonStyle)}
-              >
-                {submitting ? 'Submitting...' : 'Submit Test'}
-              </button>
-              <button
-                style={{
-                  ...buttonStyle,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  boxShadow: 'none'
-                }}
-                onClick={cancelTest}
-                disabled={submitting}
-              >
-                Cancel
-              </button>
+          </AnimatedCard>
+        ) : (
+          <AnimatedCard title={`🧪 ${activeTest.name}`} headerRight={
+            <button onClick={() => setActiveTest(null)} style={{ background: 'transparent', border: 'none', color: 'white', opacity: 0.5, cursor: 'pointer', fontSize: '0.8rem' }}>CANCEL</button>
+          }>
+            <div style={{ maxHeight: '600px', overflowY: 'auto', paddingRight: '10px' }}>
+              {activeTest.questions.map((q, idx) => (
+                <div key={q.id} style={{ marginBottom: '25px', padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <p style={{ ...premiumWhiteStyle, fontSize: '1rem', fontWeight: 300, marginBottom: '15px' }}>{idx + 1}. {q.question}</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {q.options.map((opt, i) => (
+                      <label key={i} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '12px 15px',
+                        background: testAnswers[q.id] === i ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+                        border: testAnswers[q.id] === i ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        color: 'white',
+                        fontSize: '0.9rem',
+                        fontWeight: 300
+                      }}>
+                        <input
+                          type="radio"
+                          name={`q${q.id}`}
+                          checked={testAnswers[q.id] === i}
+                          onChange={() => setTestAnswers(prev => ({ ...prev, [q.id]: i }))}
+                          style={{ accentColor: 'white' }}
+                        />
+                        {opt.text}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      )}
+            <button
+              onClick={submitTest}
+              disabled={submitting}
+              style={{
+                width: '100%',
+                padding: '14px',
+                marginTop: '20px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                color: 'white',
+                fontWeight: 600,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                cursor: 'pointer'
+              }}
+            >
+              {submitting ? 'Submitting...' : 'Commit Answers'}
+            </button>
+          </AnimatedCard>
+        )}
 
-      {/* Test Results History */}
-      {testResults.length > 0 && (
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <h4 style={{ ...brandCardHeaderStyle, ...premiumWhiteStyle }}>
-              📈 Test History
-            </h4>
-          </div>
-          <div style={cardBodyStyle}>
+        {testResults.length > 0 && (
+          <AnimatedCard title="📈 Test History">
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.2)' }}>
-                    <th style={{ padding: '12px', textAlign: 'left' }}>Test</th>
-                    <th style={{ padding: '12px', textAlign: 'center' }}>Date</th>
-                    <th style={{ padding: '12px', textAlign: 'center' }}>Score</th>
-                    <th style={{ padding: '12px', textAlign: 'center' }}>Result</th>
+                <thead style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
+                  <tr>
+                    <th style={{ padding: '15px', textAlign: 'left', fontWeight: 400, textTransform: 'uppercase' }}>Assessment</th>
+                    <th style={{ padding: '15px', textAlign: 'center', fontWeight: 400, textTransform: 'uppercase' }}>Date</th>
+                    <th style={{ padding: '15px', textAlign: 'center', fontWeight: 400, textTransform: 'uppercase' }}>Score</th>
+                    <th style={{ padding: '15px', textAlign: 'center', fontWeight: 400, textTransform: 'uppercase' }}>Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody style={{ fontSize: '0.9rem', fontWeight: 300 }}>
                   {testResults.map((result) => (
-                    <tr key={result.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      <td style={{ padding: '12px' }}>{result.test_name}</td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>
-                        {new Date(result.date).toLocaleDateString()}
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>
-                        {result.score}/{result.total_questions} ({result.percentage}%)
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>
-                        <span style={result.passed ? passedStyle : failedStyle}>
+                    <tr key={result.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '15px' }}>{result.test_name}</td>
+                      <td style={{ padding: '15px', textAlign: 'center', opacity: 0.6 }}>{new Date(result.date).toLocaleDateString()}</td>
+                      <td style={{ padding: '15px', textAlign: 'center' }}>{result.percentage}%</td>
+                      <td style={{ padding: '15px', textAlign: 'center' }}>
+                        <span style={{ color: result.passed ? '#10B981' : '#EF4444', fontWeight: 600, fontSize: '0.75rem' }}>
                           {result.passed ? 'PASS' : 'FAIL'}
                         </span>
                       </td>
@@ -386,9 +279,9 @@ export default function TestsSection() {
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      )}
+          </AnimatedCard>
+        )}
+      </div>
     </div>
   );
 }

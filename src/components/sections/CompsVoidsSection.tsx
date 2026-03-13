@@ -1,31 +1,19 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/progress';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define unique coral color for comps & voids
-const SECTION_COLOR = '#FF6B6B'; // Bright coral
-const SECTION_COLOR_RGB = '255, 107, 107';
-
-// Static Card Component without Hover Effects
-function StaticCard({ title, description, items, footer, index, children }: any) {
-  // Different background colors for different cards
-  const backgroundColors = [
-    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.08))`,
-    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.12))`,
-    `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.22), rgba(${SECTION_COLOR_RGB}, 0.09))`
-  ];
-
-  const backgroundColor = backgroundColors[index] || `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`;
-
+// Simplified Card Component - ALOHA STYLED
+function StaticCard({ title, description, items, footer, children }: any) {
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -36,22 +24,27 @@ function StaticCard({ title, description, items, footer, index, children }: any)
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: backgroundColor,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '16px 20px' }}>
           {children || (
             <>
-              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
-              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px', fontSize: '0.9rem' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -59,14 +52,16 @@ function StaticCard({ title, description, items, footer, index, children }: any)
         </div>
         {footer && (
           <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
+            padding: '12px 20px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            fontSize: '0.8rem',
+            color: 'rgba(255, 255, 255, 0.6)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
           }}>
             <span>{footer.left}</span>
             <span>{footer.right}</span>
@@ -101,7 +96,7 @@ export default function CompsVoidsSection() {
     <div
       id="comps-voids"
       style={{
-        marginBottom: '30px',
+        marginBottom: '25px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
@@ -109,69 +104,67 @@ export default function CompsVoidsSection() {
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Comps & Voids Procedures
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Comps & Voids
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Financial procedures for complimentary items and void transactions
+            Financial accuracy and accountability
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.9rem',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          Financial
+          FINANCIAL
         </span>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Introduction Card */}
+        {/* Overview Card */}
         <StaticCard
-          title="💰 Comps & Voids Overview"
-          description="Proper procedures for handling complimentary items and voided transactions to maintain financial accuracy and accountability."
+          title="💰 Protocol Overview"
+          description="Proper procedures for handling complimentary items and voided transactions to maintain financial accuracy."
           items={[
-            'Manager approval required for all comps',
-            'Document reason for every void',
-            'Follow POS system procedures',
-            'Daily reconciliation process'
+            'Active Manager approval required for all comps',
+            'Full documentation of reason for every void',
+            'Strict adherence to POS system procedures',
+            'Mandatory end-of-shift reconciliation'
           ]}
-          footer={{ left: 'Financial compliance', right: '📊 Procedures' }}
-          index={0}
         />
 
-        {/* Standardized Naming Convention Card */}
+        {/* Naming Convention Card */}
         <StaticCard
-          title="🏷️ Standard Comp Naming Convention"
-          description="Use the 'xxx' + code + 'xxx' pattern for all comps and voids to ensure clear communication and proper tracking."
-          index={1}
+          title="🏷️ System Naming Convention"
+          description="Use the 'xxx' + code + 'xxx' pattern for all descriptions to ensure audit tracking."
         >
           <div style={{
             display: 'grid',
@@ -181,54 +174,51 @@ export default function CompsVoidsSection() {
           }}>
             <div style={{
               padding: '18px',
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
             }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
-                Customer Situations
+              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
+                Customer Experience
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
                 <li><strong>xxxdecxxx</strong> - Customer declined/refused</li>
                 <li><strong>xxxdissxxx</strong> - Customer dissatisfied</li>
-                <li><strong>xxxwaitxxx</strong> - Long wait time compensation</li>
+                <li><strong>xxxwaitxxx</strong> - Wait time compensation</li>
                 <li><strong>xxxvipxxx</strong> - VIP guest treatment</li>
-                <li><strong>xxxregxxx</strong> - Regular customer appreciation</li>
               </ul>
             </div>
 
             <div style={{
               padding: '18px',
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
             }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
-                Product Issues
+              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
+                Product & Service
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
                 <li><strong>xxxqualxxx</strong> - Product quality issue</li>
-                <li><strong>xxxspilxxx</strong> - Drink spilled/accident</li>
+                <li><strong>xxxspilxxx</strong> - Drink spill/accident</li>
                 <li><strong>xxxwrongxxx</strong> - Wrong item made/ordered</li>
-                <li><strong>xxxremakexxx</strong> - Item remake requested</li>
-                <li><strong>xxxexpiredxxx</strong> - Product expired/out of date</li>
+                <li><strong>xxxremakexxx</strong> - Remake requested</li>
               </ul>
             </div>
 
             <div style={{
               padding: '18px',
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
             }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '12px', fontSize: '1rem', fontWeight: 600 }}>
-                System & Operational
+              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
+                Administrative
               </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem' }}>
-                <li><strong>xxxvoidxxx</strong> - General void transaction</li>
+              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
+                <li><strong>xxxvoidxxx</strong> - General transaction void</li>
                 <li><strong>xxxdupxxx</strong> - Duplicate charge</li>
                 <li><strong>xxxerrxxx</strong> - Bartender/System error</li>
-                <li><strong>xxxpromoxxx</strong> - Promotion/discount</li>
                 <li><strong>xxxempxxx</strong> - Employee comp</li>
               </ul>
             </div>
@@ -237,128 +227,43 @@ export default function CompsVoidsSection() {
           <div style={{
             marginTop: '20px',
             padding: '16px',
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.03)',
             borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
+            border: '1px solid rgba(255, 255, 255, 0.05)'
           }}>
-            <h5 style={{
-              color: SECTION_COLOR,
-              marginBottom: '10px',
-              fontSize: '1rem',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              📝 Usage Example
-            </h5>
             <p style={{
               margin: 0,
               ...premiumBodyStyle,
-              fontSize: '0.9rem',
-              fontStyle: 'italic'
+              fontSize: '0.85rem',
+              fontStyle: 'italic',
+              opacity: 0.8
             }}>
-              When a customer is dissatisfied with their drink and you need to comp it, use: <strong>"xxxdissxxx"</strong> in the comp reason field.
+              Example: For a dissatisfied guest, enter <strong>"xxxdissxxx"</strong> in the POS reason field.
             </p>
           </div>
         </StaticCard>
 
-        {/* Comps Procedures */}
-        <StaticCard
-          title="🎁 Complimentary Items Procedures"
-          index={2}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px',
-            marginTop: '10px'
-          }}>
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Manager Approval
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>All comps require manager approval</li>
-                <li>Document customer name and reason</li>
-                <li>Use designated comp codes in POS</li>
-                <li>Limit comps per shift</li>
-              </ul>
-            </div>
+        {/* Comp/Void Procedures */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <StaticCard title="🎁 Comp Standards">
+            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0, fontWeight: 300 }}>
+              <li style={{ marginBottom: '8px' }}>Manager must authorize every complimentary item</li>
+              <li style={{ marginBottom: '8px' }}>Name and specific reason must be documented</li>
+              <li style={{ marginBottom: '8px' }}>Specific codes must be applied in the POS</li>
+            </ul>
+          </StaticCard>
 
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Valid Reasons
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Customer service recovery</li>
-                <li>VIP guest treatment</li>
-                <li>Product quality issues</li>
-                <li>Special promotions</li>
-              </ul>
-            </div>
-          </div>
-        </StaticCard>
-
-        {/* Voids Procedures */}
-        <StaticCard
-          title="📝 Void Transaction Procedures"
-          index={3}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px',
-            marginTop: '10px'
-          }}>
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Void Requirements
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Manager approval for all voids</li>
-                <li>Document detailed reason</li>
-                <li>Include original transaction ID</li>
-                <li>Customer signature if applicable</li>
-              </ul>
-            </div>
-
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Common Void Scenarios
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Duplicate charges</li>
-                <li>Incorrect items ordered</li>
-                <li>System errors</li>
-                <li>Customer disputes</li>
-              </ul>
-            </div>
-          </div>
-        </StaticCard>
+          <StaticCard title="📝 Void Standards">
+            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0, fontWeight: 300 }}>
+              <li style={{ marginBottom: '8px' }}>Manager swipe or login required for all voids</li>
+              <li style={{ marginBottom: '8px' }}>Transaction ID must be referenced for audits</li>
+              <li style={{ marginBottom: '8px' }}>Customer signature required for credit disputes</li>
+            </ul>
+          </StaticCard>
+        </div>
 
         {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '30px' }}>
           <ProgressSection />
         </div>
       </div>

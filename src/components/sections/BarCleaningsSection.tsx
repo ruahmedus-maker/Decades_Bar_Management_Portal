@@ -6,56 +6,65 @@ import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdro
 import { useState, useEffect, useRef } from 'react';
 import { CardProps } from '@/types';
 
-// Define the section color for bar cleanings
-const SECTION_COLOR = '#38B2AC'; // Teal color for cleaning
-const SECTION_COLOR_RGB = '56, 178, 172';
+// Standard Aloha Blue Background (No section-specific teal)
+const SECTION_BLUE = 'rgba(37, 99, 235, 0.2)';
 
-// Simplified Card Component - NO HOVER EFFECTS
-function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, description, items, footer, children }: CardProps) {
   return (
     <div
       style={{
-        borderRadius: '12px',
-        margin: '12px 0',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        borderRadius: '16px',
+        margin: '15px 0',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
         position: 'relative'
       }}
     >
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
-        {children || (
-          <>
-            <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
-            <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
-              {items?.map((item: string, i: number) => (
-                <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px' }}>{item}</li>
-              ))}
-            </ul>
-          </>
-        )}
+        <div style={{ padding: '16px 20px' }}>
+          {children || (
+            <>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
+                {items?.map((item: string, i: number) => (
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px', fontSize: '0.9rem' }}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
         {footer && (
           <div style={{
             padding: '12px 20px',
-            background: 'rgba(237, 242, 247, 0.1)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
+            background: 'rgba(255, 255, 255, 0.03)',
+            fontSize: '0.8rem',
+            color: 'rgba(255, 255, 255, 0.6)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
           }}>
             <span>{footer.left}</span>
             <span>{footer.right}</span>
@@ -66,30 +75,33 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
   );
 }
 
-// Simplified Checklist Item Component - NO HOVER
-function ChecklistItem({ children, index }: any) {
+// Simplified Checklist Item Component - ALOHA STYLED
+function ChecklistItem({ children }: any) {
   return (
     <label style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: '10px',
-      padding: '10px',
-      background: 'rgba(255, 255, 255, 0.06)',
-      borderRadius: '6px',
+      gap: '12px',
+      padding: '12px',
+      background: 'rgba(255, 255, 255, 0.05)',
+      borderRadius: '8px',
       border: '1px solid rgba(255, 255, 255, 0.1)',
-      marginBottom: '6px',
+      marginBottom: '8px',
       cursor: 'pointer',
+      transition: 'all 0.2s ease'
     }}>
       <input type="checkbox" style={{
-        width: '16px',
-        height: '16px',
+        width: '18px',
+        height: '18px',
         marginTop: '2px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        accentColor: '#3B82F6'
       }} />
       <span style={{
         ...premiumBodyStyle,
-        fontSize: '0.9rem',
-        flex: 1
+        fontSize: '0.95rem',
+        flex: 1,
+        fontWeight: 300
       }}>
         {children}
       </span>
@@ -97,7 +109,7 @@ function ChecklistItem({ children, index }: any) {
   );
 }
 
-// YouTube Video Player - SIMPLIFIED
+// YouTube Video Player - ALOHA STYLED
 function YouTubeVideo({ videoId, title, description, duration }: {
   videoId: string;
   title: string;
@@ -134,16 +146,17 @@ function YouTubeVideo({ videoId, title, description, duration }: {
   };
 
   return (
-    <AnimatedCard title={title} index={0}>
-      <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
+    <AnimatedCard title={title}>
+      <p style={{ ...premiumBodyStyle, marginBottom: '12px', opacity: 0.9 }}>{description}</p>
 
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
         height: 0,
         overflow: 'hidden',
-        borderRadius: '6px',
-        backgroundColor: '#000'
+        borderRadius: '8px',
+        backgroundColor: '#000',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <iframe
           ref={iframeRef}
@@ -170,44 +183,57 @@ function YouTubeVideo({ videoId, title, description, duration }: {
               width: '100%',
               height: '100%',
               background: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(4px)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               color: 'white',
-              borderRadius: '6px',
+              borderRadius: '8px',
               cursor: 'pointer'
             }}
             onClick={handlePlay}
           >
             <div style={{ fontSize: '48px', marginBottom: '8px' }}>▶️</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Click to Play</div>
-            <div style={{ marginTop: '6px', fontSize: '0.85rem', opacity: 0.8 }}>
-              Duration: {duration}
+            <div style={{
+              ...premiumWhiteStyle,
+              fontSize: '1rem',
+              letterSpacing: '2px',
+              fontWeight: 300
+            }}>Click to Play</div>
+            <div style={{
+              marginTop: '8px',
+              fontSize: '0.8rem',
+              color: 'rgba(255, 255, 255, 0.6)',
+              letterSpacing: '1px'
+            }}>
+              DURATION: {duration}
             </div>
           </div>
         )}
       </div>
 
       <div style={{
-        marginTop: '8px',
-        fontSize: '0.85rem',
-        color: 'rgba(255, 255, 255, 0.7)',
+        marginTop: '12px',
+        fontSize: '0.8rem',
+        color: 'rgba(255, 255, 255, 0.5)',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase'
       }}>
-        <span>🔗 <a
+        <span><a
           href={`https://youtu.be/${videoId}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            color: SECTION_COLOR,
-            textDecoration: 'none',
-            fontWeight: '500'
+            color: '#FFFFFF',
+            textDecoration: 'underline',
+            opacity: 0.7
           }}
         >
-          Open in YouTube
+          YouTube Link
         </a></span>
       </div>
     </AnimatedCard>
@@ -217,7 +243,7 @@ function YouTubeVideo({ videoId, title, description, duration }: {
 const BAR_CLEANING_VIDEOS = [
   {
     id: 'pfcYoAOTRjA',
-    title: 'Bar Cleaning Procedures',
+    title: 'Cleaning Procedures',
     description: 'Step-by-step guide to proper bar cleaning',
     category: 'Bar Maintenance',
     duration: '2:45'
@@ -233,7 +259,6 @@ export default function BarCleaningsSection() {
 
 
   useEffect(() => {
-    // Load cleaning days first
     const saved = localStorage.getItem('decadesCleaningDays');
     if (saved) {
       setCleaningDays(JSON.parse(saved));
@@ -241,10 +266,9 @@ export default function BarCleaningsSection() {
 
     if (!currentUser) return;
 
-    // Wait 60 seconds then mark as complete
     timerRef.current = setTimeout(() => {
       trackVisit('bar-cleanings');
-      trackVisit('bar-cleanings'); // Call twice to reach 60 seconds (30s + 30s)
+      trackVisit('bar-cleanings');
       console.log('Section auto-completed after 60 seconds');
     }, 60000);
 
@@ -253,7 +277,7 @@ export default function BarCleaningsSection() {
         clearTimeout(timerRef.current);
       }
     };
-  }, [currentUser]); // ✅ FIXED: Code reorganized and properly closed
+  }, [currentUser]);
 
   const toggleCleaningDay = (year: number, month: number, day: number) => {
     const dateStr = `${year}-${month + 1}-${day}`;
@@ -276,11 +300,14 @@ export default function BarCleaningsSection() {
       calendar.push(
         <div key={`header-${day}`} style={{
           padding: '8px',
-          background: 'rgba(255, 255, 255, 0.12)',
-          color: 'rgba(255, 255, 255, 0.9)',
-          fontWeight: '600',
+          background: 'rgba(255, 255, 255, 0.05)',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontWeight: 300,
           textAlign: 'center',
-          fontSize: '0.85rem'
+          fontSize: '0.7rem',
+          letterSpacing: '1px',
+          textTransform: 'uppercase',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           {day}
         </div>
@@ -297,22 +324,23 @@ export default function BarCleaningsSection() {
       const isCleaningDay = cleaningDays.includes(dateStr);
 
       const dayStyle = {
-        padding: '8px',
+        padding: '12px 8px',
         background: isCleaningDay
-          ? `rgba(${SECTION_COLOR_RGB}, 0.25)`
+          ? 'rgba(255, 255, 255, 0.15)'
           : isToday
-            ? 'rgba(212, 175, 55, 0.15)'
-            : 'rgba(255, 255, 255, 0.06)',
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(255, 255, 255, 0.03)',
         border: '1px solid',
         borderColor: isCleaningDay
-          ? `rgba(${SECTION_COLOR_RGB}, 0.4)`
+          ? 'rgba(255, 255, 255, 0.3)'
           : isToday
-            ? 'rgba(212, 175, 55, 0.3)'
-            : 'rgba(255, 255, 255, 0.12)',
-        borderRadius: '6px',
+            ? 'rgba(255, 255, 255, 0.2)'
+            : 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '8px',
         textAlign: 'center' as const,
         cursor: 'pointer',
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        transition: 'all 0.2s ease'
       };
 
       calendar.push(
@@ -322,21 +350,22 @@ export default function BarCleaningsSection() {
           onClick={() => toggleCleaningDay(currentYear, currentMonth, day)}
         >
           <div style={{
-            fontWeight: isToday ? 'bold' : 'normal',
-            color: 'white'
+            fontWeight: isToday ? 600 : 300,
+            color: 'white',
+            opacity: isCleaningDay || isToday ? 1 : 0.7
           }}>
             {day}
           </div>
           {isCleaningDay && (
             <div style={{
-              fontSize: '0.65rem',
-              background: SECTION_COLOR,
+              fontSize: '0.6rem',
               color: 'white',
-              padding: '2px 4px',
-              borderRadius: '3px',
-              marginTop: '4px'
+              marginTop: '4px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontWeight: 600
             }}>
-              Cleaning
+              CLEAN
             </div>
           )}
         </div>
@@ -376,148 +405,153 @@ export default function BarCleaningsSection() {
       id="bar-cleanings"
       style={{
         marginBottom: '25px',
-        borderRadius: '16px',
+        borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
-        padding: '16px 20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-        // REMOVED: backdrop-filter
+        background: 'rgba(255, 255, 255, 0.05)',
+        padding: '20px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Bar Cleaning Schedule
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Cleaning Schedule
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.9rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Comprehensive cleaning procedures and schedules
+            Maintenance and hygiene procedures
           </p>
         </div>
         <span style={{
-          background: 'rgba(255, 255, 255, 0.15)',
-          padding: '6px 12px',
-          borderRadius: '16px',
-          fontSize: '0.85rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
+          borderRadius: '20px',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          Maintenance
+          ESSENTIAL
         </span>
       </div>
 
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '25px' }}>
         {/* Training Video */}
-        {BAR_CLEANING_VIDEOS.map(video => (
-          <YouTubeVideo
-            key={video.id}
-            videoId={video.id}
-            title={video.title}
-            description={video.description}
-            duration={video.duration}
-          />
-        ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px' }}>
+          {BAR_CLEANING_VIDEOS.map(video => (
+            <YouTubeVideo
+              key={video.id}
+              videoId={video.id}
+              title={video.title}
+              description={video.description}
+              duration={video.duration}
+            />
+          ))}
+        </div>
 
-        {/* Opening Checklist */}
-        <AnimatedCard
-          title="✅ Opening Checklist"
-          index={1}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <ChecklistItem>Remove caps from bottles and soak in Soda water</ChecklistItem>
-            <ChecklistItem>Organize bottles on back-bar display - Straight facing and filling gaps</ChecklistItem>
-            <ChecklistItem>Set up well - Marry bottles and gather the required bottles for the shift</ChecklistItem>
-            <ChecklistItem>Set up drink menus on Bar</ChecklistItem>
-            <ChecklistItem>Check paper in the printer and make sure you have back up rolls</ChecklistItem>
-            <ChecklistItem>Make sure you have enough checkbooks for the shift - HH & Roof get additional light ones from office</ChecklistItem>
-            <ChecklistItem>Collect bank from office</ChecklistItem>
-            <ChecklistItem>Ensure you register is assigned</ChecklistItem>
-          </div>
-        </AnimatedCard>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginTop: '10px' }}>
+          {/* Opening Checklist */}
+          <AnimatedCard
+            title="✅ Opening Procedures"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ChecklistItem>Remove caps from bottles and soak in Soda water</ChecklistItem>
+              <ChecklistItem>Organize bottles on back-bar display - Straight facing</ChecklistItem>
+              <ChecklistItem>Set up well - Marry bottles and gather required stock</ChecklistItem>
+              <ChecklistItem>Set up drink menus on Bar</ChecklistItem>
+              <ChecklistItem>Check paper in the printer and backup rolls</ChecklistItem>
+              <ChecklistItem>Ensure checkbooks are ready for the shift</ChecklistItem>
+              <ChecklistItem>Collect bank from office</ChecklistItem>
+              <ChecklistItem>Ensure your register is assigned</ChecklistItem>
+            </div>
+          </AnimatedCard>
 
-        {/* Closing Procedures */}
-        <AnimatedCard
-          title="🧹 Closing Procedures Checklist"
-          index={2}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <ChecklistItem>Soak guns for 10-15 mins in hot water (if available) then wipe and return to holder. Soak the guns as soon as the lights go up on your floor and start entering tips, etc while they're soaking.</ChecklistItem>
-            <ChecklistItem>Soak bottle caps in hot water/soda water as you remove them from bottles at the start of your shift.</ChecklistItem>
-            <ChecklistItem>Soda-gun holders should be cleaned and if they have a spill cup underneath, that should also be cleaned and free of standing water</ChecklistItem>
-            <ChecklistItem>The black box from which the soda-guns hose extends is visible in some bars, this will get splashed throughout the night and should be wiped down as well and the hose</ChecklistItem>
-            <ChecklistItem>Rim around ice bin should be cleaned and free of any standing water</ChecklistItem>
-            <ChecklistItem>Bottles wiped including the pour spouts and then capped</ChecklistItem>
-            <ChecklistItem>All wells and rails that hold bottles should be thoroughly cleaned and free of any standing water</ChecklistItem>
-            <ChecklistItem>Books wiped down and left to dry standing</ChecklistItem>
-            <ChecklistItem>POS system should be cleaned in its entirety, this includes wiping down the cash register, printer, credit card machine and the whole display, not just the screen</ChecklistItem>
-            <ChecklistItem>Screen should be cleaned with a wet beverage napkin and then dried, using only water.</ChecklistItem>
-            <ChecklistItem>Drinks menus should be wiped down and then dried using a beverage napkin to avoid streaking and lint.</ChecklistItem>
-            <ChecklistItem>Area surrounding POS should be free of clutter/trash (receipt paper, etc) and surface should be wiped down</ChecklistItem>
-          </div>
-        </AnimatedCard>
+          {/* Closing Procedures */}
+          <AnimatedCard
+            title="🧹 Closing Procedures"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ChecklistItem>Soak soda guns for 10-15 mins in hot water</ChecklistItem>
+              <ChecklistItem>Soak bottle caps and wipe down guns</ChecklistItem>
+              <ChecklistItem>Clean soda-gun holders and spill cups</ChecklistItem>
+              <ChecklistItem>Wipe down soda-gun hoses and boxes</ChecklistItem>
+              <ChecklistItem>Clean rim around ice bin and remove standing water</ChecklistItem>
+              <ChecklistItem>Wipe bottles, pour spouts, and cap them</ChecklistItem>
+              <ChecklistItem>Clean all wells and bottle rails thoroughly</ChecklistItem>
+              <ChecklistItem>Wipe down POS system and peripheral hardware</ChecklistItem>
+            </div>
+          </AnimatedCard>
+        </div>
 
         {/* Cleaning Calendar */}
         <AnimatedCard
-          title="📅 Bar Cleans Schedule"
-          index={3}
+          title="📅 Log Schedule"
         >
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '12px',
-            padding: '8px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            borderRadius: '6px'
+            marginBottom: '20px',
+            padding: '12px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <button style={{
-              background: SECTION_COLOR,
+              background: 'rgba(255, 255, 255, 0.05)',
               color: 'white',
-              border: 'none',
-              padding: '6px 12px',
-              borderRadius: '4px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '8px 16px',
+              borderRadius: '20px',
               cursor: 'pointer',
-              fontWeight: '600',
+              fontSize: '0.7rem',
+              letterSpacing: '1px',
+              textTransform: 'uppercase'
             }} onClick={() => changeMonth(-1)}>
-              ← Previous
+              Previous
             </button>
-            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+            <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle, fontSize: '0.9rem', letterSpacing: '4px' }}>
               {new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h4>
             <button style={{
-              background: SECTION_COLOR,
+              background: 'rgba(255, 255, 255, 0.05)',
               color: 'white',
-              border: 'none',
-              padding: '6px 12px',
-              borderRadius: '4px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '8px 16px',
+              borderRadius: '20px',
               cursor: 'pointer',
-              fontWeight: '600',
+              fontSize: '0.7rem',
+              letterSpacing: '1px',
+              textTransform: 'uppercase'
             }} onClick={() => changeMonth(1)}>
-              Next →
+              Next
             </button>
           </div>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '4px',
+            gap: '8px',
             marginTop: '8px'
           }}>
             {generateCalendar()}
@@ -526,37 +560,41 @@ export default function BarCleaningsSection() {
 
         {/* Monthly/Quarterly Cleans */}
         <AnimatedCard
-          title="✅ Monthly / Quarterly Bar Cleans"
-          index={4}
+          title="✨ Periodical Deep Clean"
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <ChecklistItem>Remove caps/ pour spouts from all bottles and soak hot water</ChecklistItem>
-            <ChecklistItem>Remove bottles from back-bar displays and clean</ChecklistItem>
-            <ChecklistItem>Clean all shelving and restore wiped bottles</ChecklistItem>
-            <ChecklistItem>restore cleaned pour spots and caps to bottles</ChecklistItem>
-            <ChecklistItem>Empty all beer coolers and clean thoroughly then restoring beer/water/redbull(Check for expiration)</ChecklistItem>
-            <ChecklistItem>Clean POS system thoroughly</ChecklistItem>
-            <ChecklistItem>Spot clean anywhere mold is forming (Generally in areas that collect a lot of water like rim around ice bins)</ChecklistItem>
-            <ChecklistItem>Once complete move to another floor and help complete the work there</ChecklistItem>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <ChecklistItem>Remove and soak all pour spouts and caps</ChecklistItem>
+            <ChecklistItem>Clean all back-bar shelving and display units</ChecklistItem>
+            <ChecklistItem>Deep clean beer coolers and check expiration dates</ChecklistItem>
+            <ChecklistItem>Thorough POS hardware maintenance</ChecklistItem>
+            <ChecklistItem>Spot clean and sanitize high-moisture areas</ChecklistItem>
           </div>
         </AnimatedCard>
 
         {/* Reset Button */}
-        <button style={{
-          background: `linear-gradient(135deg, ${SECTION_COLOR}, #319795)`,
-          color: 'white',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          fontWeight: '600',
-          marginTop: '12px',
-        }} onClick={resetChecklists}>
-          Reset All Checklists
-        </button>
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button
+            onClick={resetChecklists}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '12px 30px',
+              borderRadius: '30px',
+              cursor: 'pointer',
+              fontWeight: 300,
+              fontSize: '0.8rem',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            Reset All Checklists
+          </button>
+        </div>
 
         {/* Progress Section */}
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: '30px' }}>
           <ProgressSection />
         </div>
       </div>

@@ -1,56 +1,44 @@
-
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define the section color for resources
-const SECTION_COLOR = '#8B5CF6'; // Purple color for resources
-const SECTION_COLOR_RGB = '139, 92, 246';
-
-// Animated Card Component without Hover Effects
-function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
-  // Different glow colors for different cards - purple theme for resources
-  const glowColors = [
-    'linear-gradient(45deg, #8B5CF6, #A78BFA, transparent)',
-    'linear-gradient(45deg, #A78BFA, #C4B5FD, transparent)',
-    'linear-gradient(45deg, #7C3AED, #8B5CF6, transparent)',
-    'linear-gradient(45deg, #6D28D9, #8B5CF6, transparent)'
-  ];
-
-  //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #A78BFA, transparent)`;
-
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, description, children }: CardProps) {
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
+          {description && <p style={{ ...premiumBodyStyle, marginBottom: '15px', fontSize: '0.9rem' }}>{description}</p>}
           {children}
         </div>
       </div>
@@ -58,49 +46,24 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
   );
 }
 
-// Resource Item Component without Hover Effects
-function ResourceItem({ title, description, icon, index }: any) {
+// Resource Item Component - ALOHA STYLED
+function ResourceItem({ title, description, icon }: any) {
   return (
     <div
       style={{
-        padding: '20px',
-        background: 'rgba(255, 255, 255, 0.08)',
+        padding: '18px',
+        background: 'rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'none', // Removed - caused scroll crashes
-        transform: 'translateY(0)',
-        backdropFilter: 'blur(10px)',
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden'
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        backdropFilter: 'blur(8px)',
+        cursor: 'pointer'
       }}
     >
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-        <div style={{
-          fontSize: '1.5rem',
-          color: 'rgba(255, 255, 255, 0.7)',
-          transition: 'color 0.3s ease',
-          flexShrink: 0
-        }}>
-          {icon}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+        <div style={{ fontSize: '1.2rem', opacity: 0.7 }}>{icon}</div>
         <div>
-          <h5 style={{
-            color: 'white',
-            margin: '0 0 8px 0',
-            fontSize: '1rem',
-            fontWeight: 600,
-            transition: 'color 0.3s ease'
-          }}>
-            {title}
-          </h5>
-          <p style={{
-            ...premiumBodyStyle,
-            margin: 0,
-            fontSize: '0.9rem'
-          }}>
-            {description}
-          </p>
+          <h5 style={{ color: 'white', margin: '0 0 6px 0', fontSize: '0.9rem', fontWeight: 300, letterSpacing: '0.5px' }}>{title}</h5>
+          <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.6 }}>{description}</p>
         </div>
       </div>
     </div>
@@ -113,67 +76,28 @@ export default function ResourcesSection() {
 
   useEffect(() => {
     if (!currentUser) return;
-
-    // Wait 60 seconds then mark as complete
     timerRef.current = setTimeout(() => {
       trackSectionVisit(currentUser.email, 'resources', 60);
-      console.log('Section auto-completed after 60 seconds');
     }, 60000);
-
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [currentUser]);
+
   const resources = [
-    {
-      icon: '🍸',
-      title: 'Cocktail Recipes',
-      description: 'Complete guide to signature cocktails and classic recipes with measurements and preparation steps.'
-    },
-    {
-      icon: '💻',
-      title: 'POS Manual',
-      description: 'Point of Sale system operation, troubleshooting, and best practices for efficient service.'
-    },
-    {
-      icon: '🛡️',
-      title: 'Safety Procedures',
-      description: 'Emergency protocols, safety guidelines, and incident reporting procedures.'
-    },
-    {
-      icon: '📦',
-      title: 'Inventory Guide',
-      description: 'Stock management, ordering procedures, and inventory control best practices.'
-    },
-    {
-      icon: '🎉',
-      title: 'Event Protocols',
-      description: 'Special event procedures, checklists, and customer service standards.'
-    },
-    {
-      icon: '👥',
-      title: 'Customer Service',
-      description: 'Guest interaction standards, conflict resolution, and service excellence guidelines.'
-    },
-    {
-      icon: '🍺',
-      title: 'Beer & Wine Guide',
-      description: 'Comprehensive guide to our beer selection, wine list, and pairing recommendations.'
-    },
-    {
-      icon: '🔧',
-      title: 'Equipment Manuals',
-      description: 'Operating instructions and troubleshooting for all venue equipment.'
-    }
+    { icon: '🍸', title: 'Cocktail Bible', description: 'Complete signature recipe database' },
+    { icon: '💻', title: 'Aloha POS Guide', description: 'Terminal troubleshooting & operations' },
+    { icon: '🛡️', title: 'Safety Protocols', description: 'Emergency procedures & medical response' },
+    { icon: '📦', title: 'Inventory Log', description: 'Stock control and ordering guidelines' },
+    { icon: '🎉', title: 'Event Standards', description: 'VIP hosting and special feature protocols' },
+    { icon: '👥', title: 'Guest Excellence', description: 'Service standards & de-escalation' }
   ];
 
   return (
     <div
       id="resources-section"
       style={{
-        marginBottom: '30px',
+        marginBottom: '25px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
@@ -181,133 +105,85 @@ export default function ResourcesSection() {
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: 'translateY(0)',
-        animation: 'fadeIn 0.5s ease'
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Additional Resources
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Resource Library
           </h3>
           <p style={{
             margin: 0,
-            ...premiumBodyStyle,
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Training materials, reference guides, and essential documentation
+            Training materials and reference documentation
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.9rem',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          Reference
+          REFERENCE
         </span>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Resources Grid */}
         <AnimatedCard
-          title="📚 Training & Reference Materials"
-          description="Access all essential resources for your role at Decades Bar"
-          index={0}
+          title="📚 Reference Materials"
+          description="Access all essential guides and documentation for your role at Decades."
         >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '15px',
-            marginTop: '15px'
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
             {resources.map((resource, index) => (
-              <ResourceItem
-                key={index}
-                title={resource.title}
-                description={resource.description}
-                icon={resource.icon}
-                index={index}
-              />
+              <ResourceItem key={index} {...resource} />
             ))}
           </div>
         </AnimatedCard>
 
-        {/* Quick Access */}
-        <AnimatedCard
-          title="⚡ Quick Access"
-          index={1}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '15px',
-            marginTop: '15px'
-          }}>
-            <button style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '10px' }}>
+          {[
+            { icon: '📋', label: 'Employee Handbook' },
+            { icon: '🎬', label: 'Training Videos' },
+            { icon: '📞', label: 'Support Contacts' }
+          ].map((btn, idx) => (
+            <button key={idx} style={{
+              padding: '12px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.22)',
               borderRadius: '8px',
               color: 'white',
+              fontSize: '0.8rem',
+              letterSpacing: '1px',
               cursor: 'pointer',
-              transition: 'none', // Removed - caused scroll crashes
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              backdropFilter: 'blur(10px)'
+              fontWeight: 300
             }}>
-              📋 Download Handbook
+              {btn.icon} {btn.label}
             </button>
-            <button style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-              transition: 'none', // Removed - caused scroll crashes
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              backdropFilter: 'blur(10px)'
-            }}>
-              🎬 Training Videos
-            </button>
-            <button style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-              transition: 'none', // Removed - caused scroll crashes
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              backdropFilter: 'blur(10px)'
-            }}>
-              📞 Contact Support
-            </button>
-          </div>
-        </AnimatedCard>
+          ))}
+        </div>
 
-        {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '30px' }}>
           <ProgressSection />
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
@@ -6,101 +5,64 @@ import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define the section color for glassware guide
-const SECTION_COLOR = '#4299E1'; // Blue color for glassware
-const SECTION_COLOR_RGB = '66, 153, 225';
-
-// Animated Card Component without Hover Effects
-function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
-  // Different glow colors for different cards - blue theme for glassware
-  const glowColors = [
-    'linear-gradient(45deg, #4299E1, #63B3ED, transparent)', // Blue
-    'linear-gradient(45deg, #3182CE, #4299E1, transparent)', // Dark Blue
-    'linear-gradient(45deg, #2B6CB0, #3182CE, transparent)', // Deeper Blue
-    'linear-gradient(45deg, #2C5282, #2B6CB0, transparent)'  // Navy Blue
-  ];
-
-  //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #63B3ED, transparent)`;
-
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, description, items, children }: CardProps) {
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
         position: 'relative'
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
-              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px', fontSize: '0.9rem' }}>{item}</li>
                 ))}
               </ul>
             </>
           )}
         </div>
-        {footer && (
-          <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <span>{footer.left}</span>
-            <span>{footer.right}</span>
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
-// Glassware Card Component without Hover Effects
-function GlasswareCard({ title, primaryUse, includes, note, index }: any) {
-  const glasswareColors = [
-    'linear-gradient(45deg, #4299E1, transparent)', // Blue
-    'linear-gradient(45deg, #3182CE, transparent)', // Dark Blue
-    'linear-gradient(45deg, #2B6CB0, transparent)'  // Deeper Blue
-  ];
-
-  const glasswareColor = glasswareColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, transparent)`;
-
+// Glassware Card - ALOHA STYLED
+function GlasswareCard({ title, primaryUse, includes, note }: any) {
   return (
     <div
       style={{
-        textAlign: 'left',
         padding: '20px',
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: 'rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'none', // Removed - caused scroll crashes
-        transform: 'translateY(0)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         position: 'relative',
@@ -109,51 +71,32 @@ function GlasswareCard({ title, primaryUse, includes, note, index }: any) {
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h5 style={{
-          color: 'white',
-          marginBottom: '15px',
-          fontSize: '1.1rem',
-          fontWeight: 600,
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-          paddingBottom: '8px',
-          transition: 'all 0.3s ease'
+          ...premiumWhiteStyle,
+          marginBottom: '18px',
+          fontSize: '1rem',
+          letterSpacing: '2px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          paddingBottom: '8px'
         }}>
           {title}
         </h5>
 
         <div style={{ marginBottom: '15px' }}>
-          <div style={{
-            color: SECTION_COLOR,
-            fontSize: '0.95rem',
-            fontWeight: '600',
-            marginBottom: '8px'
-          }}>
+          <div style={{ color: 'white', fontSize: '0.75rem', fontWeight: 400, marginBottom: '6px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.6 }}>
             Primary Use:
           </div>
-          <p style={{
-            ...premiumBodyStyle,
-            margin: 0,
-            fontSize: '0.9rem'
-          }}>
+          <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.95rem', fontWeight: 300 }}>
             {primaryUse}
           </p>
         </div>
 
         <div style={{ marginBottom: '15px' }}>
-          <div style={{
-            color: SECTION_COLOR,
-            fontSize: '0.95rem',
-            fontWeight: '600',
-            marginBottom: '8px'
-          }}>
-            Includes:
+          <div style={{ color: 'white', fontSize: '0.75rem', fontWeight: 400, marginBottom: '6px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.6 }}>
+            Drink Selection:
           </div>
-          <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+          <ul style={{ margin: '8px 0', paddingLeft: '18px' }}>
             {includes.map((item: string, idx: number) => (
-              <li key={idx} style={{
-                ...premiumBodyStyle,
-                marginBottom: '4px',
-                fontSize: '0.9rem'
-              }}>
+              <li key={idx} style={{ ...premiumBodyStyle, marginBottom: '4px', fontSize: '0.85rem', fontWeight: 300, opacity: 0.85 }}>
                 {item}
               </li>
             ))}
@@ -161,28 +104,8 @@ function GlasswareCard({ title, primaryUse, includes, note, index }: any) {
         </div>
 
         {note && (
-          <div style={{
-            marginTop: '15px',
-            padding: '12px',
-            background: `rgba(${SECTION_COLOR_RGB}, 0.1)`,
-            border: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
-            borderRadius: '8px'
-          }}>
-            <div style={{
-              color: SECTION_COLOR,
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              marginBottom: '4px'
-            }}>
-              Note:
-            </div>
-            <p style={{
-              ...premiumBodyStyle,
-              margin: 0,
-              fontSize: '0.85rem',
-              fontStyle: 'italic',
-              opacity: 0.8
-            }}>
+          <div style={{ marginTop: '15px', padding: '12px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+            <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', fontStyle: 'italic', fontWeight: 300, opacity: 0.7 }}>
               {note}
             </p>
           </div>
@@ -198,53 +121,45 @@ export default function GlasswareGuideSection() {
 
   useEffect(() => {
     if (!currentUser) return;
-
-    // Wait 60 seconds then mark as complete
     timerRef.current = setTimeout(() => {
       trackSectionVisit(currentUser.email, 'glassware-guide', 60);
-      console.log('Section auto-completed after 60 seconds');
     }, 60000);
-
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [currentUser]);
 
   const glasswareData = [
     {
-      title: 'Decades Large Branded Glass',
-      primaryUse: 'High-volume cocktails and mixed drinks',
+      title: 'Large Branded Glass',
+      primaryUse: 'High-volume cocktails and refreshments',
       includes: [
-        'Water, Juice, and Soda',
-        'Any Long Island Iced Tea variations',
-        'Any cocktail with Red Bull',
-        'Bombs for Red Bull',
-        'Decades Signature/Seasonal feature cocktails',
-        'Any "double" cocktail'
+        'Soft drinks, Water, and Juices',
+        'Long Island Iced Tea variations',
+        'All cocktails containing Red Bull',
+        'Signature Decades features',
+        'Double liquor-count cocktails'
       ],
-      note: 'May be used as a double shooter upon specific customer request'
+      note: 'Can serve as a double shooter vessel upon specific request'
     },
     {
-      title: 'Decades Frosted Glass',
-      primaryUse: 'Spirit-forward drinks served without large-volume mixers',
+      title: 'Frosted Spirit Glass',
+      primaryUse: 'Spirit-forward serves and rocks pours',
       includes: [
-        'Single or double "neat" pours of any liquor',
-        'Single-pour cocktails (e.g., Vodka & Soda, Rum & Coke)',
-        'Single or double pours of liquor "on the rocks"',
-        'Any request for a Neat/Straight Up shot (e.g., Bourbon Neat, Scotch Straight Up)'
-      ],
-      note: null
+        'Single/Double neat spirit pours',
+        'Single-pour mixed drinks (e.g. Soda/Cola)',
+        'Rocks pours (Ice only)',
+        'Straight-up chilled spirit pours'
+      ]
     },
     {
-      title: 'Decades Shot Glass',
-      primaryUse: 'All shot servings',
+      title: 'Precision Shot Glass',
+      primaryUse: 'Fixed-measure spirit and shooter serves',
       includes: [
-        'Shots of liquor',
-        'All shooters'
+        'Single liquor shots',
+        'Multi-ingredient shooters'
       ],
-      note: 'All shots are to be poured below the rim'
+      note: 'Protocol: Pours should arrive just below the rim'
     }
   ];
 
@@ -252,7 +167,7 @@ export default function GlasswareGuideSection() {
     <div
       id="glassware-guide"
       style={{
-        marginBottom: '30px',
+        marginBottom: '25px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
@@ -260,101 +175,84 @@ export default function GlasswareGuideSection() {
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Glassware Guide
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Glassware Standards
           </h3>
           <p style={{
             margin: 0,
-            ...premiumBodyStyle,
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Proper glassware selection and usage guidelines
+            Vessel selection and presentation protocols
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.9rem',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          3 Glass Types
+          3 STANDARDS
         </span>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Introduction Card */}
         <AnimatedCard
-          title="🥃 Decades Glassware Standards"
-          description="Master the art of proper glassware selection. Each glass type is specifically designed for different drink categories to ensure optimal presentation and customer experience."
-          items={[
-            'Large Branded Glass - High-volume cocktails',
-            'Frosted Glass - Spirit-forward drinks',
-            'Shot Glass - All shot servings',
-            'Thursday security protocols'
-          ]}
-          footer={{ left: 'Essential knowledge', right: '📋 Standards' }}
-          index={0}
+          title="🥃 Proper Selection"
+          description="Master the art of presentation. Correct glassware ensures optimal flavor profiles and professional guest service."
         />
 
-        {/* Glassware Grid */}
-        <AnimatedCard
-          title="🍶 Glassware Types & Uses"
-          index={1}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '20px'
-          }}>
-            {glasswareData.map((glassware, index) => (
-              <GlasswareCard
-                key={index}
-                title={glassware.title}
-                primaryUse={glassware.primaryUse}
-                includes={glassware.includes}
-                note={glassware.note}
-                index={index}
-              />
-            ))}
-          </div>
-        </AnimatedCard>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '20px',
+          marginTop: '10px'
+        }}>
+          {glasswareData.map((glass, index) => (
+            <GlasswareCard
+              key={index}
+              title={glass.title}
+              primaryUse={glass.primaryUse}
+              includes={glass.includes}
+              note={glass.note}
+            />
+          ))}
+        </div>
 
-        {/* Thursday Policy */}
         <AnimatedCard
-          title="⚠️ Important Thursday Policy"
-          description="Security & Underage Drinking Protocol"
+          title="⚠️ Exclusive Thursday Policy"
+          description="Specific security protocol for Thursday night operations."
           items={[
-            'On Thursdays, all cocktails normally served in Large Branded Glass must use Frosted Glass',
-            'This includes Long Island Iced Teas, cocktails with Red Bull, and double cocktails',
-            'Please adhere to this policy for the entire Thursday night operation'
+            'All cocktails normally in Large Branded glass MUST use Frosted glass',
+            'This includes LIITs, Red Bull mixers, and Double pours',
+            'Policy applies from Doors Open until Operational Close'
           ]}
-          footer={{ left: 'Security protocol', right: '🔒 Required' }}
-          index={2}
         />
 
-        {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '30px' }}>
           <ProgressSection />
         </div>
       </div>

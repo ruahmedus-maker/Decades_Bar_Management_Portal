@@ -8,18 +8,14 @@ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { MaintenanceTicket, CardProps } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define the section color for maintenance - deep blue theme
-const SECTION_COLOR = '#1E40AF'; // Deep blue color for maintenance
-const SECTION_COLOR_RGB = '30, 64, 175';
-
-// Simplified Card Component without hover effects
-function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, description, children }: CardProps) {
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -30,20 +26,21 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
           {description && (
-            <p style={{
-              margin: '8px 0 0 0',
-              ...premiumBodyStyle,
-              fontSize: '0.9rem'
-            }}>
+            <p style={{ ...premiumBodyStyle, margin: '6px 0 0 0', fontSize: '0.85rem', opacity: 0.7 }}>
               {description}
             </p>
           )}
@@ -56,65 +53,54 @@ function AnimatedCard({ title, description, items, footer, index, children }: Ca
   );
 }
 
-// Maintenance Item Component without hover effects
-function MaintenanceItem({ title, description, icon, status, index }: any) {
+// Maintenance Item Component - ALOHA STYLED
+function MaintenanceItem({ title, description, icon, status }: any) {
   const getStatusColor = (status: string) => {
     const colors: { [key: string]: string } = {
       open: '#3B82F6',
+      assigned: '#8B5CF6',
       'in-progress': '#F59E0B',
       completed: '#10B981',
       closed: '#6B7280'
     };
-    return colors[status] || SECTION_COLOR;
+    return colors[status] || '#FFFFFF';
   };
 
   return (
     <div
       style={{
-        padding: '20px',
-        background: 'rgba(255, 255, 255, 0.08)',
+        padding: '18px',
+        background: 'rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
         backdropFilter: 'blur(10px)',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-        <div style={{
-          fontSize: '1.5rem',
-          color: 'rgba(255, 255, 255, 0.7)',
-          flexShrink: 0
-        }}>
+        <div style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>
           {icon}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-            <h5 style={{
-              color: 'white',
-              margin: 0,
-              fontSize: '1rem',
-              fontWeight: 600
-            }}>
+            <h5 style={{ color: 'white', margin: 0, fontSize: '0.95rem', fontWeight: 300, letterSpacing: '0.5px' }}>
               {title}
             </h5>
             <span style={{
-              background: `linear-gradient(135deg, ${getStatusColor(status)}, ${getStatusColor(status)}99)`,
+              background: getStatusColor(status),
               color: 'white',
-              padding: '4px 8px',
-              borderRadius: '12px',
-              fontSize: '0.7rem',
-              fontWeight: '600',
-              textTransform: 'capitalize'
+              padding: '2px 8px',
+              borderRadius: '4px',
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '1px'
             }}>
               {status}
             </span>
           </div>
-          <p style={{
-            ...premiumBodyStyle,
-            margin: 0,
-            fontSize: '0.9rem'
-          }}>
+          <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.85rem', fontWeight: 300, opacity: 0.8 }}>
             {description}
           </p>
         </div>
@@ -126,12 +112,7 @@ function MaintenanceItem({ title, description, icon, status, index }: any) {
 export default function MaintenanceSection() {
   const { currentUser, showToast } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recentTickets, setRecentTickets] = useState<Array<{
-    icon: string;
-    title: string;
-    description: string;
-    status: string;
-  }>>([]);
+  const [recentTickets, setRecentTickets] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [ticketForm, setTicketForm] = useState({
     floor: '2000s' as '2000s' | '2010s' | 'Hip Hop' | 'Rooftop',
@@ -141,26 +122,22 @@ export default function MaintenanceSection() {
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent'
   });
 
-  // Fetch recent maintenance tickets
   const fetchRecentTickets = async () => {
     try {
       const { data, error } = await supabase
         .from('maintenance_tickets')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(4);
+        .limit(6);
 
       if (error) throw error;
-
       if (data) {
-        // Convert database data to the format expected by the component
-        const formattedTickets = data.map((ticket: MaintenanceTicket) => ({
+        setRecentTickets(data.map((ticket: MaintenanceTicket) => ({
           icon: getTicketIcon(ticket.title),
           title: ticket.title,
           description: ticket.description,
           status: ticket.status
-        }));
-        setRecentTickets(formattedTickets);
+        })));
       }
     } catch (error) {
       console.error('Error fetching maintenance tickets:', error);
@@ -170,66 +147,38 @@ export default function MaintenanceSection() {
     }
   };
 
-
-
-  // In your useEffect, replace the subscription code with this:
   useEffect(() => {
     fetchRecentTickets();
-
-    // Subscribe to real-time changes with proper typing
     const subscription = supabase
       .channel('maintenance_tickets_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'maintenance_tickets'
-        },
-        (payload: RealtimePostgresChangesPayload<any>) => {
-          console.log('Maintenance ticket change received!', payload);
-          fetchRecentTickets(); // Refresh the list
-        }
-      )
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Real-time subscription active');
-        }
-        if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Real-time subscription failed');
-        }
-      });
-
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_tickets' }, () => {
+        fetchRecentTickets();
+      })
+      .subscribe();
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  // Helper function to get appropriate icon based on ticket title
   const getTicketIcon = (title: string) => {
-    if (title.toLowerCase().includes('ice') || title.toLowerCase().includes('machine')) return '🔧';
-    if (title.toLowerCase().includes('light')) return '💡';
-    if (title.toLowerCase().includes('leak') || title.toLowerCase().includes('water')) return '🚰';
-    if (title.toLowerCase().includes('pos') || title.toLowerCase().includes('system')) return '🔌';
+    const t = title.toLowerCase();
+    if (t.includes('ice') || t.includes('machine')) return '🔧';
+    if (t.includes('light')) return '💡';
+    if (t.includes('leak') || t.includes('water')) return '🚰';
+    if (t.includes('pos') || t.includes('system')) return '🔌';
     return '🛠️';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
-      showToast('You must be logged in to submit a maintenance ticket');
+      showToast('Login required');
       return;
     }
-
     setIsSubmitting(true);
-
     try {
-      // Generate a UUID for the ticket ID
-      const ticketId = crypto.randomUUID();
-
-      // Debug: Log what we're about to send
-      console.log('🔄 Attempting to create maintenance ticket with data:', {
-        id: ticketId,
+      const { error } = await supabase.from('maintenance_tickets').insert([{
+        id: crypto.randomUUID(),
         floor: ticketForm.floor,
         location: ticketForm.location,
         title: ticketForm.title,
@@ -238,88 +187,27 @@ export default function MaintenanceSection() {
         reported_by_email: currentUser.email,
         status: 'open',
         priority: ticketForm.priority
-      });
-
-
-      // Simplified - only include fields that are required or have values
-      const ticketData = {
-        id: ticketId,
-        floor: ticketForm.floor,
-        location: ticketForm.location,
-        title: ticketForm.title,
-        description: ticketForm.description,
-        reported_by: currentUser.name,
-        reported_by_email: currentUser.email,
-        status: 'open' as const,
-        priority: ticketForm.priority
-        // Omit assigned_to and notes - they'll use database NULL defaults
-      };
-
-      console.log('📤 Sending to Supabase...');
-
-      const { data, error } = await supabase
-        .from('maintenance_tickets')
-        .insert([ticketData])
-        .select();
-
-      console.log('📥 Supabase response:', { data, error });
-
-      if (error) {
-        console.error('❌ Supabase error details:', {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
-        throw error;
-      }
-
-      console.log('✅ Ticket created successfully:', data);
-      showToast('Maintenance ticket submitted successfully!');
-
-      // Reset form
-      setTicketForm({
-        floor: '2000s',
-        location: '',
-        title: '',
-        description: '',
-        priority: 'medium'
-      });
-
-      // Refresh the recent tickets list
+      }]);
+      if (error) throw error;
+      showToast('Ticket logged successfully');
+      setTicketForm({ floor: '2000s', location: '', title: '', description: '', priority: 'medium' });
       fetchRecentTickets();
     } catch (error: any) {
-      console.error('Error submitting maintenance ticket:', error);
-      showToast(error.message || 'Error submitting ticket. Please try again.');
+      showToast('Submission error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setTicketForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  // Update getStatusColor to handle all statuses from your schema
-  const getStatusColor = (status: string) => {
-    const colors: { [key: string]: string } = {
-      open: '#3B82F6',
-      assigned: '#8B5CF6', // Purple for assigned
-      'in-progress': '#F59E0B',
-      completed: '#10B981',
-      closed: '#6B7280'
-    };
-    return colors[status] || SECTION_COLOR;
+    setTicketForm(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <div
       id="maintenance-section"
       style={{
-        marginBottom: '30px',
+        marginBottom: '25px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
@@ -327,330 +215,163 @@ export default function MaintenanceSection() {
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        animation: 'fadeIn 0.5s ease'
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Maintenance Request
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Maintenance Log
           </h3>
           <p style={{
             margin: 0,
-            ...premiumBodyStyle,
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Report facility and equipment issues for prompt resolution
+            Facility tracking and equipment resolution
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.9rem',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          Report Issues
+          LOG TICKETS
         </span>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Maintenance Ticket Form */}
-        <AnimatedCard
-          title="🔧 Create Maintenance Ticket"
-          description="Report facility, equipment, or safety issues for immediate attention"
-          index={0}
-        >
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '15px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
-                  Floor / Area *
-                </label>
-                <select
-                  value={ticketForm.floor}
-                  onChange={(e) => handleInputChange('floor', e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    fontSize: '0.9rem'
-                  }}
-                  required
-                >
-                  <option value="2000s">2000's</option>
-                  <option value="2010s">2010's</option>
-                  <option value="Hip Hop">Hip Hop</option>
-                  <option value="Rooftop">Rooftop</option>
-                </select>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px' }}>
+          <AnimatedCard
+            title="🔧 New Request"
+            description="Log facility or safety issues for manager review"
+          >
+            <form onSubmit={handleSubmit}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Floor</label>
+                  <select
+                    value={ticketForm.floor}
+                    onChange={(e) => handleInputChange('floor', e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', fontSize: '0.85rem' }}
+                  >
+                    <option value="2000s">2000's</option>
+                    <option value="2010s">2010's</option>
+                    <option value="Hip Hop">Hip Hop</option>
+                    <option value="Rooftop">Rooftop</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Priority</label>
+                  <select
+                    value={ticketForm.priority}
+                    onChange={(e) => handleInputChange('priority', e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', fontSize: '0.85rem' }}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
-                  Priority *
-                </label>
-                <select
-                  value={ticketForm.priority}
-                  onChange={(e) => handleInputChange('priority', e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    fontSize: '0.9rem'
-                  }}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Location & Title</label>
+                <input
+                  type="text"
+                  value={ticketForm.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="e.g., Back Bar - POS Terminal 2"
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', fontSize: '0.85rem' }}
                   required
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
+                />
               </div>
-            </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
-                Location / Title *
-              </label>
-              <input
-                type="text"
-                value={ticketForm.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="e.g., Back Bar, Restroom A, DJ Booth, etc."
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Description</label>
+                <textarea
+                  value={ticketForm.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Details of the issue..."
+                  rows={3}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', fontSize: '0.85rem', resize: 'none' }}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
                 style={{
                   width: '100%',
-                  padding: '10px',
-                  borderRadius: '8px',
+                  padding: '12px',
                   background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  fontSize: '0.9rem'
-                }}
-                required
-              />
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
-                Issue Title *
-              </label>
-              <input
-                type="text"
-                value={ticketForm.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Brief description of the issue"
-                style={{
-                  width: '100%',
-                  padding: '10px',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: 'white',
-                  fontSize: '0.9rem'
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 300,
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px'
                 }}
-                required
-              />
-            </div>
+              >
+                {isSubmitting ? 'Submitting...' : 'Commit Ticket'}
+              </button>
+            </form>
+          </AnimatedCard>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>
-                Description *
-              </label>
-              <textarea
-                value={ticketForm.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Please provide detailed description of the issue..."
-                rows={4}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  fontSize: '0.9rem',
-                  resize: 'vertical'
-                }}
-                required
-              />
-            </div>
-
-            {currentUser && (
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '15px',
-                fontSize: '0.9rem',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                ...premiumBodyStyle
-              }}>
-                <strong style={{ color: SECTION_COLOR }}>Reported by:</strong> {currentUser.name} ({currentUser.email})
+          <AnimatedCard
+            title="📋 Current Status"
+            description="Tracking the resolution of recent active requests"
+          >
+            {isLoading ? <p style={premiumBodyStyle}>Loading database...</p> : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {recentTickets.length > 0 ? (
+                  recentTickets.map((ticket, idx) => (
+                    <MaintenanceItem key={idx} {...ticket} />
+                  ))
+                ) : (
+                  <p style={{ ...premiumBodyStyle, opacity: 0.5, textAlign: 'center', padding: '20px' }}>No active tickets reported.</p>
+                )}
               </div>
             )}
+          </AnimatedCard>
+        </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              style={{
-                width: '100%',
-                padding: '12px 24px',
-                background: isSubmitting
-                  ? 'rgba(255, 255, 255, 0.2)'
-                  : `rgba(${SECTION_COLOR_RGB}, 0.3)`,
-                border: isSubmitting
-                  ? '1px solid rgba(255, 255, 255, 0.3)'
-                  : `1px solid rgba(${SECTION_COLOR_RGB}, 0.5)`,
-                borderRadius: '8px',
-                color: 'white',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              {isSubmitting ? '🔄 Submitting...' : '🚀 Submit Maintenance Ticket'}
-            </button>
-          </form>
-        </AnimatedCard>
-
-        {/* Recent Tickets */}
-        <AnimatedCard
-          title="📋 Recent Maintenance Tickets"
-          description="Track the status of recent maintenance requests"
-          index={1}
-        >
-          {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px', ...premiumBodyStyle, opacity: 0.7 }}>
-              Loading recent tickets...
+        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+          {[
+            { tag: 'Repair', icon: '🛠️', desc: 'Equipment, POS, Audio' },
+            { tag: 'Facility', icon: '🏢', desc: 'Leaks, Lighting, HVAC' },
+            { tag: 'Decor', icon: '🪑', desc: 'Furniture, Fixtures' },
+            { tag: 'Safety', icon: '🚨', desc: 'Hazards, Emergency' }
+          ].map((item, idx) => (
+            <div key={idx} style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: '0.9rem', color: 'white', marginBottom: '4px', fontWeight: 300 }}>{item.icon} {item.tag}</div>
+              <div style={{ fontSize: '0.75rem', color: 'white', opacity: 0.5, fontWeight: 300 }}>{item.desc}</div>
             </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: '15px',
-              marginTop: '15px'
-            }}>
-              {recentTickets.length > 0 ? (
-                recentTickets.map((ticket, index) => (
-                  <MaintenanceItem
-                    key={index}
-                    title={ticket.title}
-                    description={ticket.description}
-                    icon={ticket.icon}
-                    status={ticket.status}
-                    index={index}
-                  />
-                ))
-              ) : (
-                <div style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  ...premiumBodyStyle,
-                  opacity: 0.7,
-                  gridColumn: '1 / -1'
-                }}>
-                  No maintenance tickets found. Create one above!
-                </div>
-              )}
-            </div>
-          )}
-        </AnimatedCard>
-
-        {/* Quick Reference */}
-        <AnimatedCard
-          title="ℹ️ When to Use This Form"
-          index={2}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '15px',
-            marginTop: '15px'
-          }}>
-            <div style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                🛠️ Equipment Repairs
-              </h5>
-              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
-                Ice machines, POS systems, audio equipment, etc.
-              </p>
-            </div>
-
-            <div style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                🏢 Facility Issues
-              </h5>
-              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
-                Leaks, lighting, temperature control, structural issues
-              </p>
-            </div>
-
-            <div style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                🪑 Furniture & Fixtures
-              </h5>
-              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
-                Broken chairs, tables, bar fixtures, decor issues
-              </p>
-            </div>
-
-            <div style={{
-              padding: '15px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                🚨 Safety Concerns
-              </h5>
-              <p style={{ ...premiumBodyStyle, margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>
-                Slippery floors, electrical hazards, emergency equipment
-              </p>
-            </div>
-          </div>
-        </AnimatedCard>
+          ))}
+        </div>
       </div>
     </div>
   );

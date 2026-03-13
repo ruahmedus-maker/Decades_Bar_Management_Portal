@@ -4,9 +4,8 @@ import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define the section color for Aloha POS - Green theme
-const SECTION_COLOR = '#38A169'; // Green color for POS
-const SECTION_COLOR_RGB = '56, 161, 105';
+// Standard Aloha Blue Background (No section-specific green)
+const SECTION_BLUE = 'rgba(37, 99, 235, 0.2)';
 
 const TRAINING_VIDEOS = [
   {
@@ -95,48 +94,45 @@ const TRAINING_VIDEOS = [
   }
 ];
 
-// SIMPLE Card Component - NO HOVER EFFECTS
-function SimpleCard({ title, description, items, footer, index, children }: any) {
+// SIMPLE Card Component - ALOHA STYLED
+function SimpleCard({ title, description, items, footer, children }: any) {
   return (
     <div
       style={{
-        borderRadius: '12px',
+        borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
+        border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
         position: 'relative'
       }}
     >
-      {/* Static Glow Effect - No Animation */}
-      <div style={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        right: '0',
-        height: '3px',
-        background: `linear-gradient(90deg, ${SECTION_COLOR}, #48BB78)`,
-        zIndex: 1
-      }} />
-
-      <div style={{ position: 'relative', zIndex: 1, marginTop: '3px' }}>
+      <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.2), rgba(${SECTION_COLOR_RGB}, 0.1))`,
+          background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.2)`,
+          borderBottom: `1px solid rgba(255, 255, 255, 0.1)`,
+          backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '16px 20px' }}>
           {children || (
             <>
-              <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
               <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px', fontSize: '0.9rem' }}>{item}</li>
                 ))}
               </ul>
             </>
@@ -145,13 +141,15 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
         {footer && (
           <div style={{
             padding: '12px 20px',
-            background: 'rgba(237, 242, 247, 0.1)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
+            background: 'rgba(255, 255, 255, 0.03)',
+            fontSize: '0.8rem',
+            color: 'rgba(255, 255, 255, 0.6)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
           }}>
             <span>{footer.left}</span>
             <span>{footer.right}</span>
@@ -162,31 +160,33 @@ function SimpleCard({ title, description, items, footer, index, children }: any)
   );
 }
 
-// Simple Checklist Item - NO HOVER
-function ChecklistItem({ children, index }: any) {
+// Simple Checklist Item - ALOHA STYLED
+function ChecklistItem({ children }: any) {
   return (
     <label style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: '10px',
-      padding: '10px',
-      background: 'rgba(255, 255, 255, 0.06)',
-      borderRadius: '6px',
+      gap: '12px',
+      padding: '12px',
+      background: 'rgba(255, 255, 255, 0.05)',
+      borderRadius: '8px',
       border: '1px solid rgba(255, 255, 255, 0.1)',
       cursor: 'pointer',
-      marginBottom: '6px',
+      marginBottom: '8px',
+      transition: 'all 0.2s ease'
     }}>
       <input type="checkbox" style={{
-        width: '16px',
-        height: '16px',
+        width: '18px',
+        height: '18px',
         marginTop: '2px',
         cursor: 'pointer',
-        accentColor: SECTION_COLOR
+        accentColor: '#3B82F6'
       }} />
       <span style={{
         ...premiumBodyStyle,
-        fontSize: '0.9rem',
-        flex: 1
+        fontSize: '0.95rem',
+        flex: 1,
+        fontWeight: 300
       }}>
         {children}
       </span>
@@ -194,7 +194,7 @@ function ChecklistItem({ children, index }: any) {
   );
 }
 
-// YouTube Video Player - SIMPLIFIED
+// YouTube Video Player - ALOHA STYLED
 function YouTubeVideo({ videoId, title, description, duration }: {
   videoId: string;
   title: string;
@@ -231,16 +231,17 @@ function YouTubeVideo({ videoId, title, description, duration }: {
   };
 
   return (
-    <SimpleCard title={title} index={0}>
-      <p style={{ ...premiumBodyStyle, marginBottom: '12px' }}>{description}</p>
+    <SimpleCard title={title}>
+      <p style={{ ...premiumBodyStyle, marginBottom: '12px', opacity: 0.9 }}>{description}</p>
 
       <div style={{
         position: 'relative',
         paddingBottom: '56.25%',
         height: 0,
         overflow: 'hidden',
-        borderRadius: '6px',
-        backgroundColor: '#000'
+        borderRadius: '8px',
+        backgroundColor: '#000',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <iframe
           ref={iframeRef}
@@ -267,51 +268,64 @@ function YouTubeVideo({ videoId, title, description, duration }: {
               width: '100%',
               height: '100%',
               background: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(4px)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               color: 'white',
-              borderRadius: '6px',
+              borderRadius: '8px',
               cursor: 'pointer',
             }}
             onClick={handlePlay}
           >
             <div style={{ fontSize: '48px', marginBottom: '8px' }}>▶️</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Click to Play</div>
-            <div style={{ marginTop: '6px', fontSize: '0.85rem', opacity: 0.8 }}>
-              Duration: {duration}
+            <div style={{
+              ...premiumWhiteStyle,
+              fontSize: '1rem',
+              letterSpacing: '2px',
+              fontWeight: 300
+            }}>Click to Play</div>
+            <div style={{
+              marginTop: '8px',
+              fontSize: '0.8rem',
+              color: 'rgba(255, 255, 255, 0.6)',
+              letterSpacing: '1px'
+            }}>
+              DURATION: {duration}
             </div>
           </div>
         )}
       </div>
 
       <div style={{
-        marginTop: '8px',
-        fontSize: '0.85rem',
-        color: 'rgba(255, 255, 255, 0.7)',
+        marginTop: '12px',
+        fontSize: '0.8rem',
+        color: 'rgba(255, 255, 255, 0.5)',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase'
       }}>
-        <span>🔗 <a
+        <span><a
           href={`https://youtu.be/${videoId}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            color: SECTION_COLOR,
-            textDecoration: 'none',
-            fontWeight: '500'
+            color: '#FFFFFF',
+            textDecoration: 'underline',
+            opacity: 0.7
           }}
         >
-          Open in YouTube
+          YouTube Link
         </a></span>
       </div>
     </SimpleCard>
   );
 }
 
-// Simple Category Filter - NO HOVER
+// Simple Category Filter - ALOHA STYLED
 function CategoryFilter({ activeCategory, onCategoryChange }: {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
@@ -321,8 +335,8 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
   return (
     <div style={{
       display: 'flex',
-      gap: '8px',
-      margin: '16px',
+      gap: '10px',
+      margin: '16px 0',
       flexWrap: 'wrap'
     }}>
       {categories.map(category => (
@@ -330,19 +344,20 @@ function CategoryFilter({ activeCategory, onCategoryChange }: {
           key={category}
           onClick={() => onCategoryChange(category)}
           style={{
-            padding: '10px 16px',
-            borderRadius: '16px',
+            padding: '8px 16px',
+            borderRadius: '20px',
             border: '1px solid rgba(255, 255, 255, 0.2)',
             background: activeCategory === category
-              ? `rgba(${SECTION_COLOR_RGB}, 0.2)`
-              : 'rgba(255, 255, 255, 0.08)',
-            color: 'rgba(255, 255, 255, 0.9)',
+              ? 'rgba(255, 255, 255, 0.15)'
+              : 'rgba(255, 255, 255, 0.05)',
+            color: 'white',
             cursor: 'pointer',
-            fontSize: '0.85rem',
-            fontWeight: '500',
-            borderColor: activeCategory === category
-              ? `rgba(${SECTION_COLOR_RGB}, 0.4)`
-              : 'rgba(255, 255, 255, 0.2)',
+            fontSize: '0.75rem',
+            fontWeight: 300,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            transition: 'all 0.2s ease',
+            boxShadow: activeCategory === category ? '0 4px 12px rgba(255, 255, 255, 0.1)' : 'none'
           }}
         >
           {category}
@@ -392,64 +407,70 @@ export default function AlohaPosSection() {
       id="aloha-pos"
       style={{
         marginBottom: '25px',
-        borderRadius: '16px',
+        borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
+        border: '1px solid rgba(255, 255, 255, 0.22)',
+        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.3), rgba(${SECTION_COLOR_RGB}, 0.15))`,
-        padding: '16px 20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+        background: 'rgba(255, 255, 255, 0.05)',
+        padding: '20px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Aloha POS System Guide
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Aloha POS Guide
           </h3>
           <p style={{
             margin: 0,
-            opacity: 0.9,
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.9rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Complete video training library for POS operations
+            Video training library for POS operations
           </p>
         </div>
         <span style={{
-          background: 'rgba(255, 255, 255, 0.15)',
-          padding: '6px 12px',
-          borderRadius: '16px',
-          fontSize: '0.85rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
+          borderRadius: '20px',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          {TRAINING_VIDEOS.length} Videos
+          {TRAINING_VIDEOS.length} MODULES
         </span>
       </div>
 
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '25px' }}>
         {/* Welcome Card */}
         <SimpleCard
-          title="🎯 Welcome to Aloha POS Training"
-          index={1}
+          title="🎯 System Training"
         >
           <p style={{
             margin: 0,
             ...premiumBodyStyle,
-            fontSize: '0.95rem'
+            fontSize: '0.95rem',
+            opacity: 0.9
           }}>
-            Welcome to the Aloha POS Video Library. Here you'll find all the training videos
-            covering procedures and systems you'll use during your shift. Click on any video to start learning.
+            Welcome to the Aloha POS Video Library. Here you&apos;ll find all the training videos
+            covering procedures and systems you&apos;ll use during your shift.
           </p>
         </SimpleCard>
 
@@ -460,11 +481,14 @@ export default function AlohaPosSection() {
         />
 
         {/* Videos Grid */}
-        <div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+          gap: '20px'
+        }}>
           {filteredVideos.length === 0 ? (
             <SimpleCard
               title="No Videos Found"
-              index={2}
             >
               <p style={{
                 textAlign: 'center',
@@ -472,7 +496,7 @@ export default function AlohaPosSection() {
                 fontStyle: 'italic',
                 margin: 0
               }}>
-                No videos found in this category.
+                No modules found in this category.
               </p>
             </SimpleCard>
           ) : (
@@ -488,83 +512,90 @@ export default function AlohaPosSection() {
           )}
         </div>
 
-        {/* POS Procedures Checklist */}
-        <SimpleCard
-          title="✅ Essential POS Procedures Checklist"
-          index={3}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <ChecklistItem>Clock in using the POS system at start of shift</ChecklistItem>
-            <ChecklistItem>Check daily specials and event board for updates</ChecklistItem>
-            <ChecklistItem>Review reservation list and any special requests</ChecklistItem>
-            <ChecklistItem>Verify card reader is functioning properly</ChecklistItem>
-            <ChecklistItem>Test printer connectivity and paper levels</ChecklistItem>
-            <ChecklistItem>Know how to split checks and process payments</ChecklistItem>
-            <ChecklistItem>Understand how to handle comps and voids</ChecklistItem>
-            <ChecklistItem>Complete end-of-shift reporting accurately</ChecklistItem>
-          </div>
-        </SimpleCard>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginTop: '10px' }}>
+          {/* POS Procedures Checklist */}
+          <SimpleCard
+            title="✅ Procedures Checklist"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ChecklistItem>Clock in using the POS system at start of shift</ChecklistItem>
+              <ChecklistItem>Check daily specials and event board for updates</ChecklistItem>
+              <ChecklistItem>Review reservation list and any special requests</ChecklistItem>
+              <ChecklistItem>Verify card reader is functioning properly</ChecklistItem>
+              <ChecklistItem>Test printer connectivity and paper levels</ChecklistItem>
+              <ChecklistItem>Know how to split checks and process payments</ChecklistItem>
+              <ChecklistItem>Understand how to handle comps and voids</ChecklistItem>
+              <ChecklistItem>Complete end-of-shift reporting accurately</ChecklistItem>
+            </div>
+          </SimpleCard>
 
-        {/* Troubleshooting Checklist */}
-        <SimpleCard
-          title="🔧 POS Troubleshooting Checklist"
-          index={4}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <ChecklistItem>Reboot POS system if unresponsive</ChecklistItem>
-            <ChecklistItem>Check network connectivity for card processing</ChecklistItem>
-            <ChecklistItem>Verify card reader cables are securely connected</ChecklistItem>
-            <ChecklistItem>Restart printer and check paper levels</ChecklistItem>
-            <ChecklistItem>Use card reader cleaner if cards aren't reading</ChecklistItem>
-            <ChecklistItem>Contact manager for system override needs</ChecklistItem>
-            <ChecklistItem>Document any persistent issues for IT</ChecklistItem>
-          </div>
-        </SimpleCard>
+          {/* Troubleshooting Checklist */}
+          <SimpleCard
+            title="🔧 Troubleshooting"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ChecklistItem>Reboot POS system if unresponsive</ChecklistItem>
+              <ChecklistItem>Check network connectivity for card processing</ChecklistItem>
+              <ChecklistItem>Verify card reader cables are securely connected</ChecklistItem>
+              <ChecklistItem>Restart printer and check paper levels</ChecklistItem>
+              <ChecklistItem>Use card reader cleaner if cards aren&apos;t reading</ChecklistItem>
+              <ChecklistItem>Contact manager for system override needs</ChecklistItem>
+              <ChecklistItem>Document any persistent issues for IT</ChecklistItem>
+            </div>
+          </SimpleCard>
+        </div>
 
         {/* Video Tips */}
         <SimpleCard
-          title="💡 Video Learning Tips"
-          index={5}
+          title="💡 Learning Tips"
         >
           <ul style={{
             margin: 0,
             paddingLeft: '18px',
-            ...premiumBodyStyle
+            ...premiumBodyStyle,
+            opacity: 0.9,
+            fontSize: '0.9rem'
           }}>
-            <li>Click the fullscreen button for better viewing experience</li>
-            <li>Use playback speed controls to watch at your preferred pace</li>
-            <li>Take notes on important procedures and shortcuts</li>
-            <li>Practice the steps shown in the videos during slow periods</li>
-            <li>Contact a manager if you have questions after watching</li>
-            <li>Bookmark frequently used procedures for quick reference</li>
+            <li style={{ marginBottom: '8px' }}>Click the fullscreen button for better viewing experience</li>
+            <li style={{ marginBottom: '8px' }}>Use playback speed controls to watch at your preferred pace</li>
+            <li style={{ marginBottom: '8px' }}>Take notes on important procedures and shortcuts</li>
+            <li style={{ marginBottom: '8px' }}>Practice the steps shown in the videos during slow periods</li>
           </ul>
         </SimpleCard>
 
         {/* Reset Button */}
-        <button
-          onClick={resetChecklists}
-          style={{
-            background: `linear-gradient(135deg, ${SECTION_COLOR}, #2F855A)`,
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: '600',
-            marginTop: '12px',
-          }}
-        >
-          Reset All Checklists
-        </button>
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button
+            onClick={resetChecklists}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '12px 30px',
+              borderRadius: '30px',
+              cursor: 'pointer',
+              fontWeight: 300,
+              fontSize: '0.8rem',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            Reset All Checklists
+          </button>
+        </div>
 
         {/* Progress Section */}
-        <div style={{ marginTop: '20px' }}>
-          <SimpleCard
-            title="📊 Training Progress"
-            index={6}
-          >
-            <ProgressSection />
-          </SimpleCard>
+        <div style={{ marginTop: '30px' }}>
+          <ProgressSection />
         </div>
       </div>
     </div>

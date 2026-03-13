@@ -1,82 +1,54 @@
-
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import ProgressSection from '../ProgressSection';
 import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Define unique coral color for policies
-const SECTION_COLOR = '#FF8C42'; // Orange coral
-const SECTION_COLOR_RGB = '255, 140, 66';
-
-// Animated Card Component without Hover Effects
-function AnimatedCard({ title, description, items, footer, index, children }: CardProps) {
-  // Different glow colors for different cards
-  const glowColors = [
-    'linear-gradient(45deg, #FF8C42, #FFA366, transparent)',
-    'linear-gradient(45deg, #FFA366, #FFBA8C, transparent)',
-    'linear-gradient(45deg, #FF7B2C, #FF8C42, transparent)',
-    'linear-gradient(45deg, #FF6A13, #FF8C42, transparent)'
-  ];
-
-  //const glowColor = glowColors[index] || `linear-gradient(45deg, ${SECTION_COLOR}, #FFA366, transparent)`;
-
+// Simplified Card Component - ALOHA STYLED
+function AnimatedCard({ title, description, items, children }: CardProps) {
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: 'translateY(0) scale(1)',
         overflow: 'hidden',
-        cursor: 'pointer',
         position: 'relative'
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.25), rgba(${SECTION_COLOR_RGB}, 0.1))`,
-          padding: '20px',
-          borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.3)`,
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
           {children || (
             <>
-              <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
-              <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
+              <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
+              <ul style={{ paddingLeft: '18px', marginBottom: '0', marginTop: '12px' }}>
                 {items?.map((item: string, i: number) => (
-                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
+                  <li key={i} style={{ ...premiumBodyStyle, marginBottom: '6px', fontSize: '0.9rem' }}>{item}</li>
                 ))}
               </ul>
             </>
           )}
         </div>
-        {footer && (
-          <div style={{
-            padding: '15px 20px',
-            background: 'rgba(237, 242, 247, 0.15)',
-            fontSize: '0.85rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <span>{footer.left}</span>
-            <span>{footer.right}</span>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -88,17 +60,11 @@ export default function PoliciesSection() {
 
   useEffect(() => {
     if (!currentUser) return;
-
-    // Wait 30 seconds then mark as complete
     timerRef.current = setTimeout(() => {
       trackSectionVisit(currentUser.email, 'policies', 60);
-      console.log('Section auto-completed after 60 seconds');
     }, 60000);
-
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [currentUser]);
 
@@ -106,7 +72,7 @@ export default function PoliciesSection() {
     <div
       id="policies"
       style={{
-        marginBottom: '30px',
+        marginBottom: '25px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: uiBackground,
@@ -114,170 +80,97 @@ export default function PoliciesSection() {
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
         boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: 'translateY(0)',
-        animation: 'fadeIn 0.5s ease'
       }}
       className="active"
     >
 
       {/* Section Header */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(${SECTION_COLOR_RGB}, 0.4), rgba(${SECTION_COLOR_RGB}, 0.2))`,
+        background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
-        borderBottom: `1px solid rgba(${SECTION_COLOR_RGB}, 0.4)`,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div>
-          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-            Policies and Procedures
+          <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+            Workplace Policies
           </h3>
           <p style={{
             margin: 0,
-            ...premiumBodyStyle,
-            fontSize: '0.95rem',
-            marginTop: '4px'
+            opacity: 0.7,
+            color: 'white',
+            fontSize: '0.8rem',
+            marginTop: '4px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
           }}>
-            Essential guidelines and operational procedures for all staff members
+            Governance and regulatory standards
           </p>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
-          padding: '8px 16px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.9rem',
+          fontSize: '0.7rem',
           color: 'white',
-          fontWeight: '600',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontWeight: 300,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          letterSpacing: '1px'
         }}>
-          Required Reading
+          REQUIRED
         </span>
       </div>
 
       <div style={{ padding: '25px' }}>
-        {/* Introduction Card */}
         <AnimatedCard
-          title="📋 Essential Policies Overview"
-          description="All staff members must be familiar with and adhere to these policies to ensure a safe, professional, and compliant work environment."
+          title="📋 Decades Compliance"
+          description="Fundamental operating rules for all staff. Adherence is mandatory for maintaining our professional service environment."
           items={[
-            'Code of conduct and professionalism',
-            'Health and safety protocols',
-            'Customer service standards',
-            'Emergency procedures',
-            'Dress code and appearance'
+            'Conduct and professionalism',
+            'Sexual harassment prevention',
+            'Alcohol service compliance',
+            'Safety and emergency procedures',
+            'Social media and branding'
           ]}
-          footer={{ left: 'Mandatory reading', right: '📖 Policies' }}
-          index={0}
         />
 
-        {/* Code of Conduct */}
-        <AnimatedCard
-          title="👔 Code of Conduct"
-          index={1}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px',
-            marginTop: '10px'
-          }}>
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Professional Standards
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Punctuality and attendance</li>
-                <li>Professional communication</li>
-                <li>Conflict resolution</li>
-                <li>Teamwork and collaboration</li>
-                <li>Respect for colleagues and guests</li>
-              </ul>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+          <AnimatedCard title="👔 Professional Standards">
+            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0 }}>
+              <li style={{ marginBottom: '8px' }}>Strict punctuality - clock in 10 mins early</li>
+              <li style={{ marginBottom: '8px' }}>Respectful internal communication</li>
+              <li style={{ marginBottom: '8px' }}>Active management conflict resolution</li>
+              <li style={{ marginBottom: '8px' }}>Zero tolerance for workspace hostility</li>
+            </ul>
+          </AnimatedCard>
 
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Prohibited Behaviors
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Harassment of any kind</li>
-                <li>Substance abuse during work</li>
-                <li>Theft or dishonesty</li>
-                <li>Unauthorized discounts</li>
-                <li>Confidentiality breaches</li>
-              </ul>
+          <AnimatedCard title="🚫 Prohibited Behaviors">
+            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0 }}>
+              <li style={{ marginBottom: '8px' }}>Unauthorized drinking during shifts</li>
+              <li style={{ marginBottom: '8px' }}>Missing counterfeit verification steps</li>
+              <li style={{ marginBottom: '8px' }}>Sharing internal codes or passwords</li>
+              <li style={{ marginBottom: '8px' }}>Unauthorized guest comps or voids</li>
+            </ul>
+          </AnimatedCard>
+        </div>
+
+        <AnimatedCard title="🛡️ Active Safety Protocols">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h5 style={{ ...premiumWhiteStyle, fontSize: '0.9rem', marginBottom: '8px' }}>Fire & Life Safety</h5>
+              <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', opacity: 0.6 }}>Evacuation routes are posted at every exit. Assemble at designated rally points.</p>
+            </div>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h5 style={{ ...premiumWhiteStyle, fontSize: '0.9rem', marginBottom: '8px' }}>Medical Response</h5>
+              <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', opacity: 0.6 }}>Notify management immediately. First aid kits located at every service station.</p>
             </div>
           </div>
         </AnimatedCard>
 
-        {/* Safety Procedures */}
-        <AnimatedCard
-          title="🛡️ Health & Safety Procedures"
-          index={2}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px',
-            marginTop: '10px'
-          }}>
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Emergency Protocols
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Fire evacuation procedures</li>
-                <li>Medical emergency response</li>
-                <li>Severe weather protocols</li>
-                <li>Security incident reporting</li>
-                <li>Emergency contact numbers</li>
-              </ul>
-            </div>
-
-            <div style={{
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}>
-              <h5 style={{ color: SECTION_COLOR, marginBottom: '15px', fontSize: '1.1rem', fontWeight: 600 }}>
-                Workplace Safety
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '20px', ...premiumBodyStyle }}>
-                <li>Slip and fall prevention</li>
-                <li>Proper lifting techniques</li>
-                <li>Chemical handling procedures</li>
-                <li>Equipment safety guidelines</li>
-                <li>Incident reporting process</li>
-              </ul>
-            </div>
-          </div>
-        </AnimatedCard>
-
-        {/* Progress Section */}
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '30px' }}>
           <ProgressSection />
         </div>
       </div>

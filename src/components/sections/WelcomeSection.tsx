@@ -1,4 +1,4 @@
-// WelcomeSection.tsx - WITH COLORED GLOW EFFECTS
+// WelcomeSection.tsx - ALOHA STYLE UNIFORMITY
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -11,15 +11,13 @@ import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdro
 function DecadesIntroduction() {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Cinematic Gold Text Effect - Removed local definition, using import
-
   return (
     <div
       style={{
         borderRadius: '16px',
         margin: '15px 0',
         boxShadow: isHovered
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
+          ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 255, 255, 0.05)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: uiBackground,
         backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilter,
@@ -27,8 +25,8 @@ function DecadesIntroduction() {
         border: isHovered
           ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        transition: 'all 0.3s ease',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
         overflow: 'hidden',
         cursor: 'pointer',
         position: 'relative'
@@ -36,7 +34,7 @@ function DecadesIntroduction() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Gold Glow Effect */}
+      {/* Subtle White Glow Effect */}
       {isHovered && (
         <div style={{
           position: 'absolute',
@@ -45,27 +43,31 @@ function DecadesIntroduction() {
           right: '-2px',
           bottom: '-2px',
           borderRadius: '18px',
-          background: 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)',
+          background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
           zIndex: -1,
           opacity: 0.6,
-          animation: 'pulse 2s infinite'
         }} />
       )}
 
       <div style={{ padding: '20px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <h1 style={{
-            fontFamily: 'var(--font-outfit), sans-serif',
+            fontFamily: brandFont,
             fontSize: '2.2rem',
             margin: 0,
-            ...premiumWhiteStyle
+            ...premiumWhiteStyle,
+            letterSpacing: '6px', // Match Sidebar Logo
+            fontWeight: 100 // Match Sidebar Logo
           }}>
-            🎵 Welcome to Decades 🎵
+            Welcome to Decades
           </h1>
           <p style={{
             ...premiumBodyStyle,
-            fontSize: '1.3rem',
-            fontWeight: 500
+            fontSize: '1.2rem',
+            letterSpacing: '4px',
+            textTransform: 'uppercase',
+            opacity: 0.8,
+            marginTop: '10px'
           }}>
             Where Every Floor is a Different Era
           </p>
@@ -74,7 +76,9 @@ function DecadesIntroduction() {
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <p style={{
             fontSize: '1.1rem',
-            ...premiumBodyStyle
+            ...premiumBodyStyle,
+            maxWidth: '800px',
+            margin: '0 auto'
           }}>
             Your journey to becoming an exceptional Decades bartender starts here.
             This comprehensive training portal will guide you through everything you need to know
@@ -86,21 +90,9 @@ function DecadesIntroduction() {
   );
 }
 
-// Card Component with Colored Glow Effects
+// Card Component with Subtle UI Consistency
 function AnimatedCard({ title, description, items, footer, index }: any) {
   const [isHovered, setIsHovered] = useState(false);
-
-  // Different glow colors for different cards
-  const glowColors = [
-    'linear-gradient(45deg, #48bb78, #38a169, transparent)', // Green - Getting Started
-    'linear-gradient(45deg, #4299e1, #3182ce, transparent)', // Blue - Video Training  
-    'linear-gradient(45deg, #9f7aea, #805ad5, transparent)', // Purple - Cocktails
-    'linear-gradient(45deg, #ed8936, #dd6b20, transparent)', // Orange - Operations
-    'linear-gradient(45deg, #f56565, #e53e3e, transparent)', // Red - Floor Training
-    'linear-gradient(45deg, #0bc5ea, #00b5d8, transparent)'  // Cyan - Progress Tracking
-  ];
-
-  const glowColor = glowColors[index] || 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)';
 
   return (
     <div
@@ -108,7 +100,7 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
         borderRadius: '16px',
         margin: '15px 0',
         boxShadow: isHovered
-          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 32px rgba(212, 175, 55, 0.1)'
+          ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 255, 255, 0.05)'
           : '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: uiBackground,
         backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilter,
@@ -116,8 +108,8 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
         border: isHovered
           ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'none', // Removed cubic-bezier - caused browser crashes
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        transition: 'all 0.3s ease',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
         overflow: 'hidden',
         cursor: 'pointer',
         position: 'relative'
@@ -134,76 +126,72 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
           right: '-2px',
           bottom: '-2px',
           borderRadius: '18px',
-          background: glowColor,
+          background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
           zIndex: 0,
           opacity: 0.7,
-          animation: 'pulse 2s infinite'
         }} />
       )}
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
+          background: 'rgba(255, 255, 255, 0.05)',
           padding: '20px',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)'
         }}>
-          <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+          <h4 style={{
+            ...cardHeaderStyle,
+            ...premiumWhiteStyle,
+            letterSpacing: '3px',
+            fontSize: '1rem'
+          }}>
             {title}
           </h4>
         </div>
         <div style={{ padding: '20px' }}>
-          <p style={{ ...premiumBodyStyle, marginBottom: '15px' }}>{description}</p>
+          <p style={{ ...premiumBodyStyle, marginBottom: '15px', fontSize: '0.95rem' }}>{description}</p>
           <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
             {items.map((item: string, i: number) => (
-              <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px' }}>{item}</li>
+              <li key={i} style={{ ...premiumBodyStyle, marginBottom: '8px', fontSize: '0.9rem' }}>{item}</li>
             ))}
           </ul>
         </div>
         <div style={{
           padding: '15px 20px',
-          background: 'rgba(237, 242, 247, 0.15)',
-          fontSize: '0.85rem',
-          color: 'rgba(255, 255, 255, 0.9)',
+          background: 'rgba(255, 255, 255, 0.03)',
+          fontSize: '0.8rem',
+          color: 'rgba(255, 255, 255, 0.6)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          letterSpacing: '1px',
+          textTransform: 'uppercase'
         }}>
-          <span style={premiumBodyStyle}>{footer.left}</span>
-          <span style={premiumBodyStyle}>{footer.right}</span>
+          <span>{footer.left}</span>
+          <span>{footer.right}</span>
         </div>
       </div>
     </div>
   );
 }
 
-// Week Day Component with Individual Colored Glows
+// Week Day Component with Sidebar Consistency
 function WeekDay({ icon, day, title, desc, index }: any) {
   const [isHovered, setIsHovered] = useState(false);
-
-  // Different colors for each day like original CSS
-  const dayColors = [
-    'linear-gradient(45deg, #48bb78, transparent)', // Green - Day 1
-    'linear-gradient(45deg, #ed8936, transparent)', // Orange - Day 2
-    'linear-gradient(45deg, #4299e1, transparent)', // Blue - Day 3
-    'linear-gradient(45deg, #9f7aea, transparent)'  // Purple - Day 4
-  ];
-
-  const dayColor = dayColors[index] || 'linear-gradient(45deg, var(--accent), transparent)';
 
   return (
     <div
       style={{
         textAlign: 'left',
         padding: '20px',
-        background: 'rgba(255, 255, 255, 0.08)',
+        background: isHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'none', // Removed - caused scroll crashes
-        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-        backdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
-        WebkitBackdropFilter: isHovered ? 'blur(15px)' : 'blur(8px)',
+        border: isHovered ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'all 0.3s ease',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         cursor: 'pointer',
         position: 'relative',
         overflow: 'hidden'
@@ -220,25 +208,27 @@ function WeekDay({ icon, day, title, desc, index }: any) {
           right: '-2px',
           bottom: '-2px',
           borderRadius: '14px',
-          background: dayColor,
+          background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
           zIndex: 0,
           opacity: 0.6
         }} />
       )}
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <span style={{ fontSize: '2.5rem', marginBottom: '15px', display: 'block' }}>{icon}</span>
+        <span style={{ fontSize: '2rem', marginBottom: '15px', display: 'block', opacity: 0.9 }}>{icon}</span>
         <h5 style={{
-          color: 'white',
-          marginBottom: '12px',
-          fontSize: '1.1rem',
-          fontWeight: 600
+          ...premiumWhiteStyle,
+          marginBottom: '8px',
+          fontSize: '0.9rem',
+          letterSpacing: '2px',
+          fontWeight: 400
         }}>
           {day}
         </h5>
         <p style={{
           ...premiumBodyStyle,
-          margin: 0
+          margin: 0,
+          fontSize: '0.9rem'
         }}>
           <strong>{title}</strong><br />{desc}
         </p>
@@ -276,31 +266,31 @@ export default function WelcomeSection() {
     },
     {
       title: '🎬 Video Training Library',
-      description: 'Watch our comprehensive training videos covering everything from Aloha POS operations to advanced mixology.',
+      description: 'Watch comprehensive training videos covering operations and mixology.',
       items: ['POS system tutorials', 'Pouring technique demonstrations', 'Cocktail preparation videos', 'Customer service scenarios'],
-      footer: { left: '20+ training videos', right: '📺 Visual Learning' }
+      footer: { left: '20+ training videos', right: '📺 Visual' }
     },
     {
-      title: '🍹 Decades Cocktail Recipes',
-      description: 'Access our complete recipe database featuring Decades signature cocktails and classic preparations.',
-      items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation guides'],
+      title: '🍹 Cocktail Recipes',
+      description: 'Access our complete recipe database featuring signature cocktails.',
+      items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation'],
       footer: { left: '50+ recipes', right: '✨ Mixology' }
     },
     {
       title: '⚡ Bar Operations',
-      description: 'Master the operational side of Decades including cleaning procedures and inventory management.',
+      description: 'Master the operational side including cleaning and inventory.',
       items: ['Daily cleaning checklists', 'Inventory & cost control', 'Closing procedures', 'Rush hour strategies'],
-      footer: { left: 'Essential Procedures', right: '🛠️ Operations' }
+      footer: { left: 'Essential', right: '🛠️ Operations' }
     },
     {
-      title: '🎵 Floor-Specific Training',
-      description: 'Learn the unique requirements and service styles for each Decades floor.',
+      title: '🏢 Floor Training',
+      description: 'Learn unique requirements and service styles for each floor.',
       items: ['2000\'s Floor procedures', 'Hip Hop Floor service', 'Rooftop bottle service', 'Floor-specific cocktails'],
-      footer: { left: 'Multi-floor expertise', right: '🏢 Environment' }
+      footer: { left: 'All Floors', right: '📍 Environment' }
     },
     {
       title: '📊 Progress Tracking',
-      description: 'Monitor your training progress and completion status across all sections.',
+      description: 'Monitor your training progress and completion status.',
       items: ['Section completion tracking', 'Training progress overview', 'Skill assessment readiness', 'Performance metrics'],
       footer: { left: 'Real-time tracking', right: '📈 Analytics' }
     }
@@ -336,19 +326,21 @@ export default function WelcomeSection() {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle }}>
-          Welcome to Your Training Hub
+        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+          Training Hub
         </h3>
         <span style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+          background: 'rgba(255, 255, 255, 0.1)',
           color: 'white',
-          padding: '6px 12px',
+          padding: '6px 14px',
           borderRadius: '20px',
-          fontSize: '0.8rem',
-          fontWeight: 'bold',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+          fontSize: '0.7rem',
+          fontWeight: 300,
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
-          New
+          Portal Active
         </span>
       </div>
 
@@ -358,10 +350,11 @@ export default function WelcomeSection() {
         <p style={{
           fontSize: '1.1rem',
           ...premiumBodyStyle,
-          marginBottom: '25px'
+          marginBottom: '25px',
+          textAlign: 'center',
+          opacity: 0.9
         }}>
-          Welcome to the Decades Bar Management System, your comprehensive guide to excellence in high-volume nightclub bartending.
-          This portal contains everything you need to master our procedures, signature cocktails, customer service standards, and more.
+          Welcome to the Decades Bar Management System, your comprehensive guide to excellence.
         </p>
 
         {/* Card Grid */}
@@ -381,11 +374,10 @@ export default function WelcomeSection() {
           borderRadius: '16px',
           margin: '25px 0 0 0',
           boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-          background: uiBackground,
+          background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: uiBackdropFilter,
           WebkitBackdropFilter: uiBackdropFilterWebkit,
-          border: '1px solid rgba(255, 255, 255, 0.18)',
-          transition: 'all 0.4s ease',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
           overflow: 'hidden',
           position: 'relative'
         }}>
@@ -397,7 +389,7 @@ export default function WelcomeSection() {
             right: '-2px',
             bottom: '-2px',
             borderRadius: '18px',
-            background: 'linear-gradient(45deg, var(--accent), #c19b2a, transparent)',
+            background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
             zIndex: 0,
             opacity: 0,
             transition: 'opacity 0.3s ease'
@@ -405,13 +397,13 @@ export default function WelcomeSection() {
 
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.1))',
+              background: 'rgba(255, 255, 255, 0.05)',
               padding: '20px',
-              borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(8px)'
             }}>
-              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
-                🎯 Your First Week at Decades
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
+                🎯 Your First Week
               </h4>
             </div>
             <div style={{ padding: '20px' }}>
