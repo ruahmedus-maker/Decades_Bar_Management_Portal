@@ -27,6 +27,17 @@ test.describe('Admin Functionality', () => {
         await expect(page.locator('.main-content')).toContainText(/KPI|Performance|Metrics|Report/i);
     });
 
+    test('should access training tests', async ({ page }) => {
+        // Only run if ENABLE_TESTS is active
+        await page.goto('/?enableTests=true');
+        await page.click('button:has-text("Admin")');
+        await page.waitForSelector('#login-barrier', { state: 'hidden' });
+        
+        await page.click('.sidebar a:has-text("Training Tests")');
+        await expect(page.locator('.main-content')).toBeVisible();
+        await expect(page.locator('.main-content')).toContainText(/Test|Take|Question/i);
+    });
+
     test('should logout successfully', async ({ page }) => {
         await page.click('button:has-text("Logout")');
         await expect(page.locator('#login-barrier')).toBeVisible();

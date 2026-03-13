@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Bartender Functionality', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/?enableTests=false');
         await expect(page.locator('#login-barrier')).toBeVisible();
         await page.click('button:has-text("Bartender")');
         await page.waitForSelector('#login-barrier', { state: 'hidden', timeout: 30000 });
@@ -33,11 +33,6 @@ test.describe('Bartender Functionality', () => {
         await expect(page.locator('.main-content')).toContainText(/Cocktail|Recipe|Signature|Drink/i);
     });
 
-    test('should access training tests', async ({ page }) => {
-        await page.click(`.sidebar a:has-text("Training Tests")`);
-        await expect(page.locator('.main-content')).toBeVisible();
-        await expect(page.locator('.main-content')).toContainText(/Test|Take|Question/i);
-    });
 
     test('should render training materials with progress', async ({ page }) => {
         await page.click(`.sidebar a:has-text("Training Materials")`);

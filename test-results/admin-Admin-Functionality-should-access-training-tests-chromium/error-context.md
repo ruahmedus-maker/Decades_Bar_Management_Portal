@@ -1,0 +1,219 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - strong [ref=e4]: "Build:"
+      - text: build-2026-03-13
+    - generic [ref=e5]:
+      - strong [ref=e6]: "Stored:"
+      - text: build-2026-03-13
+    - generic [ref=e7]:
+      - strong [ref=e8]: "Time:"
+      - text: 9:46:14 PM
+    - generic [ref=e9]:
+      - strong [ref=e10]: "Status:"
+      - text: ✅ Current
+  - img "Decades Bar & Lounge" [ref=e12]
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - heading "Decades Bar Management System" [level=2] [ref=e16]
+      - generic [ref=e17]:
+        - button "🔔" [ref=e19] [cursor=pointer]
+        - generic [ref=e20]:
+          - generic [ref=e21]: T
+          - generic [ref=e22]: Test Admin (Admin)
+          - button "Logout" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - heading "Main Menu" [level=1] [ref=e26]
+        - paragraph [ref=e27]: Training Modules
+      - list [ref=e28]:
+        - listitem [ref=e29]:
+          - generic [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: 🏠
+            - generic [ref=e32]: Welcome
+        - listitem [ref=e33]:
+          - generic [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: 🎓
+            - generic [ref=e36]: Training Materials
+        - listitem [ref=e37]:
+          - generic [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: ❓
+            - generic [ref=e40]: Training Tests
+        - listitem [ref=e41]:
+          - generic [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]: 📋
+            - generic [ref=e44]: Standard Procedures
+        - listitem [ref=e45]:
+          - generic [ref=e46] [cursor=pointer]:
+            - generic [ref=e47]: 💻
+            - generic [ref=e48]: Aloha POS
+        - listitem [ref=e49]:
+          - generic [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]: 🍹
+            - generic [ref=e52]: Cocktail Recipes
+        - listitem [ref=e53]:
+          - generic [ref=e54] [cursor=pointer]:
+            - generic [ref=e55]: 🏷️
+            - generic [ref=e56]: Drinks Specials
+        - listitem [ref=e57]:
+          - generic [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]: 🥃
+            - generic [ref=e60]: Glassware Guide
+        - listitem [ref=e61]:
+          - generic [ref=e62] [cursor=pointer]:
+            - generic [ref=e63]: 👕
+            - generic [ref=e64]: Uniform Guide
+        - listitem [ref=e65]:
+          - generic [ref=e66] [cursor=pointer]:
+            - generic [ref=e67]: 🧹
+            - generic [ref=e68]: Bar Cleanings
+        - listitem [ref=e69]:
+          - generic [ref=e70] [cursor=pointer]:
+            - generic [ref=e71]: 📱
+            - generic [ref=e72]: Social Media
+        - listitem [ref=e73]:
+          - generic [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 📅
+            - generic [ref=e76]: Special Events
+        - listitem [ref=e77]:
+          - generic [ref=e78] [cursor=pointer]:
+            - generic [ref=e79]: 💰
+            - generic [ref=e80]: Comps & Voids
+        - listitem [ref=e81]:
+          - generic [ref=e82] [cursor=pointer]:
+            - generic [ref=e83]: 📄
+            - generic [ref=e84]: Policies
+        - listitem [ref=e85]:
+          - generic [ref=e86] [cursor=pointer]:
+            - generic [ref=e87]: ⚙️
+            - generic [ref=e88]: Admin Panel
+        - listitem [ref=e89]:
+          - generic [ref=e90] [cursor=pointer]:
+            - generic [ref=e91]: 📝
+            - generic [ref=e92]: Employee Counselings
+        - listitem [ref=e93]:
+          - generic [ref=e94] [cursor=pointer]:
+            - generic [ref=e95]: 📊
+            - generic [ref=e96]: Key Performance Indicators
+        - listitem [ref=e97]:
+          - generic [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]: 🔧
+            - generic [ref=e100]: Maintenance
+    - generic [ref=e103]:
+      - generic [ref=e104]:
+        - heading "Training Hub" [level=3] [ref=e105]
+        - generic [ref=e106]: Portal Active
+      - generic [ref=e107]:
+        - generic [ref=e109] [cursor=pointer]:
+          - generic [ref=e110]:
+            - heading "Welcome to Decades" [level=1] [ref=e111]
+            - paragraph [ref=e112]: Where Every Floor is a Different Era
+          - paragraph [ref=e114]: Your journey to becoming an exceptional Decades bartender starts here. This comprehensive training portal will guide you through everything you need to know to excel in our high-volume, multi-floor nightclub environment.
+        - paragraph [ref=e115]: Welcome to the Decades Bar Management System, your comprehensive guide to excellence.
+        - generic [ref=e116]:
+          - generic [ref=e118] [cursor=pointer]:
+            - heading "🚀 Getting Started Guide" [level=4] [ref=e120]
+            - generic [ref=e121]:
+              - paragraph [ref=e122]: Begin your Decades journey with our structured training program.
+              - list [ref=e123]:
+                - listitem [ref=e124]: Review training materials & procedures
+                - listitem [ref=e125]: Study Decades-specific standards
+                - listitem [ref=e126]: Complete POS system training
+                - listitem [ref=e127]: Practice signature cocktail recipes
+            - generic [ref=e128]:
+              - generic [ref=e129]: "Estimated: 2-3 days"
+              - generic [ref=e130]: ⭐ Essential
+          - generic [ref=e132] [cursor=pointer]:
+            - heading "🎬 Video Training Library" [level=4] [ref=e134]
+            - generic [ref=e135]:
+              - paragraph [ref=e136]: Watch comprehensive training videos covering operations and mixology.
+              - list [ref=e137]:
+                - listitem [ref=e138]: POS system tutorials
+                - listitem [ref=e139]: Pouring technique demonstrations
+                - listitem [ref=e140]: Cocktail preparation videos
+                - listitem [ref=e141]: Customer service scenarios
+            - generic [ref=e142]:
+              - generic [ref=e143]: 20+ training videos
+              - generic [ref=e144]: 📺 Visual
+          - generic [ref=e146] [cursor=pointer]:
+            - heading "🍹 Cocktail Recipes" [level=4] [ref=e148]
+            - generic [ref=e149]:
+              - paragraph [ref=e150]: Access our complete recipe database featuring signature cocktails.
+              - list [ref=e151]:
+                - listitem [ref=e152]: Signature Decades cocktails
+                - listitem [ref=e153]: Classic drink preparations
+                - listitem [ref=e154]: Seasonal specials
+                - listitem [ref=e155]: Garnishing & presentation
+            - generic [ref=e156]:
+              - generic [ref=e157]: 50+ recipes
+              - generic [ref=e158]: ✨ Mixology
+          - generic [ref=e160] [cursor=pointer]:
+            - heading "⚡ Bar Operations" [level=4] [ref=e162]
+            - generic [ref=e163]:
+              - paragraph [ref=e164]: Master the operational side including cleaning and inventory.
+              - list [ref=e165]:
+                - listitem [ref=e166]: Daily cleaning checklists
+                - listitem [ref=e167]: Inventory & cost control
+                - listitem [ref=e168]: Closing procedures
+                - listitem [ref=e169]: Rush hour strategies
+            - generic [ref=e170]:
+              - generic [ref=e171]: Essential
+              - generic [ref=e172]: 🛠️ Operations
+          - generic [ref=e174] [cursor=pointer]:
+            - heading "🏢 Floor Training" [level=4] [ref=e176]
+            - generic [ref=e177]:
+              - paragraph [ref=e178]: Learn unique requirements and service styles for each floor.
+              - list [ref=e179]:
+                - listitem [ref=e180]: 2000's Floor procedures
+                - listitem [ref=e181]: Hip Hop Floor service
+                - listitem [ref=e182]: Rooftop bottle service
+                - listitem [ref=e183]: Floor-specific cocktails
+            - generic [ref=e184]:
+              - generic [ref=e185]: All Floors
+              - generic [ref=e186]: 📍 Environment
+          - generic [ref=e188] [cursor=pointer]:
+            - heading "📊 Progress Tracking" [level=4] [ref=e190]
+            - generic [ref=e191]:
+              - paragraph [ref=e192]: Monitor your training progress and completion status.
+              - list [ref=e193]:
+                - listitem [ref=e194]: Section completion tracking
+                - listitem [ref=e195]: Training progress overview
+                - listitem [ref=e196]: Skill assessment readiness
+                - listitem [ref=e197]: Performance metrics
+            - generic [ref=e198]:
+              - generic [ref=e199]: Real-time tracking
+              - generic [ref=e200]: 📈 Analytics
+        - generic [ref=e203]:
+          - heading "🎯 Your First Week" [level=4] [ref=e205]
+          - generic [ref=e207]:
+            - generic [ref=e209] [cursor=pointer]:
+              - generic [ref=e210]: 📚
+              - heading "Days 1-2" [level=5] [ref=e211]
+              - paragraph [ref=e212]:
+                - strong [ref=e213]: Portal Review
+                - text: Complete all training sections in this portal
+            - generic [ref=e215] [cursor=pointer]:
+              - generic [ref=e216]: 👀
+              - heading "Day 3" [level=5] [ref=e217]
+              - paragraph [ref=e218]:
+                - strong [ref=e219]: Observation Shift
+                - text: Shadow on 2000's Floor - focus on learning
+            - generic [ref=e221] [cursor=pointer]:
+              - generic [ref=e222]: 🛠️
+              - heading "Day 4" [level=5] [ref=e223]
+              - paragraph [ref=e224]:
+                - strong [ref=e225]: Hands-On Training
+                - text: Practice on Hip Hop & Rooftop floors
+            - generic [ref=e227] [cursor=pointer]:
+              - generic [ref=e228]: 🎓
+              - heading "Day 5" [level=5] [ref=e229]
+              - paragraph [ref=e230]:
+                - strong [ref=e231]: Assessment
+                - text: Final test and evaluation for shift readiness
+  - button "Open Next.js Dev Tools" [ref=e237] [cursor=pointer]:
+    - img [ref=e238]
+  - alert [ref=e241]
+```
