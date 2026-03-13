@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { setupTestUsers } from '../src/lib/supabase-auth';
 
 test.describe('Notification System', () => {
+    test.beforeAll(async () => {
+        await setupTestUsers();
+    });
+
     test('should send checkout notification from Bartender to Admin', async ({ browser }) => {
         const bartenderContext = await browser.newContext();
         const bartenderPage = await bartenderContext.newPage();

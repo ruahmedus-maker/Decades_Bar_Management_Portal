@@ -94,6 +94,10 @@ export const setupTestUsers = async (): Promise<{ success: boolean; message: str
           }
         } else {
           console.log(`✅ Auth user already exists: ${user.email}`);
+          // Force update metadata to ensure RLS works
+          await supabase.auth.updateUser({
+            data: { name: user.name, position: user.position }
+          });
         }
 
         // Step 2: Ensure user exists in custom users table

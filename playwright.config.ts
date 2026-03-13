@@ -1,4 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+
+// Load .env.local manually since dotenv is not a dependency
+const envPath = path.resolve(__dirname, '.env.local');
+if (fs.existsSync(envPath)) {
+    const envFile = fs.readFileSync(envPath, 'utf8');
+    envFile.split('\n').forEach(line => {
+        const [key, ...valueParts] = line.split('=');
+        if (key && valueParts.length > 0) {
+            process.env[key.trim()] = valueParts.join('=').trim();
+        }
+    });
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
