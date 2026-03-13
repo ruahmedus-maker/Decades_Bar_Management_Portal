@@ -24,14 +24,18 @@ export default function NotificationCenter() {
     const fetchNotifications = async () => {
         if (!currentUser) return;
 
-        const { data } = await supabase
+        const { data, error } = await supabase
             .from('notifications')
             .select('*')
             .eq('recipient_role', 'Admin')
             .order('created_at', { ascending: false })
             .limit(20);
 
+        if (error) {
+            console.error('❌ Error fetching notifications:', error);
+        }
         if (data) {
+            console.log(`📋 Fetched ${data.length} notifications for ${currentUser.email}`);
             setNotifications(data);
             setUnreadCount(data.filter(n => !n.read).length);
         }
