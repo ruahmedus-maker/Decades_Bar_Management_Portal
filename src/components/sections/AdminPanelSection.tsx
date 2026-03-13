@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { getAllUsers, updateUser, deleteUser } from '@/lib/supabase-auth';
 import { getProgressBreakdown } from '@/lib/progress';
 import { supabaseMaintenance } from '@/lib/supabase-maintenance';
+import { testService, type TestResultWithUser } from '@/lib/test-service';
 
 // Modern color theme for admin panel
 const SECTION_COLOR = '#2563eb';
@@ -976,7 +977,7 @@ export default function AdminPanelSection() {
   const { isAdmin: userIsAdmin, showToast, currentUser } = useApp();
   const [users, setUsers] = useState<User[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
-  const [testResults, setTestResults] = useState<{ email: string, user: User, results: Record<string, TestResult> }[]>([]);
+  const [testResults, setTestResults] = useState<TestResultWithUser[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'tests' | 'management' | 'maintenance' | 'events' | 'tasks'>('overview');
   const [quickStats, setQuickStats] = useState<QuickStats>({
     totalUsers: 0,
@@ -1052,12 +1053,9 @@ export default function AdminPanelSection() {
           );
           setUserProgress(progressData);
 
-          // Test results
-          const testData = bartendersAndTrainees.map(user => {
-            const results = user.testResults || {};
-            return { email: user.email, user, results };
-          });
-          setTestResults(testData);
+          // Test results from dedicated table
+          const allTestResults = await testService.getAllTestResults();
+          setTestResults(allTestResults);
 
           // Load quick stats - split queries for resilience
           const [maintenanceResponse, tasksResponse] = await Promise.all([
@@ -1624,7 +1622,95 @@ export default function AdminPanelSection() {
           </div>
         )}
 
-        {/* Management Tab */}
+        {activeTab === 'tests' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '25px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle }}>
+                🎯 Employee Test Results
+              </h4>
+              <button
+                onClick={loadAllData}
+                style={{
+                  background: SECTION_COLOR,
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                🔄 Refresh Results
+              </button>
+            </div>
+
+            {testResults.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                No test results recorded yet.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {testResults.map((result) => (
+                  <div
+                    key={result.id}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '12px',
+                      padding: '18px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>{result.user_name}</span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)', background: 'rgba(255, 255, 255, 0.1)', padding: '2px 8px', borderRadius: '10px' }}>
+                          {result.user_position}
+                        </span>
+                      </div>
+                      <div style={{ color: SECTION_COLOR, fontSize: '0.9rem', fontWeight: 600 }}>
+                        {result.test_name}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>
+                        {new Date(result.date).toLocaleString()}
+                      </div>
+                    </div>
+                    
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 'bold',
+                        color: result.passed ? SUCCESS_COLOR : DANGER_COLOR
+                      }}>
+                        {result.percentage}%
+                      </div>
+                      <div style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        color: result.passed ? SUCCESS_COLOR : DANGER_COLOR,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
+                      }}>
+                        {result.passed ? 'PASSED' : 'FAILED'}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                        {result.score}/{result.total_questions} correct
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'management' && (
           <TeamManagementContent users={users} currentUser={currentUser} userProgress={userProgress} />
         )}
