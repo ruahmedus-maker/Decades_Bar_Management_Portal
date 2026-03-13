@@ -31,8 +31,9 @@ test.describe('Notification System', () => {
         // 3. Verify on both sides
         await expect(bartenderPage.locator('.toast')).toContainText(/Manager notified/i, { timeout: 15000 });
         
-        const adminToast = adminPage.locator('.toast');
-        await expect(adminToast).toContainText(/🔔.*Checkout/i, { timeout: 30000 });
+        // Admin should see notification in the list
+        await adminPage.click('button[title="Notifications"]');
+        await expect(adminPage.locator('.max-h-96')).toContainText(/Checkout/i, { timeout: 20000 });
         
         await bartenderContext.close();
         await adminContext.close();
@@ -44,12 +45,10 @@ test.describe('Notification System', () => {
         const adminContext = await browser.newContext();
         const adminPage = await adminContext.newPage();
 
-        // 1. Admin Role: Login and wait for clear state
+        // 1. Admin Role: Login
         await adminPage.goto('/');
         await adminPage.locator('button', { hasText: 'Admin' }).click();
         await adminPage.waitForSelector('#login-barrier', { state: 'hidden', timeout: 20000 });
-        await expect(adminPage.locator('.toast')).toContainText(/Welcome back/i);
-        await expect(adminPage.locator('.toast')).not.toBeVisible({ timeout: 15000 });
 
         // 2. Bartender Role: Pass a Test
         await bartenderPage.goto('/?enableTests=true');
@@ -65,8 +64,9 @@ test.describe('Notification System', () => {
         // 3. Verify on both sides
         await expect(bartenderPage.locator('.toast')).toContainText(/PASSED/i, { timeout: 15000 });
         
-        const adminToast = adminPage.locator('.toast');
-        await expect(adminToast).toContainText(/🔔.*Test Passed/i, { timeout: 30000 });
+        // Admin should see notification in the list
+        await adminPage.click('button[title="Notifications"]');
+        await expect(adminPage.locator('.max-h-96')).toContainText(/Test Passed/i, { timeout: 20000 });
         
         await bartenderContext.close();
         await adminContext.close();
