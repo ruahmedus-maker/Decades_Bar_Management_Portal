@@ -2,10 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
-import PWAInstaller from '@/components/PWAInstaller';
-import InstallPrompt from '@/components/InstallPrompt';
-import ChunkErrorHandler from '@/components/ChunkErrorHandler';
-import VersionChecker from '@/components/VersionChecker';
 import VersionDisplay from '@/components/VersionDisplay';
 import { getBuildInfo } from '@/lib/build-info';
 import { AppProvider } from '@/contexts/AppContext';
@@ -99,9 +95,6 @@ export default function RootLayout({
             userSelect: 'none',
           }}
         >
-          {/* Version Display - Remove this after testing */}
-          <VersionDisplay />
-
           <DecadesBanner />
           <div style={{
             position: 'relative',
@@ -112,15 +105,8 @@ export default function RootLayout({
             {children}
           </div>
 
-          {/* PWA Components */}
-          <PWAInstaller />
-          <InstallPrompt />
-
-          {/* Chunk Error Handler */}
-          <ChunkErrorHandler />
-
-          {/* Version Checker - Fixed to prevent loops */}
-          <VersionChecker />
+          {/* Version Display remains for debugging at the very bottom */}
+          <VersionDisplay />
         </body>
       </AppProvider>
     </html>
