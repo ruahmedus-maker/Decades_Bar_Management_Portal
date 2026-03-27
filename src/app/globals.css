@@ -54,16 +54,12 @@ body {
   flex: 1;
   margin-left: 300px;
   margin-top: 120px;
-  padding: 20px;
+  padding: 0;
   height: calc(100vh - 140px);
   background: transparent !important;
   width: calc(100% - 320px);
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  will-change: transform, scroll-position;
+  overflow: hidden;
 }
 
 /* Glassmorphism panel for main content */
@@ -219,14 +215,19 @@ html,
 body,
 #__next {
   min-height: 100vh;
-  overflow-y: auto;
 }
 
 .content-wrapper {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  height: 100%;
   position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .content-wrapper>* {
@@ -235,17 +236,17 @@ body,
 }
 
 /* ===== SCROLLBAR OPTIMIZATIONS ===== */
-.main-content::-webkit-scrollbar {
+.content-wrapper::-webkit-scrollbar {
   width: 4px;
   /* Thinner scrollbar */
 }
 
-.main-content::-webkit-scrollbar-track {
+.content-wrapper::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 2px;
 }
 
-.main-content::-webkit-scrollbar-thumb {
+.content-wrapper::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 2px;
 }
