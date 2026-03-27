@@ -5,14 +5,14 @@ import { useEffect } from 'react';
 export default function PWAInstaller() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
-        });
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister().then((success) => {
+            console.log('Unregistered rogue Service Worker:', success);
+            // Optional: force a reload if needed, but unregistering is usually enough.
+          });
+        }
+      });
     }
   }, []);
 
