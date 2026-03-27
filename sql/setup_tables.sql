@@ -20,11 +20,7 @@ CREATE POLICY "Admins can view all notifications"
 ON public.notifications FOR SELECT
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE auth.users.id = auth.uid()
-    AND (auth.users.raw_user_meta_data->>'position' = 'Admin')
-  )
+  (auth.jwt() -> 'user_metadata' ->> 'position') = 'Admin'
 );
 
 DROP POLICY IF EXISTS "Anyone can insert notifications" ON public.notifications;
@@ -38,11 +34,7 @@ CREATE POLICY "Admins can update notifications"
 ON public.notifications FOR UPDATE
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE auth.users.id = auth.uid()
-    AND (auth.users.raw_user_meta_data->>'position' = 'Admin')
-  )
+  (auth.jwt() -> 'user_metadata' ->> 'position') = 'Admin'
 )
 WITH CHECK (true);
 
@@ -75,11 +67,7 @@ CREATE POLICY "Admins can view all results"
 ON public.test_results FOR SELECT
 TO authenticated
 USING (
-  EXISTS (
-    SELECT 1 FROM auth.users
-    WHERE auth.users.id = auth.uid()
-    AND (auth.users.raw_user_meta_data->>'position' = 'Admin')
-  )
+  (auth.jwt() -> 'user_metadata' ->> 'position') = 'Admin'
 );
 
 DROP POLICY IF EXISTS "Users can insert their own results" ON public.test_results;

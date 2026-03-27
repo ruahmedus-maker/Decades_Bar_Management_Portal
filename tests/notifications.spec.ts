@@ -50,6 +50,9 @@ test.describe('Notification System', () => {
         const adminContext = await browser.newContext();
         const adminPage = await adminContext.newPage();
 
+        adminPage.on('console', msg => console.log(`[Admin] ${msg.text()}`));
+        bartenderPage.on('console', msg => console.log(`[Bartender] ${msg.text()}`));
+
         // 1. Admin Role: Login
         await adminPage.goto('/');
         await adminPage.locator('button', { hasText: 'Admin' }).click();
