@@ -62,6 +62,7 @@ export default function GuidedTour() {
   // --- ADVANCED OWNER-CENTRIC PRESENTATION ---
   const adminSteps: Step[] = [
     {
+      id: 'admin1',
       target: 'body',
       placement: 'center',
       content: (
@@ -75,16 +76,18 @@ export default function GuidedTour() {
       skipBeacon: true,
     },
     {
+      id: 'admin2',
       target: '.sidebar',
       placement: 'right',
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>The Command Center</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Every operational procedure, training manual, and management tool is organized here. Access is automatically dynamically filtered so staff only see what pertains to their level.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Every operational procedure, training manual, and management tool is organized here. Access is dynamically filtered so staff only see what pertains to their level.</p>
         </div>
       ),
     },
     {
+      id: 'admin3',
       target: '[data-tour="procedures"]',
       placement: 'right',
       content: (
@@ -95,8 +98,9 @@ export default function GuidedTour() {
       ),
     },
     {
-      target: '.content-wrapper',
-      placement: 'left',
+      id: 'admin4',
+      target: '[data-tour="employee-counselings"]',
+      placement: 'right',
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Structured Communication</h3>
@@ -105,8 +109,9 @@ export default function GuidedTour() {
       ),
     },
     {
-      target: '.content-wrapper',
-      placement: 'left',
+      id: 'admin5',
+      target: '[data-tour="performance-report"]',
+      placement: 'right',
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Eagle-Eye Overview</h3>
@@ -115,8 +120,9 @@ export default function GuidedTour() {
       ),
     },
     {
-      target: '.content-wrapper',
-      placement: 'left',
+      id: 'admin6',
+      target: '[data-tour="admin-panel"]',
+      placement: 'right',
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Secure Administration</h3>
@@ -125,6 +131,7 @@ export default function GuidedTour() {
       ),
     },
     {
+      id: 'admin7',
       target: 'body',
       placement: 'center',
       content: (
@@ -189,6 +196,54 @@ export default function GuidedTour() {
 
   if (!isClient) return null;
 
-  // DIAGNOSTIC BYPASS: Temporarily disabling the Tour physically to isolate the freeze.
-  return <div id="tour-diagnostic-bypass" style={{ display: 'none' }} />;
+  return (
+    <Joyride
+      steps={isAdmin ? adminSteps : staffSteps}
+      run={run}
+      continuous
+      scrollToFirstStep
+      onEvent={handleJoyrideCallback}
+      options={{
+        showProgress: true,
+        buttons: ['back', 'skip', 'primary'],
+        arrowColor: 'rgba(26, 54, 93, 0.98)',
+        backgroundColor: 'rgba(26, 54, 93, 0.98)',
+        primaryColor: '#FFD700',
+        textColor: '#FFFFFF',
+        overlayColor: 'rgba(0, 0, 0, 0.75)',
+        zIndex: 10000,
+      }}
+      styles={{
+        tooltipContainer: {
+          textAlign: 'left',
+          fontSize: '15px',
+          fontFamily: 'var(--font-outfit), sans-serif',
+        },
+        tooltip: {
+          border: '1px solid rgba(255, 215, 0, 0.3)',
+          borderRadius: '16px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+          padding: '15px',
+        },
+        buttonPrimary: {
+          background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
+          color: '#1a365d',
+          fontWeight: 600,
+          borderRadius: '8px',
+          padding: '10px 20px',
+          border: 'none',
+          boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+        },
+        buttonBack: {
+          color: '#FFD700',
+          marginRight: '15px',
+          fontWeight: 300,
+        },
+        buttonSkip: {
+          color: 'rgba(255, 255, 255, 0.5)',
+          fontWeight: 300,
+        }
+      }}
+    />
+  );
 }
