@@ -18,8 +18,8 @@ export default function GuidedTour() {
   useEffect(() => {
     if (!currentUser || !isClient) return;
 
-    // Check if the user has already seen the tour (V2 - Programmatic Walkthrough)
-    const tourKey = `decades_tour_v2_seen_${currentUser.email}`;
+    // Check if the user has already seen the tour (V3 - Comprehensive 18-Step Walkthrough)
+    const tourKey = `decades_tour_v3_seen_${currentUser.email}`;
     const hasSeenTour = localStorage.getItem(tourKey);
     
     if (!hasSeenTour) {
@@ -34,111 +34,253 @@ export default function GuidedTour() {
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     // --- PROGRAMMATIC NAVIGATION ENGINE ---
-    // If the user advances or reverses, dynamically change the application routing in the background
-    // This allows the tour to walk them through multiple discrete views
     if (isAdmin && type === 'step:after') {
       if (action === 'next') {
-        if (index === 1) setActiveSection('welcome'); // Back to hub if they were clicking around
-        if (index === 2) setActiveSection('employee-counselings'); // Jump exactly to Counselings for Step 4 (Index 3)
-        if (index === 3) setActiveSection('performance-report'); // Jump to KPIs for Step 5 (Index 4)
-        if (index === 4) setActiveSection('admin-panel'); // Jump to Admin for Step 6 (Index 5)
-        if (index === 5) setActiveSection('welcome'); // Reset before signoff
+        // Navigation triggers as we move from one step to the next
+        if (index === 14) setActiveSection('admin-panel');
+        if (index === 15) setActiveSection('employee-counselings');
+        if (index === 16) setActiveSection('performance-report');
+        if (index === 17) setActiveSection('maintenance');
+        if (index === 18) setActiveSection('welcome'); // Reset on outro
       } else if (action === 'prev') {
-        if (index === 3) setActiveSection('welcome'); // Reverting back to sidebar/hub
-        if (index === 4) setActiveSection('employee-counselings');
-        if (index === 5) setActiveSection('performance-report');
+        if (index === 16) setActiveSection('admin-panel');
+        if (index === 17) setActiveSection('employee-counselings');
+        if (index === 18) setActiveSection('performance-report');
+        if (index === 19) setActiveSection('maintenance');
       }
     }
 
     // Mark as completed once they finish or skip
     if (finishedStatuses.includes(status) && currentUser) {
-      localStorage.setItem(`decades_tour_v2_seen_${currentUser.email}`, 'true');
+      localStorage.setItem(`decades_tour_v3_seen_${currentUser.email}`, 'true');
       setRun(false);
-      // Reset view to normal once they finish
       setActiveSection('welcome');
     }
   };
 
-  // --- ADVANCED OWNER-CENTRIC PRESENTATION ---
+  // --- COMPREHENSIVE 18-STEP OWNER-CENTRIC PRESENTATION ---
   const adminSteps: Step[] = [
     {
-      id: 'admin1',
+      id: 'step_intro',
       target: 'body',
       placement: 'center',
       content: (
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>Digital Headquarters</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            Welcome to the Decades Bar Management System! This platform is designed to revolutionize how your staff is trained and how operations are tracked.<br/><br/>Let's take a quick tour.
+            Welcome to the Decades Bar Management System! This platform is designed to revolutionize how your staff is trained and how operations are tracked.<br/><br/>Let's explore every feature together.
           </p>
         </div>
       ),
       skipBeacon: true,
     },
     {
-      id: 'admin2',
-      target: '.sidebar',
+      id: 'step_welcome',
+      target: '[data-tour="welcome"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>The Command Center</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Every operational procedure, training manual, and management tool is organized here. Access is dynamically filtered so staff only see what pertains to their level.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Welcome & Dashboard</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Your Operational Dashboard – Overview of tasks, announcements, and personal progress at a glance.</p>
         </div>
       ),
     },
     {
-      id: 'admin3',
+      id: 'step_training',
+      target: '[data-tour="training"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Materials</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Knowledge Base – Digital library containing all mandatory training modules and core documentation.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_tests',
+      target: '[data-tour="tests"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Tests</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Compliance Certification – Integrated assessment system to verify staff knowledge and ensure house standards.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_procedures',
       target: '[data-tour="procedures"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Digitized Accountability</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Say goodbye to paper checklists. Staff read policies and complete interactive closing duties right from their phones, giving you a timestamped digital paper trail.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Standard Procedures</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Consistency Engine – Centralized repository for opening and closing checklists to maintain operational excellence.</p>
         </div>
       ),
     },
     {
-      id: 'admin4',
-      target: '[data-tour="employee-counselings"]',
+      id: 'step_aloha',
+      target: '[data-tour="aloha-pos"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Structured Communication</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>We've seamlessly jumped to the <b>Employee Counselings</b> section. This tool allows managers to log verbal and written warnings securely. All disciplinary records are permanently tied directly to the employee's profile.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Aloha POS Guide</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Technical Guide – Visual tutorials and troubleshooting for the point-of-sale system to minimize errors.</p>
         </div>
       ),
     },
     {
-      id: 'admin5',
-      target: '[data-tour="performance-report"]',
+      id: 'step_cocktails',
+      target: '[data-tour="cocktails"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Eagle-Eye Overview</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>We are now in the <b>Performance KPIs</b> dashboard. This gives you real-time analytics on staff training completion rates across the entire venue. Instantly spot who is falling behind.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Cocktail Recipes</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Quality Control – Standardized beverage build-sheets to ensure every drink is poured to perfection.</p>
         </div>
       ),
     },
     {
-      id: 'admin6',
+      id: 'step_specials',
+      target: '[data-tour="drinks-specials"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Drinks Specials</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Promotional Hub – Real-time updates on current specials, seasonal offerings, and happy hour deals.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_glassware',
+      target: '[data-tour="glassware-guide"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Glassware Guide</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Visual Standards – Reference for correct glass selection, reinforcing premium branding.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_uniform',
+      target: '[data-tour="uniform-guide"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Uniform Guide</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Appearance Standards – Clear guidelines for staff presentation to maintain a professional atmosphere.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_cleaning',
+      target: '[data-tour="bar-cleanings"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Bar Cleanings</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Sanitation Standards – Specialized checklists for daily and weekly deep-cleaning tasks to ensure a spotless bar.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_social',
+      target: '[data-tour="social-media"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Social Media</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Brand Amplification – Guidelines and assets for staff to assist with digital marketing and outreach.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_events',
+      target: '[data-tour="special-events"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Special Events</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational Calendar – Central hub for private bookings, holiday hours, and special events.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_comps',
+      target: '[data-tour="comps-voids"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Comps & Voids</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Financial Protocol – Clear standards for handling transaction adjustments and documentation.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_policies',
+      target: '[data-tour="policies"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Policies</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>House Standards – The official handbook covering legal requirements, conduct, and safety.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_admin',
       target: '[data-tour="admin-panel"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Secure Administration</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Finally, the <b>Admin Panel</b> allows you absolute control over role assignments, password auditing, and generating fresh registration codes for new hires.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Management Hub – Backend controls for user accounts, registration codes, and global settings.</p>
         </div>
       ),
     },
     {
-      id: 'admin7',
+      id: 'step_counseling',
+      target: '[data-tour="employee-counselings"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Employee Counselings</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Performance Tracking – Secure system for logging staff feedback, professional development, and disciplinary actions.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_kpi',
+      target: '[data-tour="performance-report"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Performance KPIs</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational Analytics – Real-time data on training completion and staff engagement venue-wide.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_maintenance',
+      target: '[data-tour="maintenance"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Maintenance</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Facility Care – Reporting tool for equipment issues and tracking repair statuses.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'step_outro',
       target: 'body',
       placement: 'center',
       content: (
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>You're In Control</h2>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>A New Standard</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            The Decades Management System is engineered to automate compliance, elevate your operations, and save you countless hours.<br/><br/>Enjoy your new platform!
+            You've seen the full power of the Decades Bar Management System. Use these tools to drive efficiency and excellence in your venue.<br/><br/>Enjoy your platform!
           </p>
         </div>
       ),
