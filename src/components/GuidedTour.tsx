@@ -13,6 +13,8 @@ export default function GuidedTour() {
 
   useEffect(() => {
     setIsClient(true);
+    // Safety fallback: if anything crashes during initial mount, force it off
+    return () => setRun(false);
   }, []);
 
   useEffect(() => {

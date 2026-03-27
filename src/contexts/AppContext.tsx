@@ -76,6 +76,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       } finally {
         clearTimeout(timeoutId);
         setIsLoading(false);
+        console.log('✅ Initialization sequence complete');
       }
     };
 

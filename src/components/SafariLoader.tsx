@@ -34,7 +34,7 @@ export default function SafariLoader() {
       left: 0,
       width: '100%',
       height: '100%',
-      background: 'linear-gradient(135deg, #1a365d 0%, #2d4bf 100%)',
+      background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
