@@ -63,7 +63,7 @@ export default function GuidedTour() {
       placement: 'right',
     },
     {
-      target: '[data-tour="standard-procedures"]',
+      target: '[data-tour="procedures"]',
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase' }}>Standard Procedures</h3>

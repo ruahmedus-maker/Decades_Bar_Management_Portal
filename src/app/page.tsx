@@ -80,7 +80,9 @@ function MainApp() {
   return (
     <>
       <SafariLoader />
-      <GuidedTour />
+      <ErrorBoundary>
+        <GuidedTour />
+      </ErrorBoundary>
       <div className="container">
         <Header />
         <Sidebar />
