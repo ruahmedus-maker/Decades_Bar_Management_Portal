@@ -18,8 +18,8 @@ export default function GuidedTour() {
   useEffect(() => {
     if (!currentUser || !isClient) return;
 
-    // Check if the user has already seen the tour
-    const tourKey = `decades_tour_seen_${currentUser.email}`;
+    // Check if the user has already seen the tour (V2 - Programmatic Walkthrough)
+    const tourKey = `decades_tour_v2_seen_${currentUser.email}`;
     const hasSeenTour = localStorage.getItem(tourKey);
     
     if (!hasSeenTour) {
@@ -52,7 +52,7 @@ export default function GuidedTour() {
 
     // Mark as completed once they finish or skip
     if (finishedStatuses.includes(status) && currentUser) {
-      localStorage.setItem(`decades_tour_seen_${currentUser.email}`, 'true');
+      localStorage.setItem(`decades_tour_v2_seen_${currentUser.email}`, 'true');
       setRun(false);
       // Reset view to normal once they finish
       setActiveSection('welcome');
