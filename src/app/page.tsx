@@ -11,7 +11,6 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { ENABLE_TESTS } from '@/lib/test-utils';
 import FullScreenTest from '@/components/FullScreenTest';
 import SafariLoader from '@/components/SafariLoader'; // Add this
-import { uiBackground, uiBackdropFilter, uiBackdropFilterWebkit } from '@/lib/brand-styles';
 
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
@@ -83,14 +82,7 @@ function MainApp() {
       <div className="container">
         <Header />
         <Sidebar />
-        <div className="main-content" style={{
-          background: uiBackground,
-          backdropFilter: uiBackdropFilter,
-          WebkitBackdropFilter: uiBackdropFilterWebkit,
-          borderRadius: '20px',
-          border: '1px solid rgba(255, 255, 255, 0.25)',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-        }}>
+        <div className="main-content glass-panel" style={{ '--ui-bg': 'rgba(26, 54, 93, 0.4)' } as React.CSSProperties}>
           <div className="content-wrapper">
             <ErrorBoundary>
               <SectionRouter />

@@ -31,11 +31,10 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-outfit), sans-serif;
-  min-height: 100vh;
+  height: 100vh;
   color: white;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: auto;
+  overflow: hidden;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -62,6 +61,32 @@ body {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  will-change: transform, scroll-position;
+}
+
+/* Glassmorphism panel for main content */
+.glass-panel {
+  background: var(--ui-bg, rgba(26, 54, 93, 0.4));
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Only apply expensive backdrop-filter on non-mobile devices to prevent crashes */
+@media (min-width: 769px) {
+  .glass-panel {
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+  }
+}
+
+/* On mobile, use a solid elegant fallback to save GPU */
+@media (max-width: 768px) {
+  .glass-panel {
+    background: rgba(26, 54, 93, 0.95) !important;
+  }
 }
 
 /* ===== BUTTON STYLES - OPTIMIZED ===== */
