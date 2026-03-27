@@ -1,29 +1,10 @@
-// Simple service worker for basic caching
-const CACHE_NAME = 'decades-bar-v1';
-const urlsToCache = [
-  '/',
-  '/manifest.json'
-];
-
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+// Nullified Service Worker
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Force the waiting service worker to become the active service worker.
 });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim()); // Takes control of all pages immediately.
 });
+
+// No fetch listener = No interceptions = No hung app!
