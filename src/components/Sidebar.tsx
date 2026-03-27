@@ -161,6 +161,7 @@ export default function Sidebar() {
           return (
             <li
               key={item.id}
+              data-tour={item.id}
               style={{
                 listStyle: 'none',
               }}

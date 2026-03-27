@@ -10,7 +10,8 @@ import Toast from '@/components/Toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ENABLE_TESTS } from '@/lib/test-utils';
 import FullScreenTest from '@/components/FullScreenTest';
-import SafariLoader from '@/components/SafariLoader'; // Add this
+import SafariLoader from '@/components/SafariLoader'; 
+import GuidedTour from '@/components/GuidedTour';
 
 function MainApp() {
   const { currentUser, isLoading, toast, hideToast } = useApp();
@@ -79,6 +80,7 @@ function MainApp() {
   return (
     <>
       <SafariLoader />
+      <GuidedTour />
       <div className="container">
         <Header />
         <Sidebar />
