@@ -52,15 +52,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState({ message: '', show: false });
   const [userProgress, setUserProgress] = useState<any>(null);
 
-  // Simple auth initialization - RESTORED
+  // Simple auth initialization - RESTORED WITH ROBUST ERROR HANDLING
   useEffect(() => {
     const initAuth = async () => {
-      await initializeAuth();
+      // 1) Safety Fallback Timeout: If Supabase/SW hangs for >6s, force load
+      const timeoutId = setTimeout(() => {
+        setIsLoading(prev => {
+          if (prev) {
+            console.warn('⚠️ Auth initialization timeout reached. Forcing app load to prevent permanent hang.');
+          }
+          return false;
+        });
+      }, 6000);
 
-      // Check for existing session
-      const user = await getCurrentSession();
-      setCurrentUser(user);
-      setIsLoading(false);
+      try {
+        await initializeAuth();
+
+        // Check for existing session
+        const user = await getCurrentSession();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('❌ Failed to initialize auth session during app startup:', error);
+      } finally {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+      }
     };
 
     initAuth();
