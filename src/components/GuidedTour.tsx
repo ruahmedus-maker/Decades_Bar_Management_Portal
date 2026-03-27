@@ -189,54 +189,6 @@ export default function GuidedTour() {
 
   if (!isClient) return null;
 
-  return (
-    <Joyride
-      steps={isAdmin ? adminSteps : staffSteps}
-      run={run}
-      continuous
-      scrollToFirstStep
-      onEvent={handleJoyrideCallback}
-      options={{
-        showProgress: true,
-        buttons: ['back', 'skip', 'primary'],
-        arrowColor: 'rgba(26, 54, 93, 0.98)',
-        backgroundColor: 'rgba(26, 54, 93, 0.98)',
-        primaryColor: '#FFD700',
-        textColor: '#FFFFFF',
-        overlayColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 10000,
-      }}
-      styles={{
-        tooltipContainer: {
-          textAlign: 'left',
-          fontSize: '15px',
-          fontFamily: 'var(--font-outfit), sans-serif',
-        },
-        tooltip: {
-          border: '1px solid rgba(255, 215, 0, 0.3)',
-          borderRadius: '16px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          padding: '15px',
-        },
-        buttonPrimary: {
-          background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
-          color: '#1a365d',
-          fontWeight: 600,
-          borderRadius: '8px',
-          padding: '10px 20px',
-          border: 'none',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-        },
-        buttonBack: {
-          color: '#FFD700',
-          marginRight: '15px',
-          fontWeight: 300,
-        },
-        buttonSkip: {
-          color: 'rgba(255, 255, 255, 0.5)',
-          fontWeight: 300,
-        }
-      }}
-    />
-  );
+  // DIAGNOSTIC BYPASS: Temporarily disabling the Tour physically to isolate the freeze.
+  return <div id="tour-diagnostic-bypass" style={{ display: 'none' }} />;
 }
