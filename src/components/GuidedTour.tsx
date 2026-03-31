@@ -8,12 +8,10 @@ export default function GuidedTour() {
   const { currentUser, isAdmin, setActiveSection } = useApp();
   const [run, setRun] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  // Optional ref to keep track of any internal async logic
   const tourRef = useRef(null);
 
   useEffect(() => {
     setIsClient(true);
-    // Safety fallback: if anything crashes during initial mount, force it off
     return () => setRun(false);
   }, []);
 
@@ -33,7 +31,6 @@ export default function GuidedTour() {
 
     if (!hasSeenTour) {
       console.log('🚀 Scheduling tour start in 3s...');
-      // Delay slightly to let the UI finish animating in (glass panels etc)
       const timer = setTimeout(() => {
         console.log('🔥 Starting tour now!');
         setRun(true);
@@ -47,25 +44,63 @@ export default function GuidedTour() {
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     // --- PROGRAMMATIC NAVIGATION ENGINE ---
-    if (isAdmin && type === 'step:after') {
+    if (type === 'step:after') {
       if (action === 'next') {
-        // Navigation triggers as we move from one step to the next
-        if (index === 14) setActiveSection('admin-panel');
-        if (index === 15) setActiveSection('employee-counselings');
-        if (index === 16) setActiveSection('performance-report');
-        if (index === 17) setActiveSection('maintenance');
-        if (index === 18) setActiveSection('welcome'); // Reset on outro
+        // Admin Navigation
+        if (isAdmin) {
+          if (index === 14) setActiveSection('admin-panel');
+          if (index === 15) setActiveSection('employee-counselings');
+          if (index === 16) setActiveSection('performance-report');
+          if (index === 17) setActiveSection('maintenance');
+          if (index === 18) setActiveSection('welcome'); // Reset on outro
+        } 
+        // Staff Navigation (Bartender/Trainee)
+        else {
+          if (index === 1) setActiveSection('training');
+          if (index === 2) setActiveSection('tests');
+          if (index === 3) setActiveSection('procedures');
+          if (index === 4) setActiveSection('aloha-pos');
+          if (index === 5) setActiveSection('cocktails');
+          if (index === 6) setActiveSection('drinks-specials');
+          if (index === 7) setActiveSection('glassware-guide');
+          if (index === 8) setActiveSection('uniform-guide');
+          if (index === 9) setActiveSection('bar-cleanings');
+          if (index === 10) setActiveSection('social-media');
+          if (index === 11) setActiveSection('special-events');
+          if (index === 12) setActiveSection('comps-voids');
+          if (index === 13) setActiveSection('policies');
+          if (index === 14) setActiveSection('maintenance');
+          if (index === 15) setActiveSection('welcome'); // Reset on outro
+        }
       } else if (action === 'prev') {
-        if (index === 16) setActiveSection('admin-panel');
-        if (index === 17) setActiveSection('employee-counselings');
-        if (index === 18) setActiveSection('performance-report');
-        if (index === 19) setActiveSection('maintenance');
+        if (isAdmin) {
+          if (index === 16) setActiveSection('admin-panel');
+          if (index === 17) setActiveSection('employee-counselings');
+          if (index === 18) setActiveSection('performance-report');
+          if (index === 19) setActiveSection('maintenance');
+        } else {
+          if (index === 2) setActiveSection('training');
+          if (index === 3) setActiveSection('tests');
+          if (index === 4) setActiveSection('procedures');
+          if (index === 5) setActiveSection('aloha-pos');
+          if (index === 6) setActiveSection('cocktails');
+          if (index === 7) setActiveSection('drinks-specials');
+          if (index === 8) setActiveSection('glassware-guide');
+          if (index === 9) setActiveSection('uniform-guide');
+          if (index === 10) setActiveSection('bar-cleanings');
+          if (index === 11) setActiveSection('social-media');
+          if (index === 12) setActiveSection('special-events');
+          if (index === 13) setActiveSection('comps-voids');
+          if (index === 14) setActiveSection('policies');
+          if (index === 15) setActiveSection('maintenance');
+        }
       }
     }
 
     // Mark as completed once they finish or skip
     if (finishedStatuses.includes(status) && currentUser) {
-      localStorage.setItem(`decades_tour_v3_seen_${currentUser.email}`, 'true');
+      const tourKey = `decades_tour_v4_seen_${currentUser.email}`;
+      localStorage.setItem(tourKey, 'true');
       setRun(false);
       setActiveSection('welcome');
     }
@@ -81,7 +116,7 @@ export default function GuidedTour() {
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>Digital Headquarters</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            Welcome to the Decades Bar Management System! This platform is designed to revolutionize how your staff is trained and how operations are tracked.<br/><br/>Let's explore every feature together.
+            Welcome to the Decades Bar Management System!<br/><br/>Let's explore every feature together.
           </p>
         </div>
       ),
@@ -94,7 +129,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Welcome & Dashboard</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Your Operational Dashboard – Overview of tasks, announcements, and personal progress at a glance.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Your Operational Dashboard – Overview of tasks and progress.</p>
         </div>
       ),
     },
@@ -105,7 +140,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Materials</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Knowledge Base – Digital library containing all mandatory training modules and core documentation.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Digital library containing all mandatory training modules.</p>
         </div>
       ),
     },
@@ -116,7 +151,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Tests</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Compliance Certification – Integrated assessment system to verify staff knowledge and ensure house standards.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Integrated assessment system to verify staff knowledge.</p>
         </div>
       ),
     },
@@ -127,7 +162,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Standard Procedures</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Consistency Engine – Centralized repository for opening and closing checklists to maintain operational excellence.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Centralized repository for opening and closing checklists.</p>
         </div>
       ),
     },
@@ -138,7 +173,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Aloha POS Guide</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Technical Guide – Visual tutorials and troubleshooting for the point-of-sale system to minimize errors.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Technical Guide for the point-of-sale system.</p>
         </div>
       ),
     },
@@ -149,7 +184,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Cocktail Recipes</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Quality Control – Standardized beverage build-sheets to ensure every drink is poured to perfection.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Standardized beverage build-sheets for quality control.</p>
         </div>
       ),
     },
@@ -160,7 +195,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Drinks Specials</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Promotional Hub – Real-time updates on current specials, seasonal offerings, and happy hour deals.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Real-time updates on current specials and deals.</p>
         </div>
       ),
     },
@@ -171,7 +206,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Glassware Guide</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Visual Standards – Reference for correct glass selection, reinforcing premium branding.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Visual Standards for correct glass selection.</p>
         </div>
       ),
     },
@@ -182,7 +217,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Uniform Guide</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Appearance Standards – Clear guidelines for staff presentation to maintain a professional atmosphere.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Guidelines for staff presentation and professional atmosphere.</p>
         </div>
       ),
     },
@@ -193,7 +228,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Bar Cleanings</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Sanitation Standards – Specialized checklists for daily and weekly deep-cleaning tasks to ensure a spotless bar.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Sanitation standards and deep-cleaning tasks.</p>
         </div>
       ),
     },
@@ -204,7 +239,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Social Media</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Brand Amplification – Guidelines and assets for staff to assist with digital marketing and outreach.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Brand amplification guidelines for staff.</p>
         </div>
       ),
     },
@@ -215,7 +250,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Special Events</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational Calendar – Central hub for private bookings, holiday hours, and special events.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational calendar for private bookings and events.</p>
         </div>
       ),
     },
@@ -226,7 +261,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Comps & Voids</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Financial Protocol – Clear standards for handling transaction adjustments and documentation.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Financial Protocol for handling adjustments.</p>
         </div>
       ),
     },
@@ -237,7 +272,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Policies</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>House Standards – The official handbook covering legal requirements, conduct, and safety.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>The official handbook covering legal requirements and safety.</p>
         </div>
       ),
     },
@@ -248,7 +283,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Management Hub – Backend controls for user accounts, registration codes, and global settings.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Backend controls for user accounts and global settings.</p>
         </div>
       ),
     },
@@ -259,7 +294,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Employee Counselings</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Performance Tracking – Secure system for logging staff feedback, professional development, and disciplinary actions.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Performance tracking and disciplinary actions logs.</p>
         </div>
       ),
     },
@@ -270,7 +305,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Performance KPIs</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational Analytics – Real-time data on training completion and staff engagement venue-wide.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Operational Analytics on training completion.</p>
         </div>
       ),
     },
@@ -281,7 +316,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Maintenance</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Facility Care – Reporting tool for equipment issues and tracking repair statuses.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Facility care reporting and status tracking.</p>
         </div>
       ),
     },
@@ -293,56 +328,202 @@ export default function GuidedTour() {
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>A New Standard</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            You've seen the full power of the Decades Bar Management System. Use these tools to drive efficiency and excellence in your venue.<br/><br/>Enjoy your platform!
+            You've seen the full power of the Decades Bar Management System.<br/><br/>Enjoy your platform!
           </p>
         </div>
       ),
     }
   ];
 
-  // Generic employee tour for non-owner staff
   const staffSteps: Step[] = [
     {
+      id: 'staff_intro',
       target: 'body',
       placement: 'center',
       content: (
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>Welcome to Decades</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            This quick tour will show you how to navigate your training and operations portal.
+            This portal is your primary tool for mastering your role.<br/><br/>Let's see what's available to you.
           </p>
         </div>
       ),
       skipBeacon: true,
     },
     {
-      target: '.sidebar',
+      id: 'staff_welcome',
+      target: '[data-tour="welcome"]',
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Main Navigation</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Access all your assigned training modules and operational checklists right here.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Dashboard</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Your home screen for announcements and progress.</p>
         </div>
       ),
     },
     {
-      target: '#welcome',
-      placement: 'left',
+      id: 'staff_training',
+      target: '[data-tour="training"]',
+      placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Hub & Progress</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Your dashboard. As you complete and read sections, your progress saves automatically.</p>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Library</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Review mandatory training modules and core documentation.</p>
         </div>
       ),
     },
     {
+      id: 'staff_tests',
+      target: '[data-tour="tests"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Knowledge Tests</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Complete assessments to certify your expertise.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_procedures',
+      target: '[data-tour="procedures"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Daily Procedures</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Opening and closing checklists for shift consistency.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_aloha',
+      target: '[data-tour="aloha-pos"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Aloha POS</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Visual tutorials to master our point-of-sale system.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_cocktails',
+      target: '[data-tour="cocktails"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Cocktail Recipes</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Standardized recipes to guarantee consistency.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_specials',
+      target: '[data-tour="drinks-specials"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Current Specials</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Stay updated on seasonal offerings and deals.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_glassware',
+      target: '[data-tour="glassware-guide"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Glassware Guide</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Reference for correct serving vessels.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_uniform',
+      target: '[data-tour="uniform-guide"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Professionalism</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Guidelines for staff appearance and grooming.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_cleaning',
+      target: '[data-tour="bar-cleanings"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Sanitation</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Cleaning schedules to maintain our world-class environment.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_social',
+      target: '[data-tour="social-media"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Social Hub</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Marketing assets and guidelines for staff.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_events',
+      target: '[data-tour="special-events"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Events Calendar</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Check the schedule for private events and holiday hours.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_comps',
+      target: '[data-tour="comps-voids"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Comps & Voids</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Required protocols for transactions and documentation.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_policies',
+      target: '[data-tour="policies"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>House Policies</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Handbook on conduct, safety, and compliance.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_maintenance',
+      target: '[data-tour="maintenance"]',
+      placement: 'right',
+      content: (
+        <div>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Maintenance</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Report equipment issues or tracking requests here.</p>
+        </div>
+      ),
+    },
+    {
+      id: 'staff_outro',
       target: 'body',
       placement: 'center',
       content: (
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>Ready to Start!</h2>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 300 }}>Ready to Start</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.5', fontWeight: 300 }}>
-            Explore the portal and begin your Decades journey.
+            You're all set! Let's make every shift legendary.<br/><br/>Welcome to Decades!
           </p>
         </div>
       ),
