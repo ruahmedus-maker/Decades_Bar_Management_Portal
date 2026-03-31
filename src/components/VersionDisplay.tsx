@@ -11,10 +11,16 @@ export default function VersionDisplay() {
     const storedBuild = localStorage.getItem('app-build');
     const storedTime = localStorage.getItem('app-build-time');
     
+    // Automatically sync if it's different (since we disabled auto-reloading PWA)
+    if (storedBuild !== buildInfo.id) {
+      localStorage.setItem('app-build', buildInfo.id);
+      localStorage.setItem('app-build-time', buildInfo.time);
+    }
+    
     setInfo({
       current: buildInfo.id,
-      stored: storedBuild || 'none',
-      time: storedTime ? new Date(storedTime).toLocaleTimeString() : 'none'
+      stored: buildInfo.id, // Set to current immediately for the UI
+      time: new Date(buildInfo.time).toLocaleTimeString()
     });
   }, []);
 
