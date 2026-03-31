@@ -534,7 +534,7 @@ function MaintenanceTicketsManagement() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters & Actions */}
       <div style={{
         background: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '12px',
@@ -564,6 +564,7 @@ function MaintenanceTicketsManagement() {
             <option value="completed">Completed</option>
             <option value="closed">Closed</option>
           </select>
+
           <button
             onClick={loadTickets}
             disabled={loading}
@@ -578,7 +579,36 @@ function MaintenanceTicketsManagement() {
               opacity: loading ? 0.6 : 1
             }}
           >
-            {loading ? 'Refreshing...' : 'Refresh'}
+            {loading ? 'Refreshing...' : 'Refresh Items'}
+          </button>
+
+          {/* EMERGENCY RESTART TOUR BUTTON */}
+          <button
+            onClick={() => {
+              if (confirm('This will reset your onboarding progress and restart the 18-step tour. Proceed?')) {
+                // Clear all tour-related keys
+                Object.keys(localStorage).forEach(key => {
+                  if (key.includes('decades_tour_')) {
+                    localStorage.removeItem(key);
+                  }
+                });
+                window.location.reload();
+              }
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
+              color: '#1a365d',
+              border: 'none',
+              padding: '8px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: 'bold',
+              marginLeft: 'auto',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}
+          >
+            🔄 Restart Onboarding Tour
           </button>
         </div>
       </div>

@@ -20,16 +20,27 @@ export default function GuidedTour() {
   useEffect(() => {
     if (!currentUser || !isClient) return;
 
-    // Check if the user has already seen the tour (V3 - Comprehensive 18-Step Walkthrough)
-    const tourKey = `decades_tour_v3_seen_${currentUser.email}`;
+    // Check if the user has already seen the tour (V4 - Forced Reset)
+    const tourKey = `decades_tour_v4_seen_${currentUser.email}`;
     const hasSeenTour = localStorage.getItem(tourKey);
     
+    console.log('🏁 GuidedTour check:', { 
+      email: currentUser.email, 
+      hasSeenTour, 
+      isAdmin,
+      isClient 
+    });
+
     if (!hasSeenTour) {
+      console.log('🚀 Scheduling tour start in 3s...');
       // Delay slightly to let the UI finish animating in (glass panels etc)
-      const timer = setTimeout(() => setRun(true), 1500);
+      const timer = setTimeout(() => {
+        console.log('🔥 Starting tour now!');
+        setRun(true);
+      }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [currentUser, isClient]);
+  }, [currentUser, isClient, isAdmin]);
 
   const handleJoyrideCallback = (data: any) => {
     const { status, type, index, action } = data;
