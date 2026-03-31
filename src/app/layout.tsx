@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
@@ -13,6 +14,38 @@ const outfit = Outfit({
 });
 
 const buildInfo = getBuildInfo();
+
+function RecoveryMechanism() {
+  useEffect(() => {
+    // 1. Unregister any Service Workers (Legacy Cleanup)
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister().then(() => { 
+            console.log('✅ Legacy SW Unregistered in Layout'); 
+          });
+        }
+      });
+    }
+
+    // 2. Clear Caches if we detected a loop previously
+    if (typeof window !== 'undefined') {
+      const search = window.location.search;
+      if (search.includes('?v=') && search.split('?v=').length > 2) {
+        console.warn('⚠️ URL Loop Detected. Cleaning up...');
+        if ('caches' in window) {
+          caches.keys().then((names) => {
+            for (const name of names) caches.delete(name);
+          });
+        }
+        // Sanitize URL
+        window.location.href = window.location.origin + window.location.pathname;
+      }
+    }
+  }, []);
+
+  return null;
+}
 
 export const metadata: Metadata = {
   title: "Decades Bar Management System",
@@ -72,34 +105,6 @@ export default function RootLayout({
         <meta name="build-id" content={buildInfo.id} />
         <meta name="build-time" content={buildInfo.time} />
 
-        {/* RECOVERY SCRIPT - Fixes Recursive URL loops and Service Worker hangs */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              // 1. Unregister any Service Workers (Legacy Cleanup)
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for(let registration of registrations) {
-                    registration.unregister().then(function() { console.log('✅ SW Unregistered'); });
-                  }
-                });
-              }
-
-              // 2. Clear Caches if we detected a loop previously
-              if (window.location.search.includes('?v=') && window.location.search.split('?v=').length > 2) {
-                console.warn('⚠️ URL Loop Detected. Cleaning up...');
-                if ('caches' in window) {
-                  caches.keys().then(function(names) {
-                    for (let name of names) caches.delete(name);
-                  });
-                }
-                // Sanitize URL: Keep only the first parameter if any, or just go to root
-                window.location.href = window.location.origin + window.location.pathname;
-              }
-            })();
-          `
-        }} />
-
         {/* Cache Prevention */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />
@@ -123,6 +128,7 @@ export default function RootLayout({
             userSelect: 'none',
           }}
         >
+          <RecoveryMechanism />
           <DecadesBanner />
           <div style={{
             position: 'relative',

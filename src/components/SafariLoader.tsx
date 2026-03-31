@@ -57,6 +57,26 @@ export default function SafariLoader() {
         animation: 'spin 1s linear infinite'
       }}></div>
 
+      {/* Emergency Fallback Button after delay */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <p style={{ fontSize: '14px', opacity: 0.7 }}>Still loading? Click below to force entry</p>
+        <button 
+          onClick={() => window.location.reload()}
+          style={{
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid white',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            marginTop: '10px'
+          }}
+        >
+          FORCE RELOAD
+        </button>
+      </div>
+
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
