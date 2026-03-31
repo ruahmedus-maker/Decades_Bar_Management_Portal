@@ -157,14 +157,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // MEMOIZED trackVisit to prevent infinite loops
   const trackVisit = useCallback(async (sectionId: string) => {
     if (currentUser) {
-      try {
-        // Pass 30 seconds per visit - sections complete after 2 visits (60s total)
-        await trackSectionVisit(currentUser.email, sectionId, 30);
-        await refreshProgress();
-      } catch (error) {
-        console.error('Error tracking visit:', error);
-        showToast('Error tracking progress');
-      }
+      // NON-BLOCKING tracking to avoid UI hangs
+      trackSectionVisit(currentUser.email, sectionId, 30)
+        .then(() => refreshProgress())
+        .catch(error => console.error('Error tracking visit in background:', error));
     }
   }, [currentUser]); // Only recreate if currentUser changes
 

@@ -35,7 +35,7 @@ export default function LoginBarrier() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser and try again.")), 8000));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser and try again.")), 20000));
       await Promise.race([login(formData.email, formData.password), timeout]);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Login failed');
@@ -58,7 +58,7 @@ export default function LoginBarrier() {
         throw new Error('Administrative positions require manager authorization codes.');
       }
 
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser.")), 8000));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser.")), 20000));
       await Promise.race([register(formData), timeout]);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Registration failed');
@@ -71,7 +71,7 @@ export default function LoginBarrier() {
   const handleQuickLogin = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser to clear caches.")), 8000));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser to clear caches.")), 20000));
       await Promise.race([login(email, password), timeout]);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Login failed');

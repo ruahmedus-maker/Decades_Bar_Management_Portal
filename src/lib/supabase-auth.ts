@@ -160,14 +160,17 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     const authUser = convertToAuthUser(data.user, data.user.user_metadata);
     console.log(`✅ Signed in: ${authUser.name}`);
 
-    // SYNC: Ensure public.users has the correct auth_id
-    // This fixes issues where the public profile might have a stale or missing auth_id
+    // SYNC: Ensure public.users has the correct auth_id (NON-BLOCKING)
     if (data.user.email) {
-      await supabase
+      supabase
         .from('users')
         .update({ auth_id: data.user.id })
         .eq('email', data.user.email)
-        .neq('auth_id', data.user.id);
+        .neq('auth_id', data.user.id)
+        .then(({ error: syncError }) => {
+          if (syncError) console.warn('⚠️ User sync background notice:', syncError.message);
+          else console.log('✅ Background user sync complete');
+        });
     }
 
     return { user: authUser, error: null };
