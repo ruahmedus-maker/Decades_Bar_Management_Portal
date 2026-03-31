@@ -72,6 +72,34 @@ export default function RootLayout({
         <meta name="build-id" content={buildInfo.id} />
         <meta name="build-time" content={buildInfo.time} />
 
+        {/* RECOVERY SCRIPT - Fixes Recursive URL loops and Service Worker hangs */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              // 1. Unregister any Service Workers (Legacy Cleanup)
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  for(let registration of registrations) {
+                    registration.unregister().then(function() { console.log('✅ SW Unregistered'); });
+                  }
+                });
+              }
+
+              // 2. Clear Caches if we detected a loop previously
+              if (window.location.search.includes('?v=') && window.location.search.split('?v=').length > 2) {
+                console.warn('⚠️ URL Loop Detected. Cleaning up...');
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    for (let name of names) caches.delete(name);
+                  });
+                }
+                // Sanitize URL: Keep only the first parameter if any, or just go to root
+                window.location.href = window.location.origin + window.location.pathname;
+              }
+            })();
+          `
+        }} />
+
         {/* Cache Prevention */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />
