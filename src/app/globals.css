@@ -73,8 +73,8 @@ body {
 /* Only apply expensive backdrop-filter on non-mobile devices to prevent crashes */
 @media (min-width: 769px) {
   .glass-panel {
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 }
 
@@ -262,10 +262,10 @@ body,
   display: none;
 }
 
-/* Remove content-visibility as it can cause layout issues */
+/* Optimization: Ensure smooth layout rendering */
 .section-container {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 500px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== RESPONSIVE DESIGN - OPTIMIZED ===== */
@@ -357,7 +357,11 @@ div {
   text-rendering: optimizeLegibility;
 }
 
-/* Reduce repaints on scroll - REMOVED translateZ as it causes crashes */
+/* Additional performance tweaks */
+.main-content, .sidebar, .header {
+  transform: translateZ(0); /* Promote to GPU layer */
+  backface-visibility: hidden;
+}
 
 /* Optimize images to not cause layout shifts */
 img,

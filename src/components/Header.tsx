@@ -31,6 +31,8 @@ export default function Header() {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    willChange: 'transform',
+    transform: 'translateZ(0)'
   };
 
   // Cinematic Gold Text Effect

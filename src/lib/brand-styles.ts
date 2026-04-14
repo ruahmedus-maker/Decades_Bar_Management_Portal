@@ -78,6 +78,6 @@ export const goldCardHeaderStyle = {
 };
 
 // UI Background & Glassmorphism
-export const uiBackground = 'rgba(26, 54, 93, 0.4)';
-export const uiBackdropFilter = 'blur(12px) saturate(180%)';
-export const uiBackdropFilterWebkit = 'blur(12px) saturate(180%)';
+export const uiBackground = 'rgba(26, 54, 93, 0.55)';
+export const uiBackdropFilter = 'blur(8px)';
+export const uiBackdropFilterWebkit = 'blur(8px)';

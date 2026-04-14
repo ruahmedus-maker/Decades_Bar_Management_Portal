@@ -58,6 +58,8 @@ export default function Sidebar() {
     `,
     borderRadius: '20px',
     transition: 'none', // Removed - caused scroll crashes
+    willChange: 'transform',
+    transform: 'translateZ(0)'
   };
 
   const sidebarHoverStyle = {
