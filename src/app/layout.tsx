@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import DecadesBanner from '@/components/DecadesBanner';
 import VersionDisplay from '@/components/VersionDisplay';
+import RecoveryMechanism from '@/components/RecoveryMechanism';
 import { getBuildInfo } from '@/lib/build-info';
 import { AppProvider } from '@/contexts/AppContext';
 
@@ -14,38 +14,6 @@ const outfit = Outfit({
 });
 
 const buildInfo = getBuildInfo();
-
-function RecoveryMechanism() {
-  useEffect(() => {
-    // 1. Unregister any Service Workers (Legacy Cleanup)
-    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        for (const registration of registrations) {
-          registration.unregister().then(() => { 
-            console.log('✅ Legacy SW Unregistered in Layout'); 
-          });
-        }
-      });
-    }
-
-    // 2. Clear Caches if we detected a loop previously
-    if (typeof window !== 'undefined') {
-      const search = window.location.search;
-      if (search.includes('?v=') && search.split('?v=').length > 2) {
-        console.warn('⚠️ URL Loop Detected. Cleaning up...');
-        if ('caches' in window) {
-          caches.keys().then((names) => {
-            for (const name of names) caches.delete(name);
-          });
-        }
-        // Sanitize URL
-        window.location.href = window.location.origin + window.location.pathname;
-      }
-    }
-  }, []);
-
-  return null;
-}
 
 export const metadata: Metadata = {
   title: "Decades Bar Management System",
