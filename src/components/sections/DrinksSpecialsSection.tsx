@@ -250,9 +250,8 @@ export default function DrinksSpecialsSection() {
           title="🏷️ Decades Promotions"
           description="Stay updated with our current weekly specials. These offers are designed to drive engagement and volume across all floors."
           items={[
-            'Rotating weekly features',
-            'Floor-specific happy hours',
-            'Limited-time seasonal cocktails',
+            'Signature Cocktails and Seasonal features',
+            'Nightly specific specials',
             'Event-based promotional deals'
           ]}
         />
@@ -265,50 +264,37 @@ export default function DrinksSpecialsSection() {
             gap: '20px'
           }}>
             <SpecialCard
-              title="Thursday Night"
+              title="Thursday Night Specials"
               specials={[
                 '$5 Miller Lites',
                 '$6 Green Tea Shots',
                 '$10 Margaritas'
               ]}
-              hours="Open to Close"
+              hours="Until Midnight"
               notes="Drink tickets valid for rail drinks only"
             />
 
             <SpecialCard
-              title="Friday Happy Hour"
+              title="Friday Night Open Bar"
               specials={[
-                '$4 Domestic Drafts',
-                '$6 Well Spirits',
-                '$8 House Pours'
+                'Don Julio Silver',
+                'Surfside',
+                '$12 Hennessy & Casamigos All Night'
               ]}
-              hours="5:00 PM – 8:00 PM"
-              notes="Excludes rooftop during private events"
+              hours="10:00 PM – 11:00 PM"
+              notes="2000's or Opening floor only"
             />
 
             <SpecialCard
-              title="Saturday Vibes"
+              title="Saturday Day Party (Rooftop)"
               specials={[
-                '$7 Craft Drafts',
-                '$9 Premium Seltzers',
-                '$12 Signature Cocktails'
+                'Patron Silver'
               ]}
-              hours="All Night"
+              hours="4:00 PM - 5:00 PM"
             />
           </div>
         </AnimatedCard>
 
-        {/* Guidelines Card */}
-        <AnimatedCard
-          title="📢 Service Guidelines"
-          description="Protocol for promoting and serving specials to ensure consistency and guest satisfaction."
-          items={[
-            'Announce current specials to every guest arrival',
-            'Upsell signature features during peak service',
-            'Validate POS pricing before starting the shift',
-            'Enforce standardized portion control for all builds'
-          ]}
-        />
 
         {/* Progress Section */}
         <div style={{ marginTop: '30px' }}>
