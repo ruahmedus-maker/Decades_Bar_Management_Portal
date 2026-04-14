@@ -8,24 +8,21 @@ import { trackSectionVisit } from '@/lib/supabase-auth';
 import { ChecklistItem } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Move static data outside component
+// Move static data outside componen
 const DEFAULT_CHECKLIST: ChecklistItem[] = [
-  { id: '1', text: 'Arrive 15 minutes before scheduled shift time', completed: false, category: 'opening' },
+  { id: '1', text: 'Arrive on time for scheduled shift', completed: false, category: 'opening' },
   { id: '2', text: 'Clock in using the POS system', completed: false, category: 'opening' },
-  { id: '3', text: 'Check daily specials and event board', completed: false, category: 'opening' },
-  { id: '4', text: 'Review reservation list and any special requests', completed: false, category: 'opening' },
-  { id: '5', text: 'Set up station with necessary equipment', completed: false, category: 'opening' },
-  { id: 'bank-1', text: 'Collect bank bag from office/safe', completed: false, category: 'bank' },
+  { id: '3', text: 'Read shift notes and Bartender text threads for shift specials and updates', completed: false, category: 'opening' },
+  { id: '4', text: 'Set up station with necessary equipment', completed: false, category: 'opening' },
+  { id: 'bank-1', text: 'Collect bank bag from office', completed: false, category: 'bank' },
   { id: 'bank-2', text: 'Count $1 bills: 2 bands of $100 ($200 total)', completed: false, category: 'bank' },
   { id: 'bank-3', text: 'Count $5 bills: 1 band of $100 ($100 total)', completed: false, category: 'bank' },
   { id: 'bank-4', text: 'Verify total bank amount: $300', completed: false, category: 'bank' },
-  { id: 'cash-1', text: 'Use counterfeit pen on all $20+ bills received', completed: false, category: 'cash' },
+  { id: 'cash-1', text: 'Use counterfeit pen on all $50+ bills received', completed: false, category: 'cash' },
   { id: 'cash-2', text: 'Check for security features: watermark, security strip', completed: false, category: 'cash' },
   { id: 'shift-1', text: 'Maintain clean and organized work area', completed: false, category: 'during-shift' },
   { id: 'shift-5', text: 'Follow responsible alcohol service guidelines', completed: false, category: 'during-shift' },
-  { id: 'close-1', text: 'Count register drawer and prepare deposit', completed: false, category: 'closing' },
-  { id: 'close-2', text: 'Complete end-of-shift report in POS system', completed: false, category: 'closing' },
-  { id: 'close-5', text: 'Return bank bag with all contents to office', completed: false, category: 'closing' },
+  { id: 'close-1', text: 'Count register drawer and prepare for checkout', completed: false, category: 'closing' },
 ];
 
 const CATEGORIES = [
