@@ -9,7 +9,7 @@ const THEME_COLOR = '#D4AF37';
 const THEME_COLOR_RGB = '212, 175, 55';
 
 export default function Header() {
-  const { currentUser, logout } = useApp();
+  const { currentUser, logout, isAdmin } = useApp();
 
   const headerStyle = {
     position: 'fixed' as const,
@@ -101,7 +101,7 @@ export default function Header() {
   return (
     <div style={headerStyle}>
       <h2 style={titleStyle}>
-        Decades Bar Management System
+        {isAdmin ? 'Decades Bar Management System' : 'Decades Bar Training Portal'}
       </h2>
 
       <div style={userInfoStyle}>

@@ -225,7 +225,7 @@ export default function GlasswareGuideSection() {
           border: '1px solid rgba(255, 255, 255, 0.2)',
           letterSpacing: '1px'
         }}>
-          3 STANDARDS
+          PRESENTATION
         </span>
       </div>
 
