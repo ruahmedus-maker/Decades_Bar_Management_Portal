@@ -565,7 +565,7 @@ export default function BarCleaningsSection() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <ChecklistItem>Remove and soak all pour spouts and caps</ChecklistItem>
             <ChecklistItem>Clean all back-bar shelving and display units</ChecklistItem>
-            <ChecklistItem>Deep clean beer coolers and check expiration dates</ChecklistItem>
+            <ChecklistItem>Deep clean beer coolers and rotate stock</ChecklistItem>
             <ChecklistItem>Thorough POS hardware maintenance</ChecklistItem>
             <ChecklistItem>Spot clean and sanitize high-moisture areas</ChecklistItem>
           </div>
