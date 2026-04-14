@@ -312,24 +312,24 @@ export default function WelcomeSection() {
             gap: '25px'
           }}>
             <FloorCard 
-              title="Rooftop" 
-              image="/images/floors/rooftop.webp" 
-              desc="Open-air vibes and premium service under the stars."
-            />
-            <FloorCard 
               title="2000's Floor" 
               image="/images/floors/2000s_floor.webp" 
               desc="Nostalgic hits and a vibrant high-energy atmosphere."
             />
             <FloorCard 
+              title="2010's Floor" 
+              image="/images/floors/2010s_floor.webp" 
+              desc="The era of electronic dance music and modern pop anthems."
+            />
+            <FloorCard 
               title="Hip Hop Floor" 
-              image="/images/floors/hiphop_floor.webp" 
+              image="/images/floors/hiphop_floor.png" 
               desc="The best of urban music in a sleek, underground setting."
             />
             <FloorCard 
-              title="VIP & Lounge" 
-              image="/images/floors/vip_lounge.webp" 
-              desc="Exclusive service and luxury seating for our elite guests."
+              title="Rooftop" 
+              image="/images/floors/rooftop.webp" 
+              desc="Open-air vibes and premium service under the stars."
             />
           </div>
         </div>
