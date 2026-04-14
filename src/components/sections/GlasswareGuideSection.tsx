@@ -160,6 +160,16 @@ export default function GlasswareGuideSection() {
         'Multi-ingredient shooters'
       ],
       note: 'Protocol: Pours should arrive just below the rim'
+    },
+    {
+      title: 'Neon Shot Glass',
+      primaryUse: 'Comp shots and promotions',
+      includes: [
+        'Complimentary (Comp) shots',
+        'All Birthday Package shots at the request of a Host or management',
+        'All staff shots'
+      ],
+      note: 'Any and all comp shots should go in these shot glasses unless specified otherwise by management'
     }
   ];
 
@@ -242,15 +252,6 @@ export default function GlasswareGuideSection() {
           ))}
         </div>
 
-        <AnimatedCard
-          title="⚠️ Exclusive Thursday Policy"
-          description="Specific security protocol for Thursday night operations."
-          items={[
-            'All cocktails normally in Large Branded glass MUST use Frosted glass',
-            'This includes LIITs, Red Bull mixers, and Double pours',
-            'Policy applies from Doors Open until Operational Close'
-          ]}
-        />
 
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
