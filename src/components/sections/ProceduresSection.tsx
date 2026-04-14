@@ -13,7 +13,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: '1', text: 'Arrive on time for scheduled shift', completed: false, category: 'opening' },
   { id: '2', text: 'Clock in using the POS system', completed: false, category: 'opening' },
   { id: '3', text: 'Read shift notes and Bartender text threads for shift specials and updates', completed: false, category: 'opening' },
-  { id: '4', text: '', completed: false, category: 'opening' },
+  { id: '4', text: 'Pre-shift if scheduled', completed: false, category: 'opening' },
   { id: '5', text: 'Collect bank bag from office', completed: false, category: 'opening' },
   { id: '6', text: 'Remove all caps from bottles', completed: false, category: 'opening' },
   { id: '7', text: 'Straight face all bottles on back bar and fill any gaps', completed: false, category: 'opening' },
