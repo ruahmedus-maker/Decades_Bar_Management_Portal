@@ -161,106 +161,52 @@ export default function CompsVoidsSection() {
           ]}
         />
 
-        {/* Naming Convention Card */}
+        {/* Comp Naming Convention Card */}
         <StaticCard
-          title="🏷️ System Naming Convention"
-          description="Use the 'xxx' + code + 'xxx' pattern for all descriptions to ensure audit tracking."
+          title="🏷️ Comp Naming Convention"
+          description="Standard prefixes for all comp items in the POS system."
         >
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '15px',
-            marginTop: '10px'
+            padding: '25px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            minHeight: '200px'
           }}>
-            <div style={{
-              padding: '18px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+            <h5 style={{ 
+              color: '#D4AF37', 
+              marginBottom: '20px', 
+              fontSize: '1.2rem', 
+              fontWeight: 400, 
+              letterSpacing: '2px', 
+              textTransform: 'uppercase' 
             }}>
-              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
-                Customer Experience
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
-                <li><strong>xxxdecxxx</strong> - Customer declined/refused</li>
-                <li><strong>xxxdissxxx</strong> - Customer dissatisfied</li>
-                <li><strong>xxxwaitxxx</strong> - Wait time compensation</li>
-                <li><strong>xxxvipxxx</strong> - VIP guest treatment</li>
+              POS Entry Protocols
+            </h5>
+            <div style={{ ...premiumBodyStyle, opacity: 0.9 }}>
+              <p style={{ marginBottom: '15px' }}>Enter specific reasons using the naming standard below:</p>
+              <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <li><strong>xxxcomp[reason]xxx</strong> - Standard comp format</li>
+                <li>Example: <strong>xxxcompvipxxx</strong> for VIP guest treatment</li>
+                <li>Example: <strong>xxxcompbrthdxxx</strong> for approved birthday promotions</li>
+                <li>Example: <strong>xxxcompdissxxx</strong> for guest dissatisfaction apology</li>
               </ul>
             </div>
-
-            <div style={{
-              padding: '18px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}>
-              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
-                Product & Service
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
-                <li><strong>xxxqualxxx</strong> - Product quality issue</li>
-                <li><strong>xxxspilxxx</strong> - Drink spill/accident</li>
-                <li><strong>xxxwrongxxx</strong> - Wrong item made/ordered</li>
-                <li><strong>xxxremakexxx</strong> - Remake requested</li>
-              </ul>
-            </div>
-
-            <div style={{
-              padding: '18px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}>
-              <h5 style={{ color: 'white', marginBottom: '12px', fontSize: '0.8rem', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.7 }}>
-                Administrative
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: '18px', ...premiumBodyStyle, fontSize: '0.9rem', fontWeight: 300 }}>
-                <li><strong>xxxvoidxxx</strong> - General transaction void</li>
-                <li><strong>xxxdupxxx</strong> - Duplicate charge</li>
-                <li><strong>xxxerrxxx</strong> - Bartender/System error</li>
-                <li><strong>xxxempxxx</strong> - Employee comp</li>
-              </ul>
-            </div>
-          </div>
-
-          <div style={{
-            marginTop: '20px',
-            padding: '16px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.05)'
-          }}>
-            <p style={{
-              margin: 0,
-              ...premiumBodyStyle,
-              fontSize: '0.85rem',
-              fontStyle: 'italic',
-              opacity: 0.8
-            }}>
-              Example: For a dissatisfied guest, enter <strong>"xxxdissxxx"</strong> in the POS reason field.
-            </p>
           </div>
         </StaticCard>
 
-        {/* Comp/Void Procedures */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <StaticCard title="🎁 Comp Standards">
-            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0, fontWeight: 300 }}>
-              <li style={{ marginBottom: '8px' }}>Manager must authorize every complimentary item</li>
-              <li style={{ marginBottom: '8px' }}>Name and specific reason must be documented</li>
-              <li style={{ marginBottom: '8px' }}>Specific codes must be applied in the POS</li>
-            </ul>
-          </StaticCard>
-
-          <StaticCard title="📝 Void Standards">
-            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0, fontWeight: 300 }}>
-              <li style={{ marginBottom: '8px' }}>Manager swipe or login required for all voids</li>
-              <li style={{ marginBottom: '8px' }}>Transaction ID must be referenced for audits</li>
-              <li style={{ marginBottom: '8px' }}>Customer signature required for credit disputes</li>
-            </ul>
-          </StaticCard>
-        </div>
+        {/* Comps Guide Card */}
+        <StaticCard
+          title="📖 Comps Guide"
+          description="Step-by-step protocol for authorized complimentary items."
+          items={[
+            'Verify guest eligibility or management approval',
+            'Select the correct item in the POS system',
+            'Apply the mandatory Comp Naming Convention in the comment field',
+            'Obtain manager swipe/authorization to finalize',
+            'Document the comp in the nightly bar log'
+          ]}
+        />
 
         {/* Progress Section */}
         <div style={{ marginTop: '30px' }}>
