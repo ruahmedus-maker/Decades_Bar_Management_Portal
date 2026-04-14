@@ -176,29 +176,30 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
   );
 }
 
-// Floor Gallery Component
-function FloorCard({ title, image, desc }: { title: string, image: string, desc: string }) {
+// // Floor Gallery Component
+function FloorCard({ title, image }: { title: string, image: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
       style={{
-        borderRadius: '20px',
+        borderRadius: '16px',
         overflow: 'hidden',
         position: 'relative',
         background: uiBackground,
         border: isHovered ? '1px solid rgba(255, 255, 255, 0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: isHovered ? '0 30px 60px rgba(0, 0, 0, 0.5)' : '0 10px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: isHovered ? '0 25px 50px rgba(0, 0, 0, 0.5)' : '0 8px 25px rgba(0, 0, 0, 0.2)',
         transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
-        transform: isHovered ? 'scale(1.02) translateY(-5px)' : 'scale(1)',
-        cursor: 'pointer'
+        transform: isHovered ? 'scale(1.03) translateY(-4px)' : 'scale(1)',
+        cursor: 'pointer',
+        aspectRatio: '4 / 3'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div style={{
-        height: '240px',
         width: '100%',
+        height: '100%',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -219,8 +220,8 @@ function FloorCard({ title, image, desc }: { title: string, image: string, desc:
           bottom: 0,
           left: 0,
           right: 0,
-          padding: '20px',
-          background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+          padding: '15px 20px',
+          background: 'linear-gradient(transparent, rgba(0,0,0,0.85))',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end'
@@ -228,18 +229,14 @@ function FloorCard({ title, image, desc }: { title: string, image: string, desc:
           <h4 style={{
             ...premiumWhiteStyle,
             margin: 0,
-            fontSize: '1.2rem',
-            letterSpacing: '3px',
-            textTransform: 'uppercase'
+            fontSize: '0.9rem',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            fontWeight: 300
           }}>
             {title}
           </h4>
         </div>
-      </div>
-      <div style={{ padding: '15px 20px', background: 'rgba(255,255,255,0.02)' }}>
-        <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', margin: 0, opacity: 0.8 }}>
-          {desc}
-        </p>
       </div>
     </div>
   );
@@ -306,31 +303,28 @@ export default function WelcomeSection() {
           }}>
             Explore Decades
           </h3>
+          
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '25px'
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '20px'
           }}>
-            <FloorCard 
-              title="2000's Floor" 
-              image="/images/floors/2000s_floor.webp" 
-              desc="Nostalgic hits and a vibrant high-energy atmosphere."
-            />
-            <FloorCard 
-              title="2010's Floor" 
-              image="/images/floors/2010s_floor.webp" 
-              desc="The era of electronic dance music and modern pop anthems."
-            />
-            <FloorCard 
-              title="Hip Hop Floor" 
-              image="/images/floors/hiphop_floor.png" 
-              desc="The best of urban music in a sleek, underground setting."
-            />
-            <FloorCard 
-              title="Rooftop" 
-              image="/images/floors/rooftop.webp" 
-              desc="Open-air vibes and premium service under the stars."
-            />
+            {/* 2000's */}
+            <FloorCard title="2000's Floor" image="/images/floors/2000s_1.webp" />
+            <FloorCard title="2000's Floor" image="/images/floors/2000s_2.jpg" />
+            
+            {/* 2010's */}
+            <FloorCard title="2010's Floor" image="/images/floors/2010s_1.webp" />
+            <FloorCard title="2010's Floor" image="/images/floors/2010s_2.webp" />
+            
+            {/* Hip Hop */}
+            <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_1.png" />
+            <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_2.webp" />
+            <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_3.webp" />
+            
+            {/* Rooftop */}
+            <FloorCard title="Rooftop" image="/images/floors/rooftop_1.webp" />
+            <FloorCard title="Rooftop" image="/images/floors/rooftop_2.webp" />
           </div>
         </div>
 
