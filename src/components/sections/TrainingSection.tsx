@@ -68,12 +68,15 @@ function OverviewCard({ title, description, items, footer }: any) {
         transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
         overflow: 'hidden',
         cursor: 'pointer',
-        position: 'relative'
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
         <div style={{
           background: 'rgba(255, 255, 255, 0.05)',
           padding: '20px',
@@ -89,7 +92,7 @@ function OverviewCard({ title, description, items, footer }: any) {
             {title}
           </h4>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '20px', flex: 1 }}>
           <p style={{ ...premiumBodyStyle, marginBottom: '15px', fontSize: '0.95rem' }}>{description}</p>
           <ul style={{ paddingLeft: '20px', marginBottom: '0', marginTop: '15px' }}>
             {items.map((item: string, i: number) => (

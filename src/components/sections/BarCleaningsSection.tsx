@@ -22,10 +22,13 @@ function AnimatedCard({ title, description, items, footer, children }: CardProps
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
       }}
     >
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
         <div style={{
           background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
@@ -41,7 +44,7 @@ function AnimatedCard({ title, description, items, footer, children }: CardProps
             {title}
           </h4>
         </div>
-        <div style={{ padding: '16px 20px' }}>
+        <div style={{ padding: '16px 20px', flex: 1 }}>
           {children || (
             <>
               <p style={{ ...premiumBodyStyle, marginBottom: '12px', fontSize: '0.95rem' }}>{description}</p>
