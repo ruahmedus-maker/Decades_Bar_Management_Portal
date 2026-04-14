@@ -81,6 +81,7 @@ function DecadesIntroduction() {
             margin: '0 auto'
           }}>
             Your journey to becoming an exceptional Decades bartender starts here.
+            Detailed curriculum and roadmap are now available in <strong>Training</strong>.
             This comprehensive training portal will guide you through everything you need to know
             to excel in our high-volume, multi-floor nightclub environment.
           </p>
@@ -278,18 +279,6 @@ export default function WelcomeSection() {
       <div style={{ padding: '25px' }}>
         <DecadesIntroduction />
 
-        <p style={{
-          fontSize: '1.2rem',
-          ...premiumBodyStyle,
-          marginTop: '30px',
-          marginBottom: '30px',
-          textAlign: 'center',
-          opacity: 0.9,
-          letterSpacing: '1px'
-        }}>
-          Explore your specialized dashboard below to track your journey. 
-          Detailed curriculum and roadmap are now available in the <strong>Training Library</strong>.
-        </p>
 
         {/* Floor Gallery Section */}
         <div style={{ marginTop: '40px', marginBottom: '40px' }}>

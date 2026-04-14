@@ -15,7 +15,7 @@ export const ADMIN_CODES = [
 
 export const NAV_ITEMS = [
   { id: 'welcome', icon: '🏠', label: 'Welcome' },
-  { id: 'training', icon: '🎓', label: 'Training Materials' },
+  { id: 'training', icon: '🎓', label: 'Training' },
   { id: 'tests', icon: '❓', label: 'Training Tests' },
   { id: 'procedures', icon: '📋', label: 'Standard Procedures' },
   { id: 'aloha-pos', icon: '💻', label: 'Aloha POS' },

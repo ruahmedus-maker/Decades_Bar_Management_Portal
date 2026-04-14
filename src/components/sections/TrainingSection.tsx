@@ -218,7 +218,7 @@ const weekData = [
 
 export default function TrainingMaterials() {
   const { currentUser } = useApp();
-  const [isOverviewVisible, setIsOverviewVisible] = useState(false);
+  const [isOverviewVisible, setIsOverviewVisible] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -257,35 +257,19 @@ export default function TrainingMaterials() {
       }}>
         <div>
           <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
-            Training Curriculum
+            TRAINING OVERVIEW
           </h3>
           <p style={{ margin: 0, opacity: 0.7, color: 'white', fontSize: '0.8rem', marginTop: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Structured learning paths and proficiency stages
           </p>
         </div>
-        <span style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '6px 14px', borderRadius: '20px', fontSize: '0.7rem', color: 'white', fontWeight: 300, border: '1px solid rgba(255, 255, 255, 0.2)', letterSpacing: '1px' }}>CURRICULUM v2.0</span>
       </div>
 
       <div style={{ padding: '25px' }}>
         {/* New Training Overview Content (Migrated from Welcome) */}
         <div style={{ marginBottom: '40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h4 style={{ ...premiumWhiteStyle, fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 300 }}>🚀 Training Overview</h4>
-            <button 
-              onClick={() => setIsOverviewVisible(!isOverviewVisible)}
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '5px 15px',
-                borderRadius: '20px',
-                fontSize: '0.7rem',
-                cursor: 'pointer',
-                letterSpacing: '1px'
-              }}
-            >
-              {isOverviewVisible ? 'HIDE OVERVIEW' : 'SHOW OVERVIEW'}
-            </button>
+            <h4 style={{ ...premiumWhiteStyle, fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 300 }}>🚀 Core Curriculum</h4>
           </div>
           
           {isOverviewVisible && (

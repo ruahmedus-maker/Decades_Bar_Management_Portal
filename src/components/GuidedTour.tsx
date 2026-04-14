@@ -139,7 +139,7 @@ export default function GuidedTour() {
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Materials</h3>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training</h3>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Digital library containing all mandatory training modules.</p>
         </div>
       ),
@@ -367,7 +367,7 @@ export default function GuidedTour() {
       placement: 'right',
       content: (
         <div>
-          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training Library</h3>
+          <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Training</h3>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Review mandatory training modules and core documentation.</p>
         </div>
       ),
