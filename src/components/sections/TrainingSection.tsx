@@ -5,20 +5,6 @@ import { trackSectionVisit } from '@/lib/supabase-auth';
 import { CardProps } from '@/types';
 import { brandFont, sectionHeaderStyle, cardHeaderStyle, uiBackground, uiBackdropFilter, uiBackdropFilterWebkit, premiumWhiteStyle, premiumBodyStyle } from '@/lib/brand-styles';
 
-// Phase Item Component - ALOHA STYLED
-function PhaseItem({ title, items, highlight }: any) {
-  return (
-    <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <h5 style={{ ...premiumWhiteStyle, fontSize: '0.95rem', marginBottom: '12px', fontWeight: 300, letterSpacing: '1px' }}>{title}</h5>
-      {highlight && <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '6px', fontSize: '0.75rem', color: 'white', textAlign: 'center', marginBottom: '15px', border: '1px solid rgba(255,255,255,0.1)' }}>{highlight}</div>}
-      <ul style={{ ...premiumBodyStyle, fontSize: '0.85rem', paddingLeft: '18px', margin: 0 }}>
-        {items.map((item: string, i: number) => (
-          <li key={i} style={{ marginBottom: '6px' }}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 // Simplified Card Component - ALOHA STYLED
 function AnimatedCard({ title, children }: CardProps) {
@@ -330,14 +316,6 @@ export default function TrainingMaterials() {
           )}
         </div>
 
-        <AnimatedCard title="🎯 Your Training Roadmap">
-          <p style={{ ...premiumBodyStyle, fontSize: '0.95rem', marginBottom: '20px' }}>Follow this structured path to master high-volume operations at Decades.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            <PhaseItem title="📚 Phase 1: Foundation" items={['Study recipes & glassware', 'Learn cleaning SOPs', 'Master POS basics', 'Brand value immersion']} />
-            <PhaseItem title="🛠️ Phase 2: Practical" items={['Station shadow shifts', 'Speed/accuracy practice', 'Opening/closing loops', 'Floor-specific workflow']} />
-            <PhaseItem title="🎓 Phase 3: Mastery" items={['Solo shifts (supervised)', 'Conflict de-escalation', 'Upselling excellence', 'Final assessment']} />
-          </div>
-        </AnimatedCard>
 
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
