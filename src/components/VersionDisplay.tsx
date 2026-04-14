@@ -60,46 +60,5 @@ export default function VersionDisplay() {
     });
   }, []);
 
-  return (
-    <div style={{
-      position: 'fixed',
-      bottom: '10px',
-      left: '10px',
-      background: 'rgba(26, 54, 93, 0.95)',
-      backdropFilter: 'blur(10px)',
-      color: 'white',
-      padding: '12px 16px',
-      borderRadius: '12px',
-      fontSize: '11px',
-      zIndex: 10000,
-      maxWidth: '220px',
-      fontFamily: 'var(--font-outfit), monospace',
-      border: '1px solid rgba(255,215,0,0.3)',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-    }}>
-      <div style={{ opacity: 0.8, marginBottom: '4px' }}>
-        <strong>Build:</strong> {info.current}
-      </div>
-      <div style={{ opacity: 0.8, marginBottom: '6px' }}>
-        <strong>Time:</strong> {info.time}
-      </div>
-      <div style={{ 
-        color: '#4ADE80', 
-        fontSize: '12px', 
-        fontWeight: 'bold',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px'
-      }}>
-        <span style={{ width: '8px', height: '8px', background: '#4ADE80', borderRadius: '50%' }}></span>
-        SYSTEM CURRENT
-      </div>
-      
-      {currentUser && (
-        <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
-          <ResetTourButton />
-        </div>
-      )}
-    </div>
-  );
+  return null;
 }

@@ -225,45 +225,6 @@ export default function ProgressSection() {
             {progress}% Complete
           </span>
 
-          {/* Debug Button */}
-          <button
-            onClick={handleDebug}
-            style={{
-              background: `rgba(255, 0, 0, 0.3)`,
-              border: `2px solid rgba(255, 0, 0, 0.6)`,
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              color: 'white',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontWeight: 'bold'
-            }}
-          >
-            🐛 Debug
-          </button>
-
-          {/* Refresh Button */}
-          <button
-            onClick={handleRefresh}
-            disabled={loading}
-            style={{
-              background: loading
-                ? 'rgba(255,255,255,0.2)'
-                : `rgba(${PRIMARY_COLOR_RGB}, 0.3)`,
-              border: loading
-                ? '2px solid rgba(255,255,255,0.4)'
-                : `2px solid rgba(${PRIMARY_COLOR_RGB}, 0.6)`,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontSize: '0.8rem',
-              color: loading ? 'rgba(255,255,255,0.5)' : 'white',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontWeight: 'bold'
-            }}
-          >
-            {loading ? '⏳' : '🔄'} Refresh
-          </button>
-
           <button
             onClick={() => setIsCollapsed(true)}
             style={{

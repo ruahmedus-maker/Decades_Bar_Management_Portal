@@ -123,7 +123,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Standard Procedures</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Centralized repository for opening and closing checklists and a checkouy notification function that ensures onec all closing steps are checked off a manager will recieve an alert.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Centralized repository for opening and closing checklists and a checkout notification function that ensures once all closing steps are checked off a manager will recieve an alert.</p>
         </div>
       ),
     },
@@ -145,7 +145,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Cocktail Recipes</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>An entire database library of hundreds of popular cocktails for an employee to reference.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>An entire database library of hundreds of popular cocktails for bartenders to reference.</p>
         </div>
       ),
     },
@@ -244,7 +244,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Amin control center where managers can monitor employee completion progress of the training modules, get pop-up test results, track and modify the status of maintenance tickets create events and tasks to attach to events.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Admin control center where managers can monitor employee completion progress of the training modules, get pop-up test results, track and modify the status of maintenance tickets, create events and tasks for events.</p>
         </div>
       ),
     },
@@ -266,7 +266,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Performance KPIs</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Inactive module for now, requires integration with POS system. Deasigned to track weekly performance of bartenders</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Inactive module for now, requires integration with POS system. Designed to track Key Performance Indicators of bartenders weekly.</p>
         </div>
       ),
     },
