@@ -142,7 +142,19 @@ export default function SocialMediaSection() {
               <li style={{ marginBottom: '8px' }}>Use high-fidelity visuals only</li>
               <li style={{ marginBottom: '8px' }}>Tag official @Decades accounts</li>
               <li style={{ marginBottom: '8px' }}>Leverage #DecadesNightlife #DecadesEvents</li>
-              <li style={{ marginBottom: '8px' }}>Maintain professional representation</li>
+              <li style={{ marginBottom: '12px' }}>Maintain professional representation</li>
+              <li style={{ 
+                marginTop: '15px',
+                padding: '10px', 
+                background: 'rgba(252, 129, 129, 0.1)', 
+                borderRadius: '8px', 
+                border: '1px solid rgba(252, 129, 129, 0.3)',
+                color: '#fc8181',
+                fontSize: '0.8rem',
+                fontWeight: 600
+              }}>
+                ⚠️ REQUIREMENT: Must post the day of your shift between 12:00 PM – 5:00 PM
+              </li>
             </ul>
           </AnimatedCard>
 
