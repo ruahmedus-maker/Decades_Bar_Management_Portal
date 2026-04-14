@@ -29,6 +29,17 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   { id: 'shift-1', text: 'Maintain clean and organized work area', completed: false, category: 'during-shift' },
   { id: 'shift-5', text: 'Follow responsible alcohol service guidelines', completed: false, category: 'during-shift' },
   { id: 'close-1', text: 'Count register drawer and prepare for checkout', completed: false, category: 'closing' },
+  { id: 'close-2', text: 'Soak soda guns', completed: false, category: 'closing' },
+  { id: 'close-3', text: 'Clean menus', completed: false, category: 'closing' },
+  { id: 'close-4', text: 'Clean Check presenters and leave standing up spaced apart', completed: false, category: 'closing' },
+  { id: 'close-5', text: 'Clean POS system, printer and card reader', completed: false, category: 'closing' },
+  { id: 'close-6', text: 'return any chilled bottle to fride after wiping down', completed: false, category: 'closing' },
+  { id: 'close-7', text: 'Remove all bottles from well, clean all steel surfaces thoroughly and soak up any standing water suuround ice bin', completed: false, category: 'closing' },
+  { id: 'close-8', text: 'Clean all liquor bottles from pour spout down and return to well', completed: false, category: 'closing' },
+  { id: 'close-9', text: 'Discard any juices/syrups, clean and leave squeeze bottles to dry (Saturdy night only)', completed: false, category: 'closing' },
+  { id: 'close-10', text: 'Cap all liquor bottles at the bar as well as in the fridges', completed: false, category: 'closing' },  
+  { id: 'close-11', text: 'Discard any un-finished water bottles or RedBull cans', completed: false, category: 'closing' },   
+  { id: 'close-12', text: 'Wipe down the tops of coolers and pull out the well and clean all surround surfaces (Rooftop)', completed: false, category: 'closing' },   
 ];
 
 const CATEGORIES = [
