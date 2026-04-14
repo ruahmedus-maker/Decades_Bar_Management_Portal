@@ -180,39 +180,69 @@ const cardsData = [
   {
     title: '🚀 Getting Started Guide',
     description: 'Begin your Decades journey with our structured training program.',
-    items: ['Review training materials & procedures', 'Study Decades-specific standards', 'Complete POS system training', 'Practice signature cocktail recipes'],
-    footer: { left: 'Estimated: 2-3 days', right: '⭐ Essential' }
+    items: ['Review training materials & procedures', 'Study Decades-specific standards', 'Review POS system training videos', 'Learn Signature & Feature cocktail recipes'],
+    footer: { left: 'Estimated: 1-2 days', right: '⭐ Essential' }
+  },
+  {
+    title: '📖 Standard Operating Procedures',
+    description: 'Learn set-up and closing procedures for all floors.',
+    items: ['Set-up checklist', 'Closing checklist', 'Cleaning checklist'],
+    footer: { left: 'Procedure tracking and notifications', right: '📖 Reading' }
   },
   {
     title: '🎬 Video Training Library',
     description: 'Watch comprehensive training videos covering operations and mixology.',
-    items: ['POS system tutorials', 'Pouring technique demonstrations', 'Cocktail preparation videos', 'Customer service scenarios'],
+    items: ['POS system tutorials', 'Cleaning procedures'],
     footer: { left: '20+ training videos', right: '📺 Visual' }
   },
   {
     title: '🍹 Cocktail Recipes',
-    description: 'Access our complete recipe database featuring signature cocktails.',
+    description: 'Access our complete recipe database featuring classic cocktails.',
     items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation'],
     footer: { left: '50+ recipes', right: '✨ Mixology' }
   },
   {
-    title: '⚡ Bar Operations',
-    description: 'Master the operational side including cleaning and inventory.',
-    items: ['Daily cleaning checklists', 'Inventory & cost control', 'Closing procedures', 'Rush hour strategies'],
-    footer: { left: 'Essential', right: '🛠️ Operations' }
+    title: '🍸 Glassware Guide',
+    description: 'Learn about the different types of glassware used at Decades and how to present them properly.',
+    items: ['All glassware used at Decades', 'How to present glassware properly'],
+    footer: { left: 'Essential Reference', right: '🍸 Presentation' }
   },
   {
-    title: '📊 Progress Tracking',
-    description: 'Monitor your training progress and completion status.',
-    items: ['Section completion tracking', 'Training progress overview', 'Skill assessment readiness', 'Performance metrics'],
-    footer: { left: 'Real-time tracking', right: '📈 Analytics' }
-  }
+    title: '👔 Uniform & Appearance',
+    description: 'Learn about the uniform and appearance standards at Decades.',
+    items: ['Uniform standards', 'Appearance standards'],
+    footer: { left: 'Dress Code', right: '👔 Professional' }
+  },
+  {
+    title: '🧹 Bar Cleanings',
+    description: 'Learn about the bar cleaning procedures at Decades.',
+    items: ['Bar cleaning checklist', 'Bar cleaning procedures and scheduled dates'],
+    footer: { left: 'Sanitation Focus', right: '🧹 Cleaning' }
+  },
+  {
+    title: '📱 Social Media',
+    description: 'Learn about required social media posts and how to post them.',
+    items: ['Social Media resources', 'Brand guidelines'],
+    footer: { left: 'Digital Presence', right: '📱 Marketing' }
+  },
+  {
+    title: '💰 Comps and Voids',
+    description: 'Learn how to create comp tabs and procedures for voids.',
+    items: ['Required format for comp tabs', 'Void procedures', 'Authorization limits'],
+    footer: { left: 'Financial Protocol', right: '💰 Transactions' }
+  },
+  {
+    title: '📄 Policies',
+    description: 'Learn about the official policies and guidelines at Decades.',
+    items: ['Decades specific policies', 'General workplace policies'],
+    footer: { left: 'Official Handbook', right: '📄 Compliance' }
+  },
 ];
 
 const weekData = [
   { icon: '📚', day: 'Days 1-2', title: 'Portal Review', desc: 'Complete all training sections in this portal' },
-  { icon: '👀', day: 'Day 3', title: 'Observation Shift', desc: 'Shadow on 2000\'s Floor - focus on learning' },
-  { icon: '🛠️', day: 'Day 4', title: 'Hands-On Training', desc: 'Practice on Hip Hop & Rooftop floors' },
+  { icon: '👀', day: 'Day 3', title: 'Observational Shift', desc: 'Shadow on 2000\'s/2010\'s Floors - focus on learning work flow patterns and practicing them' },
+  { icon: '🛠️', day: 'Day 4', title: 'Hands-On Training', desc: 'Work on Hip Hop & Rooftop floors' },
   { icon: '🎓', day: 'Day 5', title: 'Assessment', desc: 'Final test and evaluation for shift readiness' }
 ];
 
@@ -308,32 +338,6 @@ export default function TrainingMaterials() {
             <PhaseItem title="🎓 Phase 3: Mastery" items={['Solo shifts (supervised)', 'Conflict de-escalation', 'Upselling excellence', 'Final assessment']} />
           </div>
         </AnimatedCard>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          <AnimatedCard title="⚡ Performance Benchmarks">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ ...premiumBodyStyle, fontSize: '0.85rem' }}>Standard Cocktail</span>
-                <span style={{ ...premiumWhiteStyle, fontSize: '0.85rem' }}>45s</span>
-              </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ ...premiumBodyStyle, fontSize: '0.85rem' }}>Complex Signature</span>
-                <span style={{ ...premiumWhiteStyle, fontSize: '0.85rem' }}>90s</span>
-              </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ ...premiumBodyStyle, fontSize: '0.85rem' }}>Peak Rush Target</span>
-                <span style={{ ...premiumWhiteStyle, fontSize: '0.85rem' }}>3 guests/min</span>
-              </div>
-            </div>
-          </AnimatedCard>
-
-          <AnimatedCard title="📅 Shift Floor Assignments">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <PhaseItem title="Friday Training" highlight="2000's Floor" items={['Mainstream speed focus', 'Group order management']} />
-              <PhaseItem title="Saturday Training" highlight="Rooftop / VIP" items={['Premium service standards', 'Bottle service pacing']} />
-            </div>
-          </AnimatedCard>
-        </div>
 
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
