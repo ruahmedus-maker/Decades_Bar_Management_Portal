@@ -123,8 +123,8 @@ export default function UniformGuideSection() {
           description="Maintain the Decades brand image. Each team member represents our commitment to excellence in premium nightlife hospitality."
         >
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-            <CategoryCard title="🤵 Fellas" items={['Black Decades branded shirt', 'Concept/Genre Culture T-shirts', 'Trending urban wear (Premium/Fly)', 'No sweat pants', 'Groomed styling required']} />
-            <CategoryCard title="👸 Ladies" items={['Concept themed (Optional)', 'Fashion-forward personal choice', 'No cocktail waitress generic look', 'No sweat pants', 'Hair and makeup polished']} />
+            <CategoryCard title="🤵 Men" items={['Black Decades branded shirt', 'Concept/Genre Culture T-shirts', 'Trending urban wear (Premium/Fly)', 'No sweat pants', 'No shorts', 'Groomed styling required']} />
+            <CategoryCard title="👸 Women" items={['Concept themed (Optional)', 'Fashion-forward personal choice', 'No cocktail waitress generic look', 'No sweat pants', 'Hair and makeup polished']} />
           </div>
         </AnimatedCard>
 
@@ -134,7 +134,7 @@ export default function UniformGuideSection() {
               <li style={{ marginBottom: '8px' }}>Uniforms must be pressed and immaculate</li>
               <li style={{ marginBottom: '8px' }}>Facial hair must be precision groomed</li>
               <li style={{ marginBottom: '8px' }}>Personal hygiene strictly enforced (Deodorant/Antiperspirant)</li>
-              <li style={{ marginBottom: '8px' }}>Event-specific attire communicated 7 days prior</li>
+              <li style={{ marginBottom: '8px' }}>Event-specific attire communicated prior to event</li>
             </ul>
           </AnimatedCard>
 
