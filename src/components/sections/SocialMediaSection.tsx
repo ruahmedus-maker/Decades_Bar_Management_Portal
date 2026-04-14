@@ -146,12 +146,30 @@ export default function SocialMediaSection() {
             </ul>
           </AnimatedCard>
 
-          <AnimatedCard title="🌐 Platform Optima">
+          <AnimatedCard title="🌐 Platform Optimization">
             <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0 }}>
               <li style={{ marginBottom: '8px' }}>IG: Vertical format, trending audio</li>
               <li style={{ marginBottom: '8px' }}>FB: Event links with clear calls-to-action</li>
               <li style={{ marginBottom: '8px' }}>TikTok: Rapid-cut energy clips</li>
               <li style={{ marginBottom: '8px' }}>X: Quick guest engagement & updates</li>
+            </ul>
+          </AnimatedCard>
+
+          <AnimatedCard title="🎟️ Flyers & Strategy">
+            <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0 }}>
+              <li style={{ marginBottom: '8px' }}>Weekly flyers shared ahead of time for strategy use</li>
+              <li style={{ marginBottom: '8px' }}>Prioritize photo content of yourself and work Reels</li>
+              <li style={{ marginBottom: '12px' }}>Follow current workplace trends for highest engagement</li>
+              <li style={{ 
+                marginBottom: '8px', 
+                padding: '10px', 
+                background: 'rgba(212, 175, 55, 0.1)', 
+                borderRadius: '8px', 
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+                color: '#D4AF37'
+              }}>
+                <strong>Call to Action:</strong> Direct followers to <strong>Posh.vip</strong> for RSVPs, tickets, and special offer details.
+              </li>
             </ul>
           </AnimatedCard>
         </div>
