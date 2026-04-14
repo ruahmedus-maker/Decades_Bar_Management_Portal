@@ -512,35 +512,18 @@ export default function AlohaPosSection() {
           )}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginTop: '10px' }}>
-          {/* POS Procedures Checklist */}
-          <SimpleCard
-            title="✅ Procedures Checklist"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <ChecklistItem>Clock in using the POS system at start of shift</ChecklistItem>
-              <ChecklistItem>Check daily specials and event board for updates</ChecklistItem>
-              <ChecklistItem>Review reservation list and any special requests</ChecklistItem>
-              <ChecklistItem>Verify card reader is functioning properly</ChecklistItem>
-              <ChecklistItem>Test printer connectivity and paper levels</ChecklistItem>
-              <ChecklistItem>Know how to split checks and process payments</ChecklistItem>
-              <ChecklistItem>Understand how to handle comps and voids</ChecklistItem>
-              <ChecklistItem>Complete end-of-shift reporting accurately</ChecklistItem>
-            </div>
-          </SimpleCard>
-
+        <div style={{ marginTop: '10px' }}>
           {/* Troubleshooting Checklist */}
           <SimpleCard
             title="🔧 Troubleshooting"
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <ChecklistItem>Reboot POS system if unresponsive</ChecklistItem>
-              <ChecklistItem>Check network connectivity for card processing</ChecklistItem>
               <ChecklistItem>Verify card reader cables are securely connected</ChecklistItem>
-              <ChecklistItem>Restart printer and check paper levels</ChecklistItem>
+              <ChecklistItem>Restart printer and check paper levels if register won't open for cash transactions</ChecklistItem>
               <ChecklistItem>Use card reader cleaner if cards aren&apos;t reading</ChecklistItem>
               <ChecklistItem>Contact manager for system override needs</ChecklistItem>
-              <ChecklistItem>Document any persistent issues for IT</ChecklistItem>
+              <ChecklistItem>Document any persistent issues and report to manager</ChecklistItem>
             </div>
           </SimpleCard>
         </div>
