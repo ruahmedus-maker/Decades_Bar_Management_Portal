@@ -235,6 +235,11 @@ export default function GlasswareGuideSection() {
           description="Master the art of presentation. Correct glassware ensures optimal flavor profiles and professional guest service."
         />
 
+        <AnimatedCard
+          title="📏 Standard Pour"
+          description="Decades standard pour amount per drink is 1.5oz"
+        />
+
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
