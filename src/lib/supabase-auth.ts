@@ -158,7 +158,7 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     if (!data.user) throw new Error('No user data returned');
 
     const authUser = convertToAuthUser(data.user, data.user.user_metadata);
-    console.log(`✅ Signed in: ${authUser.name}`);
+    console.log(`✅ [SIGNIN] Session established for: ${authUser.email}`);
 
     // SYNC: Ensure public.users has the correct auth_id (NON-BLOCKING)
     if (data.user.email) {
@@ -349,18 +349,20 @@ export const getCurrentSession = async (): Promise<AuthUser | null> => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error fetching user data in getCurrentSession:', error);
-      return null;
+      console.error('❌ [SESSION] Error fetching user profile:', error);
+      // Fallback: return auth user with minimal data if profile missing
+      return convertToAuthUser(session.user, session.user.user_metadata);
     }
 
-    // If no user data found in table, return null (or handle as needed)
     if (!userData) {
-      return null;
+      console.warn('⚠️ [SESSION] No user profile found in "users" table');
+      return convertToAuthUser(session.user, session.user.user_metadata);
     }
 
+    console.log('✅ [SESSION] Profile loaded successfully');
     return convertToAuthUser(session.user, userData);
   } catch (error) {
-    console.error('Error getting current session:', error);
+    console.error('❌ [SESSION] Critical fetch failure:', error);
     return null;
   }
 };
@@ -379,23 +381,31 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching user data in auth state change:', error);
-        callback(null);
+        console.error('❌ [AUTH_STATE] Profile fetch error:', error);
+        callback(convertToAuthUser(session.user, session.user.user_metadata));
         return;
       }
 
-      // If no user data found, we might be in the middle of registration
       if (!userData) {
-        // Don't callback with null yet, wait for the profile to be created
-        // or just return the auth user with default values if appropriate
-        // For now, we'll return null to avoid the error
+        console.warn('⚠️ [AUTH_STATE] No profile found for signed-in user');
+        callback(convertToAuthUser(session.user, session.user.user_metadata));
         return;
       }
 
       const user = convertToAuthUser(session.user, userData);
+      console.log('✅ [AUTH_STATE] SIGNED_IN - Profile Sync Complete');
       callback(user);
     } else if (event === 'SIGNED_OUT') {
+      console.log('🚪 [AUTH_STATE] SIGNED_OUT');
       callback(null);
+    } else {
+      // For other events (INITIAL_SESSION, USER_UPDATED, etc.)
+      // It's safer to refresh if session exists
+      if (session?.user) {
+        getCurrentSession().then(user => callback(user));
+      } else {
+        callback(null);
+      }
     }
   });
 };

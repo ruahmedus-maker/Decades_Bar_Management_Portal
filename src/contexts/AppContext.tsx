@@ -41,6 +41,7 @@ interface AppContextType {
   hideToast: () => void;
   isAdmin: boolean;
   refreshProgress: () => void;
+  forceReset: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -148,7 +149,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast(`Welcome to Decades Bar, ${user.name}!`);
   };
 
-  const logout = async () => {
+  const forceReset = useCallback(async () => {
+    console.warn('🚨 EMERGENCY RESET TRIGGERED');
+    
+    // 1. Clear all storage
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // 2. Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) await reg.unregister();
+      }
+      
+      // 3. Clear all caches
+      if ('caches' in window) {
+        const names = await caches.keys();
+        for (const name of names) await caches.delete(name);
+      }
+      
+      // 4. Force reload to a clean URL
+      window.location.href = window.location.origin + '?v=' + Date.now();
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
     const { error } = await signOut();
     if (error) {
       console.error('Logout error:', error);
@@ -157,17 +183,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setActiveSection('welcome');
     setUserProgress(null);
     showToast('Logged out successfully');
-  };
+  }, [showToast]);
 
-  // MEMOIZED trackVisit to prevent infinite loops
   const trackVisit = useCallback(async (sectionId: string) => {
     if (currentUser) {
-      // NON-BLOCKING tracking to avoid UI hangs
       trackSectionVisit(currentUser.email, sectionId, 30)
         .then(() => refreshProgress())
-        .catch(error => console.error('Error tracking visit in background:', error));
+        .catch(error => console.error('Error tracking visit:', error));
     }
-  }, [currentUser]); // Only recreate if currentUser changes
+  }, [currentUser]);
 
   const submitAck = async () => {
     if (currentUser) {
@@ -197,7 +221,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast,
     hideToast,
     isAdmin: currentUser?.position === 'Admin',
-    refreshProgress
+    refreshProgress,
+    forceReset
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

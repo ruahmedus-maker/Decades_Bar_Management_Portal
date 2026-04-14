@@ -18,7 +18,7 @@ const TEST_CREDENTIALS = [
 ];
 
 export default function LoginBarrier() {
-  const { login, register } = useApp();
+  const { login, register, forceReset } = useApp();
   const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -542,6 +542,26 @@ export default function LoginBarrier() {
           }}>
             🔧 Quick access credentials available above
           </p>
+        </div>
+        {/* Troubleshooting and Reset */}
+        <div style={{ marginTop: '30px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+          <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '10px' }}>
+            Connection issues?
+          </p>
+          <button 
+            onClick={forceReset}
+            style={toggleButtonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.textDecoration = 'underline';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = THEME_COLOR;
+              e.currentTarget.style.textDecoration = 'none';
+            }}
+          >
+            TROUBLESHOOT & RESET APP
+          </button>
         </div>
       </div>
     </div>
