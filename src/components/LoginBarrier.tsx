@@ -31,6 +31,22 @@ export default function LoginBarrier() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
 
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [diagResults, setDiagResults] = useState<{
+    status: 'idle' | 'running' | 'done';
+    reachable?: boolean;
+    canQuery?: boolean;
+    latency?: number;
+    error?: string;
+  }>({ status: 'idle' });
+
+  const runDiagnostics = async () => {
+    setDiagResults({ status: 'running' });
+    const { checkSupabaseReachability } = await import('@/lib/supabase-auth');
+    const result = await checkSupabaseReachability();
+    setDiagResults({ status: 'done', ...result, error: result.error || undefined });
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -38,7 +54,9 @@ export default function LoginBarrier() {
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout. Please refresh your browser and try again.")), 20000));
       await Promise.race([login(formData.email, formData.password), timeout]);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Login failed');
+      const msg = error instanceof Error ? error.message : 'Login failed';
+      alert(msg);
+      if (msg.includes('timeout')) setShowDiagnostics(true);
     } finally {
       setIsLoading(false);
     }
@@ -562,7 +580,107 @@ export default function LoginBarrier() {
           >
             TROUBLESHOOT & RESET APP
           </button>
+
+          {/* Diagnostic Link */}
+          <button 
+            onClick={() => { setShowDiagnostics(true); runDiagnostics(); }}
+            style={{ ...toggleButtonStyle, marginTop: '10px', display: 'block', width: '100%', fontSize: '0.75rem', opacity: 0.6 }}
+          >
+            RUN NETWORK DIAGNOSTICS
+          </button>
         </div>
+
+        {/* Diagnostic Overlay */}
+        {showDiagnostics && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.8)',
+            zIndex: 10000,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px'
+          }}>
+            <div style={{
+              background: '#1a365d',
+              padding: '30px',
+              borderRadius: '20px',
+              maxWidth: '400px',
+              width: '100%',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+            }}>
+              <h3 style={{ margin: '0 0 20px 0', color: THEME_COLOR }}>CONNECTION DIAGNOSTICS</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', color: 'white' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Network Reachable:</span>
+                  <span style={{ color: diagResults.reachable ? '#48bb78' : '#fc8181' }}>
+                    {diagResults.status === 'running' ? 'Checking...' : (diagResults.reachable ? '✅ YES' : '❌ NO')}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Supabase Query:</span>
+                  <span style={{ color: diagResults.canQuery ? '#48bb78' : '#fc8181' }}>
+                    {diagResults.status === 'running' ? 'Checking...' : (diagResults.canQuery ? '✅ OK' : '❌ FAILED')}
+                  </span>
+                </div>
+                {diagResults.latency && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Latency:</span>
+                    <span style={{ color: diagResults.latency < 500 ? '#48bb78' : '#ecc94b' }}>
+                      {diagResults.latency}ms
+                    </span>
+                  </div>
+                )}
+                {diagResults.error && (
+                  <div style={{ 
+                    marginTop: '10px', 
+                    padding: '10px', 
+                    background: 'rgba(252, 129, 129, 0.1)', 
+                    color: '#fc8181', 
+                    fontSize: '0.8rem',
+                    borderRadius: '8px',
+                    wordBreak: 'break-word'
+                  }}>
+                    <strong>Error:</strong> {diagResults.error}
+                  </div>
+                )}
+
+                <div style={{ marginTop: '20px', fontSize: '0.85rem', opacity: 0.8, lineHeight: '1.4' }}>
+                  {!diagResults.reachable ? (
+                    <p style={{ color: '#fc8181' }}>
+                      ⚠️ Your network is blocking Supabase. Please disable any VPN, Firewall, or Ad-blockers and try again.
+                    </p>
+                  ) : diagResults.canQuery === false ? (
+                    <p>⚠️ Connection exists but database requests are hanging. Try clearing your browser cache below.</p>
+                  ) : diagResults.status === 'done' ? (
+                    <p style={{ color: '#48bb78' }}>✅ All systems operative. If you still see timeouts, try the manual reset below.</p>
+                  ) : null}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button 
+                    onClick={() => { forceReset(); setShowDiagnostics(false); }}
+                    style={{ ...loginButtonStyle, flex: 1, fontSize: '0.8rem', padding: '10px' }}
+                  >
+                    CLEAR & RESET
+                  </button>
+                  <button 
+                    onClick={() => setShowDiagnostics(false)}
+                    style={{ ...testButtonStyle, flex: 1, fontSize: '0.8rem', padding: '10px' }}
+                  >
+                    CLOSE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -716,3 +716,39 @@ export const refreshUserData = async (): Promise<AuthUser | null> => {
     return null;
   }
 };
+
+// Diagnostic: Check if Supabase is reachable
+export const checkSupabaseReachability = async (): Promise<{
+  reachable: boolean;
+  canQuery: boolean;
+  latency: number;
+  error: string | null;
+}> => {
+  const start = Date.now();
+  const results = { reachable: false, canQuery: false, latency: 0, error: null as string | null };
+
+  try {
+    // 1. Raw fetch check (DNS/Connectivity)
+    const url = (supabase as any).supabaseUrl;
+    console.log(`🔍 [DIAG] Pinging Supabase URL: ${url}`);
+    
+    const fetchResponse = await fetch(`${url}/rest/v1/`, {
+      method: 'GET',
+      headers: { 'apikey': (supabase as any).supabaseKey }
+    }).catch(e => { throw new Error(`Network block: ${e.message}`); });
+
+    results.reachable = fetchResponse.ok || fetchResponse.status === 401; // 401 is okay if it's just a raw ping
+    
+    // 2. Minimal query check (Client logic)
+    const { error: queryError } = await supabase.from('users').select('id').limit(1).maybeSingle();
+    results.canQuery = !queryError;
+    if (queryError) results.error = queryError.message;
+
+    results.latency = Date.now() - start;
+    return results;
+  } catch (err: any) {
+    results.error = err.message;
+    results.latency = Date.now() - start;
+    return results;
+  }
+};
