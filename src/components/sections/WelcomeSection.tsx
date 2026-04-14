@@ -318,7 +318,6 @@ export default function WelcomeSection() {
             <FloorCard title="2010's Floor" image="/images/floors/2010s_2.webp" />
             
             {/* Hip Hop */}
-            <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_1.png" />
             <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_2.webp" />
             <FloorCard title="Hip Hop Floor" image="/images/floors/hiphop_3.webp" />
             
