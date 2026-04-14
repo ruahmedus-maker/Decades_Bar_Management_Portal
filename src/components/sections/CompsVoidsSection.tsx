@@ -264,6 +264,13 @@ export default function CompsVoidsSection() {
           </div>
         </StaticCard>
 
+        {/* Voids Protocol Card */}
+        <StaticCard
+          title="🚫 Voids"
+          description="Please name your voids accordingly and provide explanation to management upon request. Use the same format as a comp."
+          footer={{ left: 'Accountability', right: '🚫 Standard' }}
+        />
+
         {/* Progress Section */}
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
