@@ -176,61 +176,69 @@ function AnimatedCard({ title, description, items, footer, index }: any) {
   );
 }
 
-// Week Day Component with Sidebar Consistency
-function WeekDay({ icon, day, title, desc, index }: any) {
+// Floor Gallery Component
+function FloorCard({ title, image, desc }: { title: string, image: string, desc: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
       style={{
-        textAlign: 'left',
-        padding: '20px',
-        background: isHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-        borderRadius: '12px',
-        border: isHovered ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        cursor: 'pointer',
+        borderRadius: '20px',
+        overflow: 'hidden',
         position: 'relative',
-        overflow: 'hidden'
+        background: uiBackground,
+        border: isHovered ? '1px solid rgba(255, 255, 255, 0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: isHovered ? '0 30px 60px rgba(0, 0, 0, 0.5)' : '0 10px 30px rgba(0, 0, 0, 0.2)',
+        transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
+        transform: isHovered ? 'scale(1.02) translateY(-5px)' : 'scale(1)',
+        cursor: 'pointer'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Individual Day Color Glow */}
-      {isHovered && (
+      <div style={{
+        height: '240px',
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <img 
+          src={image} 
+          alt={title} 
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transition: 'transform 0.6s ease',
+            transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+            opacity: isHovered ? 0.9 : 1
+          }} 
+        />
         <div style={{
           position: 'absolute',
-          top: '-2px',
-          left: '-2px',
-          right: '-2px',
-          bottom: '-2px',
-          borderRadius: '14px',
-          background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
-          zIndex: 0,
-          opacity: 0.6
-        }} />
-      )}
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <span style={{ fontSize: '2rem', marginBottom: '15px', display: 'block', opacity: 0.9 }}>{icon}</span>
-        <h5 style={{
-          ...premiumWhiteStyle,
-          marginBottom: '8px',
-          fontSize: '0.9rem',
-          letterSpacing: '2px',
-          fontWeight: 400
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '20px',
+          background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end'
         }}>
-          {day}
-        </h5>
-        <p style={{
-          ...premiumBodyStyle,
-          margin: 0,
-          fontSize: '0.9rem'
-        }}>
-          <strong>{title}</strong><br />{desc}
+          <h4 style={{
+            ...premiumWhiteStyle,
+            margin: 0,
+            fontSize: '1.2rem',
+            letterSpacing: '3px',
+            textTransform: 'uppercase'
+          }}>
+            {title}
+          </h4>
+        </div>
+      </div>
+      <div style={{ padding: '15px 20px', background: 'rgba(255,255,255,0.02)' }}>
+        <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', margin: 0, opacity: 0.8 }}>
+          {desc}
         </p>
       </div>
     </div>
@@ -285,6 +293,46 @@ export default function WelcomeSection() {
           Explore your specialized dashboard below to track your journey. 
           Detailed curriculum and roadmap are now available in the <strong>Training Library</strong>.
         </p>
+
+        {/* Floor Gallery Section */}
+        <div style={{ marginTop: '40px', marginBottom: '40px' }}>
+          <h3 style={{ 
+            ...sectionHeaderStyle, 
+            ...premiumWhiteStyle, 
+            textAlign: 'center', 
+            fontSize: '1.5rem',
+            letterSpacing: '5px',
+            marginBottom: '30px'
+          }}>
+            Explore Decades
+          </h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '25px'
+          }}>
+            <FloorCard 
+              title="Rooftop" 
+              image="/images/floors/rooftop.webp" 
+              desc="Open-air vibes and premium service under the stars."
+            />
+            <FloorCard 
+              title="2000's Floor" 
+              image="/images/floors/2000s_floor.webp" 
+              desc="Nostalgic hits and a vibrant high-energy atmosphere."
+            />
+            <FloorCard 
+              title="Hip Hop Floor" 
+              image="/images/floors/hiphop_floor.webp" 
+              desc="The best of urban music in a sleek, underground setting."
+            />
+            <FloorCard 
+              title="VIP & Lounge" 
+              image="/images/floors/vip_lounge.webp" 
+              desc="Exclusive service and luxury seating for our elite guests."
+            />
+          </div>
+        </div>
 
         <ProgressSection />
       </div>
