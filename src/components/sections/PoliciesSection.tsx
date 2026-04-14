@@ -110,18 +110,6 @@ export default function PoliciesSection() {
             Governance and regulatory standards
           </p>
         </div>
-        <span style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          padding: '6px 14px',
-          borderRadius: '20px',
-          fontSize: '0.7rem',
-          color: 'white',
-          fontWeight: 300,
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          letterSpacing: '1px'
-        }}>
-          REQUIRED
-        </span>
       </div>
 
       <div style={{ padding: '25px' }}>
@@ -129,18 +117,19 @@ export default function PoliciesSection() {
           title="📋 Decades Compliance"
           description="Fundamental operating rules for all staff. Adherence is mandatory for maintaining our professional service environment."
           items={[
+            'Strict adherance to all Decades specific role based standards and procedures',
             'Conduct and professionalism',
             'Sexual harassment prevention',
             'Alcohol service compliance',
             'Safety and emergency procedures',
-            'Social media and branding'
+            'Social media marketing and branding'
           ]}
         />
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
           <AnimatedCard title="👔 Professional Standards">
             <ul style={{ ...premiumBodyStyle, fontSize: '0.9rem', paddingLeft: '18px', margin: 0 }}>
-              <li style={{ marginBottom: '8px' }}>Strict punctuality - clock in 10 mins early</li>
+              <li style={{ marginBottom: '8px' }}>Strict punctuality</li>
               <li style={{ marginBottom: '8px' }}>Respectful internal communication</li>
               <li style={{ marginBottom: '8px' }}>Active management conflict resolution</li>
               <li style={{ marginBottom: '8px' }}>Zero tolerance for workspace hostility</li>
@@ -156,19 +145,6 @@ export default function PoliciesSection() {
             </ul>
           </AnimatedCard>
         </div>
-
-        <AnimatedCard title="🛡️ Active Safety Protocols">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
-            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <h5 style={{ ...premiumWhiteStyle, fontSize: '0.9rem', marginBottom: '8px' }}>Fire & Life Safety</h5>
-              <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', opacity: 0.6 }}>Evacuation routes are posted at every exit. Assemble at designated rally points.</p>
-            </div>
-            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <h5 style={{ ...premiumWhiteStyle, fontSize: '0.9rem', marginBottom: '8px' }}>Medical Response</h5>
-              <p style={{ ...premiumBodyStyle, fontSize: '0.8rem', opacity: 0.6 }}>Notify management immediately. First aid kits located at every service station.</p>
-            </div>
-          </div>
-        </AnimatedCard>
 
         <div style={{ marginTop: '30px' }}>
           <ProgressSection />
