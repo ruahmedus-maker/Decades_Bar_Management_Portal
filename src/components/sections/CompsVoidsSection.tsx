@@ -219,7 +219,7 @@ export default function CompsVoidsSection() {
               <ul style={{ ...premiumBodyStyle, fontSize: '0.85rem', paddingLeft: '18px', margin: 0 }}>
                 <li><strong>House DJs:</strong> $75 comp tab</li>
                 <li>No free drinks off-shift without manager approval</li>
-                <li><strong>Private Events:</strong> No comps unless approved</li>
+                <li><strong>Private Events:</strong> Non house DJs get no comps unless approved by Mgr</li>
               </ul>
             </div>
 
@@ -227,9 +227,9 @@ export default function CompsVoidsSection() {
             <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
               <h5 style={{ color: 'white', fontSize: '0.9rem', marginBottom: '10px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '5px' }}>🛡️ Security & 🍹 Bartenders</h5>
               <ul style={{ ...premiumBodyStyle, fontSize: '0.85rem', paddingLeft: '18px', margin: 0 }}>
-                <li><strong>Security:</strong> 1 shift shot ONLY after clocking out</li>
-                <li><strong>Bartender Tab:</strong> $75 max ($75 extension requires Mgr)</li>
-                <li><strong>Personal:</strong> 3 shot max per shift (notate with "p")</li>
+                <li><strong>Security:</strong> 1 shift shot ONLY after clocking out and Mgr approval</li>
+                <li><strong>Bartender Tab:</strong> $75 max (Extension requires Mgr approval)</li>
+                <li><strong>Personal:</strong> 3 shot max per shift (notate with "Name" +"p")</li>
               </ul>
             </div>
 
@@ -237,7 +237,7 @@ export default function CompsVoidsSection() {
             <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
               <h5 style={{ color: 'white', fontSize: '0.9rem', marginBottom: '10px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '5px' }}>🎟️ VIP Hosts & 🎫 Tickets</h5>
               <ul style={{ ...premiumBodyStyle, fontSize: '0.85rem', paddingLeft: '18px', margin: 0 }}>
-                <li><strong>Host Entry:</strong> xxxJTTIXxxx (or xxxJTxxx if no tix)</li>
+                <li><strong>Host Entry:</strong> xxxJTTIXxxx (or xxxJTxxx if no tix, but with Mgr approval)</li>
                 <li><strong>Drink Tickets:</strong> Rail, Beer, Red Bull, Water</li>
                 <li><span style={{ color: '#fc8181' }}>NOT valid for premium liquor</span></li>
               </ul>
@@ -249,7 +249,7 @@ export default function CompsVoidsSection() {
             <div style={{ background: 'rgba(252, 129, 129, 0.05)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(252, 129, 129, 0.2)' }}>
               <h5 style={{ color: '#fc8181', fontSize: '0.9rem', marginBottom: '10px' }}>✔️ Approval Rule</h5>
               <p style={{ ...premiumBodyStyle, fontSize: '0.85rem', margin: 0 }}>
-                No oral approvals. Must have <strong>visual or text approval</strong> from management. Never accept "Someone said I could."
+              Must have <strong>in person visual/oral, or text approval from a Mgr</strong>. Never accept "Someone said I could."
               </p>
             </div>
             <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
