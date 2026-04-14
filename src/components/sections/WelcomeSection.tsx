@@ -257,52 +257,6 @@ export default function WelcomeSection() {
     };
   }, [currentUser]);
 
-  const cardsData = [
-    {
-      title: '🚀 Getting Started Guide',
-      description: 'Begin your Decades journey with our structured training program.',
-      items: ['Review training materials & procedures', 'Study Decades-specific standards', 'Complete POS system training', 'Practice signature cocktail recipes'],
-      footer: { left: 'Estimated: 2-3 days', right: '⭐ Essential' }
-    },
-    {
-      title: '🎬 Video Training Library',
-      description: 'Watch comprehensive training videos covering operations and mixology.',
-      items: ['POS system tutorials', 'Pouring technique demonstrations', 'Cocktail preparation videos', 'Customer service scenarios'],
-      footer: { left: '20+ training videos', right: '📺 Visual' }
-    },
-    {
-      title: '🍹 Cocktail Recipes',
-      description: 'Access our complete recipe database featuring signature cocktails.',
-      items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation'],
-      footer: { left: '50+ recipes', right: '✨ Mixology' }
-    },
-    {
-      title: '⚡ Bar Operations',
-      description: 'Master the operational side including cleaning and inventory.',
-      items: ['Daily cleaning checklists', 'Inventory & cost control', 'Closing procedures', 'Rush hour strategies'],
-      footer: { left: 'Essential', right: '🛠️ Operations' }
-    },
-    {
-      title: '🏢 Floor Training',
-      description: 'Learn unique requirements and service styles for each floor.',
-      items: ['2000\'s Floor procedures', 'Hip Hop Floor service', 'Rooftop bottle service', 'Floor-specific cocktails'],
-      footer: { left: 'All Floors', right: '📍 Environment' }
-    },
-    {
-      title: '📊 Progress Tracking',
-      description: 'Monitor your training progress and completion status.',
-      items: ['Section completion tracking', 'Training progress overview', 'Skill assessment readiness', 'Performance metrics'],
-      footer: { left: 'Real-time tracking', right: '📈 Analytics' }
-    }
-  ];
-
-  const weekData = [
-    { icon: '📚', day: 'Days 1-2', title: 'Portal Review', desc: 'Complete all training sections in this portal' },
-    { icon: '👀', day: 'Day 3', title: 'Observation Shift', desc: 'Shadow on 2000\'s Floor - focus on learning' },
-    { icon: '🛠️', day: 'Day 4', title: 'Hands-On Training', desc: 'Practice on Hip Hop & Rooftop floors' },
-    { icon: '🎓', day: 'Day 5', title: 'Assessment', desc: 'Final test and evaluation for shift readiness' }
-  ];
-
   return (
     <div style={{
       marginBottom: '30px',
@@ -316,112 +270,24 @@ export default function WelcomeSection() {
       animation: 'fadeIn 0.5s ease'
     }} className="active" id="welcome">
 
-      {/* Section Header */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.05)',
-        padding: '20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
-          Training Hub
-        </h3>
-        <span style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          color: 'white',
-          padding: '6px 14px',
-          borderRadius: '20px',
-          fontSize: '0.7rem',
-          fontWeight: 300,
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          Portal Active
-        </span>
-      </div>
-
       <div style={{ padding: '25px' }}>
         <DecadesIntroduction />
 
         <p style={{
-          fontSize: '1.1rem',
+          fontSize: '1.2rem',
           ...premiumBodyStyle,
-          marginBottom: '25px',
+          marginTop: '30px',
+          marginBottom: '30px',
           textAlign: 'center',
-          opacity: 0.9
+          opacity: 0.9,
+          letterSpacing: '1px'
         }}>
-          Welcome to the Decades Bar Management System, your comprehensive guide to excellence.
+          Explore your specialized dashboard below to track your journey. 
+          Detailed curriculum and roadmap are now available in the <strong>Training Library</strong>.
         </p>
 
-        {/* Card Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '25px',
-          margin: '25px 0'
-        }}>
-          {cardsData.map((card, index) => (
-            <AnimatedCard key={index} {...card} index={index} />
-          ))}
-        </div>
-
-        {/* Quick Start Guide */}
-        <div style={{
-          borderRadius: '16px',
-          margin: '25px 0 0 0',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-          background: 'rgba(255, 255, 255, 0.03)',
-          backdropFilter: uiBackdropFilter,
-          WebkitBackdropFilter: uiBackdropFilterWebkit,
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          overflow: 'hidden',
-          position: 'relative'
-        }}>
-          {/* Gold Glow for Quick Start Card */}
-          <div style={{
-            position: 'absolute',
-            top: '-2px',
-            left: '-2px',
-            right: '-2px',
-            bottom: '-2px',
-            borderRadius: '18px',
-            background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent)',
-            zIndex: 0,
-            opacity: 0,
-            transition: 'opacity 0.3s ease'
-          }} className="quick-start-glow" />
-
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              padding: '20px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(8px)'
-            }}>
-              <h4 style={{ ...cardHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
-                🎯 Your First Week
-              </h4>
-            </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '20px'
-              }}>
-                {weekData.map((week, index) => (
-                  <WeekDay key={index} {...week} index={index} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProgressSection />
       </div>
-
-      <ProgressSection />
     </div>
   );
 }
