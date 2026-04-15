@@ -51,7 +51,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState('welcome');
   const [toast, setToast] = useState({ message: '', show: false });
   const [userProgress, setUserProgress] = useState<any>(null);
 
@@ -208,7 +207,39 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const [activeSection, setActiveSectionInternal] = useState('welcome');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Sync activeSection with URL hash for browser navigation support
+  const setActiveSection = useCallback((section: string) => {
+    setActiveSectionInternal(section);
+    if (typeof window !== 'undefined') {
+      window.location.hash = section;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && hash !== activeSection) {
+        setActiveSectionInternal(hash);
+      } else if (!hash) {
+        setActiveSectionInternal('welcome');
+      }
+    };
+
+    // Initial sync
+    handleHashChange();
+
+    window.addEventListener('popstate', handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('popstate', handleHashChange);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [activeSection]);
 
   const value: AppContextType = {
     currentUser,
