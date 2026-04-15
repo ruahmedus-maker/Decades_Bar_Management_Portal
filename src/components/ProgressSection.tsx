@@ -32,7 +32,7 @@ const DARK_COLOR = '#5A9E6B';
 const PRIMARY_COLOR_RGB = '127, 182, 133';
 
 export default function ProgressSection() {
-  const { currentUser, userProgress, refreshProgress, trackVisit } = useApp();
+  const { currentUser, userProgress, refreshProgress, trackVisit, isAdmin } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -312,24 +312,26 @@ export default function ProgressSection() {
         ))}
       </div>
 
-      {/* Cloud Status */}
-      <div style={{
-        background: 'rgba(45, 212, 191, 0.1)',
-        padding: '12px',
-        borderRadius: '8px',
-        marginBottom: '16px',
-        fontSize: '0.8rem',
-        border: '1px solid rgba(45, 212, 191, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <span style={{ color: '#2DD4BF', fontWeight: 'bold' }}>🔄</span>
-        <div>
-          <div style={{ fontWeight: 'bold', color: '#2DD4BF' }}>Cloud Sync Active</div>
-          <div style={{ color: 'rgba(255,255,255,0.7)' }}>Progress syncs across all devices in real-time</div>
+      {/* Cloud Status - Only visible to Admins/Managers to reduce clutter */}
+      {isAdmin && (
+        <div style={{
+          background: 'rgba(45, 212, 191, 0.1)',
+          padding: '12px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          fontSize: '0.8rem',
+          border: '1px solid rgba(45, 212, 191, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{ color: '#2DD4BF', fontWeight: 'bold' }}>🔄</span>
+          <div>
+            <div style={{ fontWeight: 'bold', color: '#2DD4BF' }}>Cloud Sync Active</div>
+            <div style={{ color: 'rgba(255,255,255,0.7)' }}>Progress syncs across all devices in real-time</div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Acknowledgement Section */}
       {canAcknowledge && !currentUser?.acknowledged && (

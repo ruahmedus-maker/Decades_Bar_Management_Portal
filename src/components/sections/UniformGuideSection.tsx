@@ -12,7 +12,7 @@ function AnimatedCard({ title, description, items, children }: any) {
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -26,7 +26,7 @@ function AnimatedCard({ title, description, items, children }: any) {
           background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(8px)'
+          backdropFilter: 'none'
         }}>
           <h4 style={{
             ...cardHeaderStyle,
@@ -93,7 +93,7 @@ export default function UniformGuideSection() {
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >
@@ -101,7 +101,7 @@ export default function UniformGuideSection() {
         background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'none',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'

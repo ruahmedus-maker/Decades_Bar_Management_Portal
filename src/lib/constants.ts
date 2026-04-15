@@ -14,25 +14,30 @@ export const ADMIN_CODES = [
 ] as const;
 
 export const NAV_ITEMS = [
-  { id: 'welcome', icon: '🏠', label: 'Welcome' },
-  { id: 'training', icon: '🎓', label: 'Training' },
-  { id: 'tests', icon: '❓', label: 'Training Tests' },
-  { id: 'procedures', icon: '📋', label: 'Standard Procedures' },
-  { id: 'aloha-pos', icon: '💻', label: 'Aloha POS' },
-  { id: 'cocktails', icon: '🍹', label: 'Cocktail Recipes' },
-  { id: 'drinks-specials', icon: '🏷️', label: 'Drinks Specials' },
-  { id: 'glassware-guide', icon: '🥃', label: 'Glassware Guide' },
-  { id: 'uniform-guide', icon: '👕', label: 'Uniform Guide' },
-  { id: 'bar-cleanings', icon: '🧹', label: 'Bar Cleanings' },
-  { id: 'social-media', icon: '📱', label: 'Social Media' },
-  { id: 'special-events', icon: '📅', label: 'Special Events' },
-  { id: 'comps-voids', icon: '💰', label: 'Comps & Voids' },
-  { id: 'policies', icon: '📄', label: 'Policies' },
-  { id: 'admin-panel', icon: '⚙️', label: 'Admin Panel' },
-  // Add the missing admin-only items
-  { id: 'employee-counselings', icon: '📝', label: 'Employee Counselings' },
-  { id: 'performance-report', icon: '📊', label: 'Key Performance Indicators' },
-  { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
+  // HOME / DASHBOARD
+  { id: 'welcome', icon: '🏠', label: 'Home Dashboard', group: 'Home' },
+
+  // SERVICE & MENU
+  { id: 'drinks-specials', icon: '🏷️', label: 'Drinks & Specials', group: 'Service & Menu' },
+  { id: 'cocktails', icon: '🍹', label: 'Cocktail Library', group: 'Service & Menu' },
+  { id: 'bar-cleanings', icon: '🧹', label: 'Bar Cleaning', group: 'Service & Menu' },
+  { id: 'glassware-guide', icon: '🥃', label: 'Glassware Guide', group: 'Service & Menu' },
+  { id: 'comps-voids', icon: '💰', label: 'Comps & Voids', group: 'Service & Menu' },
+  { id: 'special-events', icon: '📅', label: 'Special Events', group: 'Service & Menu' },
+
+  // OPERATIONS & CULTURE
+  { id: 'training', icon: '🎓', label: 'Training Hub', group: 'Operations & Culture' },
+  { id: 'tests', icon: '📝', label: 'Classwork & Exams', group: 'Operations & Culture' },
+  { id: 'procedures', icon: '📋', label: 'Standard Procedures', group: 'Operations & Culture' },
+  { id: 'uniform-guide', icon: '👕', label: 'Uniform Standards', group: 'Operations & Culture' },
+  { id: 'social-media', icon: '📱', label: 'Social Media', group: 'Operations & Culture' },
+  { id: 'policies', icon: '📄', label: 'Venue Policies', group: 'Operations & Culture' },
+  { id: 'maintenance', icon: '🔧', label: 'Maintenance Log', group: 'Operations & Culture' },
+
+  // ADMIN
+  { id: 'admin-panel', icon: '⚙️', label: 'System Admin', group: 'Admin' },
+  { id: 'employee-counselings', icon: '📝', label: 'Counseling Log', group: 'Admin' },
+  { id: 'performance-report', icon: '📊', label: 'KPI Reports', group: 'Admin' },
 ] as const;
 
 export const TEST_QUESTIONS = [

@@ -12,7 +12,7 @@ function AnimatedCard({ title, description, items, children }: CardProps) {
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -79,7 +79,7 @@ export default function SocialMediaSection() {
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >

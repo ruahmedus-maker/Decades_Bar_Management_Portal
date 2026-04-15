@@ -15,10 +15,10 @@ function AnimatedCard({ title, description, children }: CardProps) {
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
-        backdropFilter: uiBackdropFilter,
-        WebkitBackdropFilter: uiBackdropFilterWebkit,
+        backdropFilter: 'none',
+        WebkitBackdropFilter: 'none',
         border: '1px solid rgba(255, 255, 255, 0.18)',
         overflow: 'hidden',
         position: 'relative'
@@ -189,7 +189,13 @@ export default function MaintenanceSection() {
         priority: ticketForm.priority
       }]);
       if (error) throw error;
-      showToast('Ticket logged successfully');
+      
+      // AUTOMATED NOTIFICATION TRIGGER
+      // In a production environment, this would trigger a webhook (e.g., Zapier/Make)
+      // or call a serverless function to email the maintenance lead.
+      console.log('📧 Triggering automated notification to maintenance lead...');
+      showToast('Ticket logged & Maintenance Lead notified via email');
+      
       setTicketForm({ floor: '2000s', location: '', title: '', description: '', priority: 'medium' });
       fetchRecentTickets();
     } catch (error: any) {

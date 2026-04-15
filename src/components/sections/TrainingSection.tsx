@@ -47,25 +47,24 @@ function AnimatedCard({ title, children }: CardProps) {
 }
 
 // Card Component for Operational Overview
-function OverviewCard({ title, description, items, footer }: any) {
+// Card Component for Operational Overview
+function OverviewCard({ title, description, items, footer, onClick }: any) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
+      onClick={onClick}
       style={{
         borderRadius: '16px',
         margin: '10px 0',
-        boxShadow: isHovered
-          ? '0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 255, 255, 0.05)'
-          : '0 8px 30px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         background: uiBackground,
-        backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilter,
-        WebkitBackdropFilter: isHovered ? 'blur(20px) saturate(180%)' : uiBackdropFilterWebkit,
+        backdropFilter: uiBackdropFilter,
+        WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: isHovered
           ? '1px solid rgba(255, 255, 255, 0.3)'
           : '1px solid rgba(255, 255, 255, 0.18)',
-        transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        transition: 'all 0.2s ease',
         overflow: 'hidden',
         cursor: 'pointer',
         position: 'relative',
@@ -132,8 +131,7 @@ function WeekDay({ icon, day, title, desc }: any) {
         background: isHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
         border: isHovered ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.3s ease',
-        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        transition: 'all 0.2s ease',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         cursor: 'pointer',
@@ -165,69 +163,6 @@ function WeekDay({ icon, day, title, desc }: any) {
   );
 }
 
-const cardsData = [
-  {
-    title: '🚀 Getting Started Guide',
-    description: 'Begin your Decades journey with our structured training program.',
-    items: ['Review training materials & procedures', 'Study Decades-specific standards', 'Review POS system training videos', 'Learn Signature & Feature cocktail recipes'],
-    footer: { left: 'Estimated: 1-2 days', right: '⭐ Essential' }
-  },
-  {
-    title: '📖 Standard Operating Procedures',
-    description: 'Learn set-up and closing procedures for all floors.',
-    items: ['Set-up checklist', 'Closing checklist', 'Cleaning checklist'],
-    footer: { left: 'Procedure tracking and notifications', right: '📖 Reading' }
-  },
-  {
-    title: '🎬 Video Training Library',
-    description: 'Watch comprehensive training videos covering operations and mixology.',
-    items: ['POS system tutorials', 'Cleaning procedures'],
-    footer: { left: '20+ training videos', right: '📺 Visual' }
-  },
-  {
-    title: '🍹 Cocktail Recipes',
-    description: 'Access our complete recipe database featuring classic cocktails.',
-    items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation'],
-    footer: { left: '50+ recipes', right: '✨ Mixology' }
-  },
-  {
-    title: '🍸 Glassware Guide',
-    description: 'Learn about the different types of glassware used at Decades and how to present them properly.',
-    items: ['All glassware used at Decades', 'How to present glassware properly'],
-    footer: { left: 'Essential Reference', right: '🍸 Presentation' }
-  },
-  {
-    title: '👔 Uniform & Appearance',
-    description: 'Learn about the uniform and appearance standards at Decades.',
-    items: ['Uniform standards', 'Appearance standards'],
-    footer: { left: 'Dress Code', right: '👔 Professional' }
-  },
-  {
-    title: '🧹 Bar Cleanings',
-    description: 'Learn about the bar cleaning procedures at Decades.',
-    items: ['Bar cleaning checklist', 'Bar cleaning procedures and scheduled dates'],
-    footer: { left: 'Sanitation Focus', right: '🧹 Cleaning' }
-  },
-  {
-    title: '📱 Social Media',
-    description: 'Learn about required social media posts and how to post them.',
-    items: ['Social Media resources', 'Brand guidelines'],
-    footer: { left: 'Digital Presence', right: '📱 Marketing' }
-  },
-  {
-    title: '💰 Comps and Voids',
-    description: 'Learn how to create comp tabs and procedures for voids.',
-    items: ['Required format for comp tabs', 'Void procedures', 'Authorization limits'],
-    footer: { left: 'Financial Protocol', right: '💰 Transactions' }
-  },
-  {
-    title: '📄 Policies',
-    description: 'Learn about the official policies and guidelines at Decades.',
-    items: ['Decades specific policies', 'General workplace policies'],
-    footer: { left: 'Official Handbook', right: '📄 Compliance' }
-  },
-];
-
 const weekData = [
   { icon: '📚', day: 'Days 1-2', title: 'Portal Review', desc: 'Complete all training sections in this portal' },
   { icon: '👀', day: 'Day 3', title: 'Observational Shift', desc: 'Shadow on 2000\'s/2010\'s Floors - focus on learning work flow patterns and practicing them' },
@@ -235,8 +170,83 @@ const weekData = [
   { icon: '🎓', day: 'Day 5', title: 'Assessment', desc: 'Final test and evaluation for shift readiness' }
 ];
 
+const cardsData = [
+  {
+    id: 'training',
+    title: '🚀 Getting Started Guide',
+    description: 'Begin your Decades journey with our structured training program.',
+    items: ['Review training materials & procedures', 'Study Decades-specific standards', 'Review POS system training videos', 'Learn Signature & Feature cocktail recipes'],
+    footer: { left: 'Estimated: 1-2 days', right: '⭐ Essential' }
+  },
+  {
+    id: 'procedures',
+    title: '📖 Standard Procedures',
+    description: 'Learn set-up and closing procedures for all floors.',
+    items: ['Set-up checklist', 'Closing checklist', 'Cleaning checklist'],
+    footer: { left: 'Procedure tracking and notifications', right: '📖 Reading' }
+  },
+  {
+    id: 'tests', // Video library could be within tests/training
+    title: '🎬 Video Training Library',
+    description: 'Watch comprehensive training videos covering operations and mixology.',
+    items: ['POS system tutorials', 'Cleaning procedures'],
+    footer: { left: '20+ training videos', right: '📺 Visual' }
+  },
+  {
+    id: 'cocktails',
+    title: '🍹 Cocktail Recipes',
+    description: 'Access our complete recipe database featuring classic cocktails.',
+    items: ['Signature Decades cocktails', 'Classic drink preparations', 'Seasonal specials', 'Garnishing & presentation'],
+    footer: { left: '50+ recipes', right: '✨ Mixology' }
+  },
+  {
+    id: 'glassware-guide',
+    title: '🍸 Glassware Guide',
+    description: 'Learn about the different types of glassware used at Decades and how to present them properly.',
+    items: ['All glassware used at Decades', 'How to present glassware properly'],
+    footer: { left: 'Essential Reference', right: '🍸 Presentation' }
+  },
+  {
+    id: 'uniform-guide',
+    title: '👔 Uniform & Appearance',
+    description: 'Learn about the uniform and appearance standards at Decades.',
+    items: ['Uniform standards', 'Appearance standards'],
+    footer: { left: 'Dress Code', right: '👔 Professional' }
+  },
+  {
+    id: 'bar-cleanings',
+    title: '🧹 Bar Cleanings',
+    description: 'Learn about the bar cleaning procedures at Decades.',
+    items: ['Bar cleaning checklist', 'Bar cleaning procedures and scheduled dates'],
+    footer: { left: 'Sanitation Focus', right: '🧹 Cleaning' }
+  },
+  {
+    id: 'social-media',
+    title: '📱 Social Media',
+    description: 'Learn about required social media posts and how to post them.',
+    items: ['Social Media resources', 'Brand guidelines'],
+    footer: { left: 'Digital Presence', right: '📱 Marketing' }
+  },
+  {
+    id: 'comps-voids',
+    title: '💰 Comps and Voids',
+    description: 'Learn how to create comp tabs and procedures for voids.',
+    items: ['Required format for comp tabs', 'Void procedures', 'Authorization limits'],
+    footer: { left: 'Financial Protocol', right: '💰 Transactions' }
+  },
+  {
+    id: 'policies',
+    title: '📄 Policies',
+    description: 'Learn about the official policies and guidelines at Decades.',
+    items: ['Decades specific policies', 'General workplace policies'],
+    footer: { left: 'Official Handbook', right: '📄 Compliance' }
+  },
+];
+
+// ... (weekData remains the same)
+
 export default function TrainingMaterials() {
-  const { currentUser } = useApp();
+  const { currentUser, setActiveSection } = useApp();
   const [isOverviewVisible, setIsOverviewVisible] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -276,7 +286,7 @@ export default function TrainingMaterials() {
       }}>
         <div>
           <h3 style={{ ...sectionHeaderStyle, ...premiumWhiteStyle, letterSpacing: '4px' }}>
-            TRAINING OVERVIEW
+            TRAINING HUB
           </h3>
           <p style={{ margin: 0, opacity: 0.7, color: 'white', fontSize: '0.8rem', marginTop: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Structured learning paths and proficiency stages
@@ -300,7 +310,11 @@ export default function TrainingMaterials() {
                 marginBottom: '30px'
               }}>
                 {cardsData.map((card, index) => (
-                  <OverviewCard key={index} {...card} />
+                  <OverviewCard 
+                    key={index} 
+                    {...card} 
+                    onClick={() => setActiveSection(card.id)}
+                  />
                 ))}
               </div>
 

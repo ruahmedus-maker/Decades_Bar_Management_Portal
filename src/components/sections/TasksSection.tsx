@@ -14,7 +14,7 @@ function AnimatedCard({ title, children }: any) {
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -28,7 +28,7 @@ function AnimatedCard({ title, children }: any) {
           background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(8px)'
+          backdropFilter: 'none'
         }}>
           <h4 style={{
             ...cardHeaderStyle,
@@ -71,12 +71,15 @@ export default function TasksSection() {
       setTasks((data || []).map((t: any) => ({
         id: t.id,
         title: t.title,
-        description: t.description,
+        description: t.description || '',
         assignedTo: t.assigned_to,
-        dueDate: t.due_date,
+        dueDate: t.due_date || '',
         status: t.status || (t.completed ? 'completed' : 'pending'),
         completed: t.completed,
-        priority: t.priority
+        priority: t.priority || 'medium',
+        completedAt: t.completed_at || null,
+        createdAt: t.created_at,
+        eventId: t.event_id || null
       })));
     } catch (e) {
       showToast('Error loading tasks');
@@ -129,13 +132,13 @@ export default function TasksSection() {
       backdropFilter: uiBackdropFilter,
       WebkitBackdropFilter: uiBackdropFilterWebkit,
       border: '1px solid rgba(255, 255, 255, 0.22)',
-      boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
     }}>
       <div style={{
         background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'none',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'

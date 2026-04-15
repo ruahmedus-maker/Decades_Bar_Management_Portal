@@ -42,6 +42,8 @@ interface AppContextType {
   isAdmin: boolean;
   refreshProgress: () => void;
   forceReset: () => void;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (isOpen: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -206,6 +208,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const value: AppContextType = {
     currentUser,
     isLoading,
@@ -222,7 +226,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     hideToast,
     isAdmin: currentUser?.position === 'Admin',
     refreshProgress,
-    forceReset
+    forceReset,
+    isSidebarOpen,
+    setIsSidebarOpen
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

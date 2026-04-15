@@ -9,7 +9,7 @@ const THEME_COLOR = '#D4AF37';
 const THEME_COLOR_RGB = '212, 175, 55';
 
 export default function Header() {
-  const { currentUser, logout, isAdmin } = useApp();
+  const { currentUser, logout, isAdmin, isSidebarOpen, setIsSidebarOpen } = useApp();
 
   const headerStyle = {
     position: 'fixed' as const,
@@ -40,7 +40,6 @@ export default function Header() {
     background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
-    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
   };
 
   const titleStyle = {
@@ -102,9 +101,32 @@ export default function Header() {
 
   return (
     <div style={headerStyle}>
-      <h2 style={titleStyle}>
-        {isAdmin ? 'Decades Bar Management System' : 'Decades Bar Training Portal'}
-      </h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {/* Burger Menu Trigger */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'white',
+            fontSize: '1.8rem',
+            cursor: 'pointer',
+            padding: '5px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'opacity 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+        >
+          {isSidebarOpen ? '✕' : '☰'}
+        </button>
+
+        <h2 style={titleStyle}>
+          {isAdmin ? 'Decades Bar Management System' : 'Decades Bar Training Portal'}
+        </h2>
+      </div>
 
       <div style={userInfoStyle}>
         {/* Only render for admins/managers */}

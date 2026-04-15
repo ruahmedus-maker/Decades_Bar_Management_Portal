@@ -15,7 +15,7 @@ function AnimatedCard({ title, description, children }: CardProps) {
       style={{
         borderRadius: '16px',
         margin: '15px 0',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
         background: uiBackground,
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
@@ -29,7 +29,7 @@ function AnimatedCard({ title, description, children }: CardProps) {
           background: 'rgba(255, 255, 255, 0.05)',
           padding: '16px 20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(8px)'
+          backdropFilter: 'none'
         }}>
           <h4 style={{
             ...cardHeaderStyle,
@@ -123,7 +123,7 @@ export default function SpecialEventsSection({ isAdminView = false }: { isAdminV
         backdropFilter: uiBackdropFilter,
         WebkitBackdropFilter: uiBackdropFilterWebkit,
         border: '1px solid rgba(255, 255, 255, 0.22)',
-        boxShadow: '0 16px 50px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
       }}
       className="active"
     >
@@ -131,7 +131,7 @@ export default function SpecialEventsSection({ isAdminView = false }: { isAdminV
         background: 'rgba(255, 255, 255, 0.05)',
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'none',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -172,7 +172,7 @@ export default function SpecialEventsSection({ isAdminView = false }: { isAdminV
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
               {events.map((event, idx) => (
-                <div key={event.id} style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}>
+                <div key={event.id} style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
                     <h5 style={{ ...premiumWhiteStyle, margin: 0, fontSize: '1rem', fontWeight: 300, letterSpacing: '1px' }}>{event.name}</h5>
                     <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'white', background: getStatusColor(event.status), padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>{event.status}</span>

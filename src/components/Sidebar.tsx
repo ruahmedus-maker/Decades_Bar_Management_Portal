@@ -17,11 +17,15 @@ const SIDEBAR_COLOR_RGB = '255, 255, 255';
 
 
 export default function Sidebar() {
-  const { activeSection, setActiveSection, trackVisit, isAdmin } = useApp();
+  const { activeSection, setActiveSection, trackVisit, isAdmin, isSidebarOpen, setIsSidebarOpen } = useApp();
 
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId);
     trackVisit(sectionId);
+    // Close sidebar on mobile after selection
+    if (window.innerWidth <= 1024) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // Filter navigation items based on user role and feature flags
@@ -29,176 +33,148 @@ export default function Sidebar() {
     // Hide tests if disabled
     if (item.id === 'tests' && !ENABLE_TESTS) return false;
 
-    // Hide admin sections for non-admins using the predefined array
-    if (ADMIN_SECTIONS.includes(item.id as SectionId) && !isAdmin) {
+    // Hide admin sections for non-admins
+    if (item.group === 'Admin' && !isAdmin) {
       return false;
     }
 
     return true;
   });
 
+  // Group items by their group property
+  const groups = ['Home', 'Service & Menu', 'Operations & Culture', 'Admin'];
+  const groupedItems = groups.reduce((acc, group) => {
+    const items = filteredNavItems.filter(item => item.group === group);
+    if (items.length > 0) acc[group] = items;
+    return acc;
+  }, {} as Record<string, typeof filteredNavItems>);
 
-  // Sidebar positioned to be exactly level with main content
   const sidebarStyle = {
     position: 'fixed' as const,
-    left: '20px',
-    top: '120px', // Match the main content's top position
-    height: 'calc(100vh - 140px)', // Account for header and bottom margin
-    width: '260px',
-    zIndex: 100,
+    left: isSidebarOpen ? '20px' : '-300px', // Toggle for mobile
+    top: '120px',
+    height: 'calc(100vh - 140px)',
+    width: '280px',
+    zIndex: 1000,
     overflowY: 'auto' as const,
     padding: '25px 20px',
-    background: uiBackground,
-    backdropFilter: uiBackdropFilter,
-    WebkitBackdropFilter: uiBackdropFilterWebkit,
-    border: '1px solid rgba(255, 255, 255, 0.25)',
-    boxShadow: `
-      0 20px 40px rgba(0, 0, 0, 0.3),
-      0 8px 32px rgba(${SIDEBAR_COLOR_RGB}, 0.1)
-    `,
+    background: '#121212', // Pure professional neutral
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
     borderRadius: '20px',
-    transition: 'none', // Removed - caused scroll crashes
-    willChange: 'transform',
+    transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    willChange: 'left',
     transform: 'translateZ(0)'
   };
 
-  const sidebarHoverStyle = {
-    background: 'rgba(255, 255, 255, 0.15)',
-    boxShadow: `
-      0 25px 50px rgba(0, 0, 0, 0.4),
-      0 12px 40px rgba(${SIDEBAR_COLOR_RGB}, 0.15)
-    `,
-    transform: 'translateY(-2px)',
-  };
-
-  const logoStyle = {
-    textAlign: 'center' as const,
-    marginBottom: '30px',
-    padding: '20px 0',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-  };
-
-  // Cinematic Gold Text Effect (Matching Header) - Removed local definition, using import
-
-  const logoTitleStyle = {
-    color: '#FFFFFF',
-    fontSize: '2.2rem',
-    fontFamily: brandFont,
-    fontWeight: 100, // Extra thin geometric look
-    marginBottom: '5px',
+  const groupHeaderStyle = {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: '0.65rem',
+    fontWeight: 600,
     textTransform: 'uppercase' as const,
-    letterSpacing: '6px', // Extra wide
-    filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.3))',
-  };
-
-  const logoSubtitleStyle = {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: '0.8rem',
-    fontFamily: brandFont,
-    fontWeight: 300,
-    letterSpacing: '4px',
-    textTransform: 'uppercase' as const,
-  };
-
-  const navLinksStyle = {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
+    letterSpacing: '2px',
+    marginTop: '25px',
+    marginBottom: '12px',
+    paddingLeft: '12px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingBottom: '8px'
   };
 
   const navLinkStyle = {
     textDecoration: 'none',
-    padding: '14px 16px',
-    borderRadius: '12px',
+    padding: '12px 16px',
+    borderRadius: '10px',
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
+    background: 'transparent',
+    border: '1px solid transparent',
     cursor: 'pointer',
-  };
-
-  const navLinkHoverStyle = {
-    background: 'rgba(255, 255, 255, 0.1)',
-    transform: 'translateX(8px)',
-    color: '#FFFFFF',
-    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    transition: 'all 0.2s ease',
+    marginBottom: '4px'
   };
 
   const navLinkActiveStyle = {
-    background: 'rgba(255, 255, 255, 0.15)',
-    border: '1px solid rgba(255, 255, 255, 0.4)',
-    borderLeft: '4px solid #FFFFFF',
-    transform: 'translateX(5px)',
-    boxShadow: '0 8px 20px rgba(255, 255, 255, 0.1)',
-  };
-
-  const iconStyle = {
-    marginRight: '10px',
-    width: '20px',
-    textAlign: 'center' as const,
+    background: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    color: '#FFFFFF'
   };
 
   return (
-    <div
-      className="sidebar"
-      style={sidebarStyle}
-      onMouseEnter={(e) => {
-        Object.assign(e.currentTarget.style, sidebarHoverStyle);
-      }}
-      onMouseLeave={(e) => {
-        Object.assign(e.currentTarget.style, sidebarStyle);
-      }}
-    >
-      <div style={logoStyle}>
-        <h1 style={logoTitleStyle}>Main Menu</h1>
-        <p style={logoSubtitleStyle}>Training Modules</p>
-      </div>
-      <ul style={navLinksStyle}>
-        {filteredNavItems.map((item) => {
-          const isActive = activeSection === item.id;
+    <>
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          onClick={() => setIsSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 999
+          }}
+        />
+      )}
 
-          return (
-            <li
-              key={item.id}
-              data-tour={item.id}
-              style={{
-                listStyle: 'none',
-              }}
-            >
-              <a
-                style={{
-                  ...navLinkStyle,
-                  ...(isActive ? navLinkActiveStyle : {}),
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    Object.assign(e.currentTarget.style, navLinkHoverStyle);
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    Object.assign(e.currentTarget.style, {
-                      ...navLinkStyle,
-                      ...(isActive ? navLinkActiveStyle : {}),
-                    });
-                  }
-                }}
-                onClick={() => handleSectionChange(item.id)}
-              >
-                <span style={iconStyle}>
-                  {item.icon}
-                </span>
-                <span style={navLinkTextStyle}>
-                  {item.label}
-                </span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+      <div className="sidebar" style={sidebarStyle}>
+        <div style={{ marginBottom: '20px', paddingBottom: '15px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <h1 style={{ ...goldTextStyle, fontSize: '1.4rem', letterSpacing: '4px', textTransform: 'uppercase', textAlign: 'center' }}>
+            Menu
+          </h1>
+        </div>
+
+        <nav>
+          {groups.map(groupName => {
+            const items = groupedItems[groupName];
+            if (!items) return null;
+
+            return (
+              <div key={groupName} style={{ marginBottom: '10px' }}>
+                <div style={groupHeaderStyle}>{groupName}</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {items.map(item => {
+                    const isActive = activeSection === item.id;
+                    return (
+                      <li key={item.id}>
+                        <a
+                          onClick={() => handleSectionChange(item.id)}
+                          style={{
+                            ...navLinkStyle,
+                            ...(isActive ? navLinkActiveStyle : {}),
+                            color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.6)'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                              e.currentTarget.style.color = '#FFFFFF';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                            }
+                          }}
+                        >
+                          <span style={{ fontSize: '1.1rem', width: '24px', textAlign: 'center' }}>
+                            {item.icon}
+                          </span>
+                          <span style={{ ...navLinkTextStyle, fontSize: '0.8rem', letterSpacing: '1px' }}>
+                            {item.label}
+                          </span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </nav>
+      </div>
+    </>
   );
 }

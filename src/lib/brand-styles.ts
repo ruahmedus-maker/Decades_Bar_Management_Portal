@@ -8,13 +8,11 @@ export const goldTextStyle = {
     background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
-    filter: 'drop-shadow(0px 2px 0px rgba(0,0,0,0.5))',
 };
 
 // High-contrast solid gold for small text legibility
 export const solidGoldStyle = {
     color: '#FFD700',
-    filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.5))',
 };
 
 // Premium White Style (Aloha POS Style)
@@ -23,7 +21,6 @@ export const premiumWhiteStyle = {
     fontWeight: 200,
     textTransform: 'uppercase' as const,
     letterSpacing: '4px',
-    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.3))',
 };
 
 // Premium Body Style (Aloha Content Style)
@@ -77,7 +74,7 @@ export const goldCardHeaderStyle = {
     ...goldTextStyle,
 };
 
-// UI Background & Glassmorphism
-export const uiBackground = 'rgba(26, 54, 93, 0.55)';
-export const uiBackdropFilter = 'blur(8px)';
-export const uiBackdropFilterWebkit = 'blur(8px)';
+// UI Background & Professional Glassmorphism
+export const uiBackground = 'rgba(18, 18, 18, 0.9)'; // Off-black professional look
+export const uiBackdropFilter = 'none'; // Better readability
+export const uiBackdropFilterWebkit = 'none';

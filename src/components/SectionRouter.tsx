@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import WelcomeSection from '@/components/sections/WelcomeSection';
+import HomeDashboard from '@/components/sections/HomeDashboard';
 import TrainingSection from '@/components/sections/TrainingSection';
 import TestsSection from '@/components/sections/TestsSection';
 import ProceduresSection from '@/components/sections/ProceduresSection';
@@ -48,7 +48,7 @@ export default function SectionRouter() {
   const renderSection = () => {
     switch (activeSection) {
       case 'welcome':
-        return <WelcomeSection />;
+        return <HomeDashboard />;
       case 'training':
         return <TrainingSection />;
       case 'tests':
@@ -84,7 +84,7 @@ export default function SectionRouter() {
       case 'maintenance':
         return <MaintenanceSection />;
       default:
-        return <WelcomeSection />;
+        return <HomeDashboard />;
     }
   };
 

@@ -515,21 +515,6 @@ export default function AlohaPosSection() {
           )}
         </div>
 
-        <div style={{ marginTop: '10px' }}>
-          {/* Troubleshooting Checklist */}
-          <SimpleCard
-            title="🔧 Troubleshooting"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <ChecklistItem>Reboot POS system if unresponsive</ChecklistItem>
-              <ChecklistItem>Verify card reader cables are securely connected</ChecklistItem>
-              <ChecklistItem>Restart printer and check paper levels if register won't open for cash transactions</ChecklistItem>
-              <ChecklistItem>Use card reader cleaner if cards aren&apos;t reading</ChecklistItem>
-              <ChecklistItem>Contact manager for system override needs</ChecklistItem>
-              <ChecklistItem>Document any persistent issues and report to manager</ChecklistItem>
-            </div>
-          </SimpleCard>
-        </div>
 
         {/* Video Tips */}
         <SimpleCard

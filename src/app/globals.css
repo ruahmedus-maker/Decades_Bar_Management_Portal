@@ -4,14 +4,14 @@
 
 /* Decades Bar Training Portal Styles - ULTRA PERFORMANCE */
 :root {
-  --primary: #1a365d;
-  --secondary: #2d3748;
+  --primary: #121212;
+  --secondary: #1e1e1e;
   --accent: #d4af37;
-  --light: #f7fafc;
-  --dark: #2d3748;
-  --success: #38a169;
-  --warning: #d69e2e;
-  --error: #e53e3e;
+  --light: #f5f5f5;
+  --dark: #121212;
+  --success: #2e7d32;
+  --warning: #f9a825;
+  --error: #c62828;
 }
 
 * {
@@ -62,26 +62,18 @@ body {
   overflow: hidden;
 }
 
-/* Glassmorphism panel for main content */
+/* Neutral panel for main content */
 .glass-panel {
-  background: var(--ui-bg, rgba(26, 54, 93, 0.4));
+  background: var(--ui-bg, rgba(18, 18, 18, 0.95));
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-/* Only apply expensive backdrop-filter on non-mobile devices to prevent crashes */
-@media (min-width: 769px) {
-  .glass-panel {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* On mobile, use a solid elegant fallback to save GPU */
 @media (max-width: 768px) {
   .glass-panel {
-    background: rgba(26, 54, 93, 0.95) !important;
+    background: #121212 !important;
   }
 }
 
