@@ -606,7 +606,7 @@ export default function LoginBarrier() {
             padding: '20px'
           }}>
             <div style={{
-              background: '#1a365d',
+              background: '#0a0a0a',
               padding: '30px',
               borderRadius: '20px',
               maxWidth: '400px',

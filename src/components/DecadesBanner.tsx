@@ -61,7 +61,7 @@ export default function DecadesBanner() {
           height: '100%',
           objectFit: 'cover',
           objectPosition: 'center',
-          filter: 'brightness(0.4) contrast(1.1) saturate(1.1)',
+          filter: 'brightness(0.7) contrast(1.05) saturate(1.4)',
         }}
       />
       
@@ -72,7 +72,7 @@ export default function DecadesBanner() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(0,0,0,0.8) 100%)',
+        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0,0,0,0.6) 100%)',
         pointerEvents: 'none',
       }}></div>
     </div>

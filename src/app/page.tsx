@@ -31,7 +31,7 @@ function LoadingFallback() {
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'rgba(26, 54, 93, 0.9)',
+        background: 'rgba(10, 10, 10, 0.9)',
         backdropFilter: 'blur(20px)',
         display: 'flex',
         justifyContent: 'center',
@@ -137,7 +137,7 @@ function MainApp() {
       <div className="container">
         <Header />
         <Sidebar />
-        <div className="main-content glass-panel" style={{ '--ui-bg': 'rgba(26, 54, 93, 0.4)' } as React.CSSProperties}>
+        <div className="main-content glass-panel" style={{ '--ui-bg': 'rgba(18, 18, 18, 0.4)' } as React.CSSProperties}>
           <div className="content-wrapper">
             <ErrorBoundary>
               <SectionRouter />

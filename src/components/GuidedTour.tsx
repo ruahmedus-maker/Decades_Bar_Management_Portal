@@ -277,7 +277,7 @@ export default function GuidedTour() {
       content: (
         <div>
           <h3 style={{ color: '#FFD700', marginBottom: '8px', fontWeight: 300, letterSpacing: '1px', textTransform: 'uppercase' }}>Maintenance</h3>
-          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Employees can submit maintenance tickets upon observation of any issues throughout the venue.</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 300 }}>Employees can submit maintenance logs upon observation of any issues throughout the venue.</p>
         </div>
       ),
     },
@@ -308,8 +308,8 @@ export default function GuidedTour() {
       options={{
         showProgress: true,
         buttons: ['back', 'skip', 'primary'],
-        arrowColor: 'rgba(26, 54, 93, 0.98)',
-        backgroundColor: 'rgba(26, 54, 93, 0.98)',
+        arrowColor: 'rgba(18, 18, 18, 0.98)',
+        backgroundColor: 'rgba(18, 18, 18, 0.98)',
         primaryColor: '#FFD700',
         textColor: '#FFFFFF',
         overlayColor: 'rgba(0, 0, 0, 0.75)',
@@ -329,7 +329,7 @@ export default function GuidedTour() {
         },
         buttonPrimary: {
           background: 'linear-gradient(180deg, #FFF7CC 0%, #FFD700 50%, #B8860B 100%)',
-          color: '#1a365d',
+          color: '#000000',
           fontWeight: 600,
           borderRadius: '8px',
           padding: '10px 20px',

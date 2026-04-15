@@ -69,9 +69,12 @@ export default function HomeDashboard() {
         gap: '20px'
       }}>
         <div>
-          <h1 style={{ ...goldTextStyle, fontSize: '1.8rem', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '8px' }}>
-            Welcome, {currentUser?.name?.split(' ')[0]}
+          <h1 style={{ ...goldTextStyle, fontSize: '2.2rem', letterSpacing: '8px', textTransform: 'uppercase', marginBottom: '8px' }}>
+            HOME
           </h1>
+          <p style={{ ...premiumBodyStyle, color: 'rgba(255,255,255,0.7)', margin: 0, letterSpacing: '2px' }}>
+            WELCOME, {currentUser?.name?.toUpperCase()}
+          </p>
           <p style={{ ...premiumBodyStyle, color: 'rgba(255,255,255,0.5)', margin: 0 }}>
             {currentUser?.position} Dashboard • {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>

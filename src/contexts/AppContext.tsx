@@ -172,7 +172,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       
       // 4. Force reload to a clean URL
-      window.location.href = window.location.origin + '?v=' + Date.now();
+      window.location.href = window.location.origin;
     }
   }, []);
 
